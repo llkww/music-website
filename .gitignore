@@ -1,0 +1,29 @@
+# 依赖模块
+node_modules/
+
+# 运行时文件
+.DS_Store
+.env
+
+# 日志
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 编辑器配置
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 上传文件
+public/uploads/
+
+# 构建输出
+dist/
+build/
+
+# 数据库文件
+data/

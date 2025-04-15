@@ -1,0 +1,289 @@
+<%- include('partials/header') %>
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="position-relative mb-4">
+                    <img src="<%= song.coverImage %>" alt="<%= song.title %>" class="img-fluid rounded shadow">
+                    <% if (song.isVIP) { %>
+                        <span class="position-absolute top-0 end-0 badge bg-warning text-dark m-2 p-2">VIP</span>
+                        <% } %>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4">
+                    <button class="btn btn-primary btn-lg play-button" data-id="<%= song._id %>"
+                        data-title="<%= song.title %>" data-artist="<%= song.artist.name %>"
+                        data-cover="<%= song.coverImage %>" data-audio="<%= song.audioFile %>">
+                        <i class="bi bi-play-fill"></i> 播放
+                    </button>
+
+                    <div class="btn-group">
+                        <% if (locals.user) { %>
+                            <button id="like-button" class="btn btn-outline-danger btn-lg" data-id="<%= song._id %>">
+                                <i class="bi <%= isLiked ? 'bi-heart-fill' : 'bi-heart' %>"></i>
+                                <span class="like-count">
+                                    <%= song.likes %>
+                                </span>
+                            </button>
+                            <% } else { %>
+                                <button class="btn btn-outline-danger btn-lg" onclick="alert('请先登录')">
+                                    <i class="bi bi-heart"></i>
+                                    <span>
+                                        <%= song.likes %>
+                                    </span>
+                                </button>
+                                <% } %>
+
+                                    <button class="btn btn-outline-secondary btn-lg dropdown-toggle"
+                                        data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><button class="dropdown-item btn-add-to-playlist"
+                                                data-song-id="<%= song._id %>">
+                                                <i class="bi bi-plus-circle"></i> 添加到歌单
+                                            </button></li>
+                                        <li><a class="dropdown-item" href="<%= song.audioFile %>" download>
+                                                <i class="bi bi-download"></i> 下载
+                                            </a></li>
+                                        <li><a class="dropdown-item" href="<%= song.artist._id %>">
+                                                <i class="bi bi-person"></i> 查看歌手
+                                            </a></li>
+                                        <% if (song.album) { %>
+                                            <li><a class="dropdown-item" href="/music/album/<%= song.album._id %>">
+                                                    <i class="bi bi-disc"></i> 查看专辑
+                                                </a></li>
+                                            <% } %>
+                                    </ul>
+                    </div>
+                </div>
+
+                <div class="song-info mb-4">
+                    <h1 class="mb-2">
+                        <%= song.title %>
+                    </h1>
+                    <p class="mb-1"><strong>歌手:</strong> <a href="/music/artist/<%= song.artist._id %>">
+                            <%= song.artist.name %>
+                        </a></p>
+                    <% if (song.album) { %>
+                        <p class="mb-1"><strong>专辑:</strong> <a href="/music/album/<%= song.album._id %>">
+                                <%= song.album.title %>
+                            </a></p>
+                        <% } %>
+                            <p class="mb-1"><strong>发行年份:</strong>
+                                <%= song.releaseYear %>
+                            </p>
+                            <p class="mb-1"><strong>时长:</strong>
+                                <%= Math.floor(song.duration / 60) %>:<%= (song.duration %
+                                        60).toString().padStart(2, '0' ) %>
+                            </p>
+                            <div class="d-flex mb-1">
+                                <strong class="me-2">风格:</strong>
+                                <div>
+                                    <a href="/music/genre/<%= song.genre %>" class="badge bg-primary me-1">
+                                        <%= song.genre %>
+                                    </a>
+                                    <% if (song.language) { %>
+                                        <a href="/music/language/<%= song.language %>" class="badge bg-secondary">
+                                            <%= song.language %>
+                                        </a>
+                                        <% } %>
+                                </div>
+                            </div>
+                            <p class="mb-1"><strong>播放次数:</strong>
+                                <%= song.playCount.toLocaleString() %>
+                            </p>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0">歌词</h4>
+                    </div>
+                    <div class="card-body lyrics-container">
+                        <% if (song.lyrics) { %>
+                            <div class="lyrics-text">
+                                <% // 处理LRC格式歌词 const lines=song.lyrics.split('\n'); let displayLyrics='' ; for (let
+                                    i=0; i < lines.length; i++) { const line=lines[i].trim(); if (line) { // 移除时间标记
+                                    const textOnly=line.replace(/\[\d+:\d+\.\d+\]/g, '' ).trim(); if (textOnly) {
+                                    displayLyrics +=`<p>${textOnly}</p>`;
+                                    }
+                                    }
+                                    }
+                                    %>
+                                    <%- displayLyrics %>
+                            </div>
+                            <% } else { %>
+                                <p class="text-center py-4">暂无歌词</p>
+                                <% } %>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">评论</h4>
+                        <span class="badge bg-primary rounded-pill">
+                            <%= song.comments ? song.comments.length : 0 %>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <% if (locals.user) { %>
+                            <form id="comment-form" class="mb-4" data-id="<%= song._id %>" data-type="song">
+                                <div class="input-group">
+                                    <textarea id="comment-input" class="form-control" placeholder="发表评论..." rows="2"
+                                        required></textarea>
+                                    <button type="submit" class="btn btn-primary">发布</button>
+                                </div>
+                            </form>
+                            <% } else { %>
+                                <div class="alert alert-info text-center">
+                                    <a href="/auth/login" class="alert-link">登录</a> 后发表评论
+                                </div>
+                                <% } %>
+
+                                    <div id="comments-list">
+                                        <!-- 评论将通过JS动态加载 -->
+                                        <div class="text-center my-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">加载中...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <button id="load-more-comments" class="btn btn-outline-primary"
+                                            style="display: none;">加载更多评论</button>
+                                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3 class="mb-3">相似歌曲推荐</h3>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4">
+                    <% similarSongs.forEach(similarSong=> { %>
+                        <div class="col">
+                            <div class="card h-100">
+                                <img src="<%= similarSong.coverImage %>" class="card-img-top"
+                                    alt="<%= similarSong.title %>">
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate">
+                                        <%= similarSong.title %>
+                                    </h5>
+                                    <p class="card-text text-truncate">
+                                        <%= similarSong.artist.name %>
+                                    </p>
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-primary btn-sm rounded-circle btn-play"
+                                            data-id="<%= similarSong._id %>" data-title="<%= similarSong.title %>"
+                                            data-artist="<%= similarSong.artist.name %>"
+                                            data-cover="<%= similarSong.coverImage %>"
+                                            data-audio="<%= similarSong.audioFile %>">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                        <a href="/music/song/<%= similarSong._id %>"
+                                            class="btn btn-outline-secondary btn-sm">详情</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加到歌单模态框 -->
+    <div class="modal fade" id="add-to-playlist-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加到歌单</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-to-playlist-form">
+                        <input type="hidden" id="song-id" name="songId">
+                        <div class="mb-3">
+                            <label for="playlist-select" class="form-label">选择歌单</label>
+                            <select class="form-select" id="playlist-select" required>
+                                <option value="">选择歌单</option>
+                            </select>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">添加</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/comments.js"></script>
+    <script src="/js/playlist.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 播放按钮事件
+            document.querySelectorAll('.play-button, .btn-play').forEach(button => {
+                button.addEventListener('click', function () {
+                    const songData = {
+                        id: this.dataset.id,
+                        title: this.dataset.title,
+                        artist: this.dataset.artist,
+                        cover: this.dataset.cover,
+                        audio: this.dataset.audio
+                    };
+
+                    if (window.musicPlayer) {
+                        window.musicPlayer.playSong(songData);
+                    } else {
+                        // 如果musicPlayer未初始化，使用默认的播放方式
+                        const audioElement = new Audio(songData.audio);
+                        audioElement.play();
+                    }
+                });
+            });
+
+            // 喜欢按钮事件
+            const likeButton = document.getElementById('like-button');
+            if (likeButton) {
+                likeButton.addEventListener('click', function () {
+                    const songId = this.dataset.id;
+
+                    fetch(`/music/song/${songId}/like`, {
+                        method: 'POST'
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // 更新按钮样式和计数
+                                const likeIcon = this.querySelector('i');
+                                const likeCount = this.querySelector('.like-count');
+
+                                if (data.liked) {
+                                    likeIcon.classList.remove('bi-heart');
+                                    likeIcon.classList.add('bi-heart-fill');
+                                    likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                                } else {
+                                    likeIcon.classList.remove('bi-heart-fill');
+                                    likeIcon.classList.add('bi-heart');
+                                    likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                                }
+                            } else {
+                                alert(data.message || '操作失败');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('收藏操作失败:', error);
+                            alert('操作失败，请稍后再试');
+                        });
+                });
+            }
+        });
+    </script>
+
+    <%- include('partials/footer') %>

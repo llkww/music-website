@@ -1,0 +1,136 @@
+</div>
+
+<% if (!locals.hidePlayer) { %>
+    <div id="player-bar" class="player-bar bg-dark text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <img id="playing-cover" src="/img/default-cover.jpg" alt="封面" class="player-cover me-3">
+                        <div>
+                            <div id="playing-title" class="song-title">未播放</div>
+                            <div id="playing-artist" class="song-artist">--</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="player-controls text-center">
+                        <div class="control-buttons mb-2">
+                            <button id="btn-shuffle" class="btn btn-link text-white">
+                                <i class="bi bi-shuffle"></i>
+                            </button>
+                            <button id="btn-prev" class="btn btn-link text-white">
+                                <i class="bi bi-skip-backward-fill"></i>
+                            </button>
+                            <button id="btn-play" class="btn btn-link text-white btn-lg">
+                                <i class="bi bi-play-circle-fill"></i>
+                            </button>
+                            <button id="btn-next" class="btn btn-link text-white">
+                                <i class="bi bi-skip-forward-fill"></i>
+                            </button>
+                            <button id="btn-repeat" class="btn btn-link text-white">
+                                <i class="bi bi-arrow-repeat"></i>
+                            </button>
+                        </div>
+                        <div class="progress-area">
+                            <span id="current-time">0:00</span>
+                            <div class="progress">
+                                <div id="progress-bar" class="progress-bar bg-primary" role="progressbar"
+                                    style="width: 0%"></div>
+                            </div>
+                            <span id="total-time">0:00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="player-options d-flex align-items-center justify-content-end">
+                        <button id="btn-lyrics" class="btn btn-link text-white">
+                            <i class="bi bi-chat-quote"></i>
+                        </button>
+                        <button id="btn-playlist" class="btn btn-link text-white">
+                            <i class="bi bi-music-note-list"></i>
+                        </button>
+                        <div class="volume-control d-flex align-items-center">
+                            <button id="btn-volume" class="btn btn-link text-white">
+                                <i class="bi bi-volume-up"></i>
+                            </button>
+                            <div class="progress volume-progress">
+                                <div id="volume-bar" class="progress-bar bg-primary" role="progressbar"
+                                    style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lyrics-panel" class="lyrics-panel">
+        <div class="lyrics-header">
+            <h5>歌词</h5>
+            <button id="close-lyrics" class="btn btn-link text-dark">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div id="lyrics-content" class="lyrics-content">
+            <p class="text-center">暂无歌词</p>
+        </div>
+    </div>
+
+    <div id="playlist-panel" class="playlist-panel">
+        <div class="playlist-header">
+            <h5>播放列表</h5>
+            <button id="close-playlist" class="btn btn-link text-dark">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <ul id="playlist-items" class="playlist-items list-group">
+            <li class="list-group-item text-center">播放列表为空</li>
+        </ul>
+    </div>
+    <% } %>
+
+        <footer class="footer bg-light py-4 mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>音乐网站</h5>
+                        <p>发现、聆听、分享美妙音乐</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>快速链接</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="/">首页</a></li>
+                            <li><a href="/search?type=song">搜索歌曲</a></li>
+                            <li><a href="/search?type=artist">搜索歌手</a></li>
+                            <li><a href="/search?type=playlist">搜索歌单</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>关注我们</h5>
+                        <div class="social-links">
+                            <a href="#" class="me-2"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="me-2"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="me-2"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="me-2"><i class="bi bi-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <p>&copy; 2025 音乐网站. 保留所有权利.</p>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/main.js"></script>
+        <% if (!locals.hidePlayer) { %>
+            <script src="/js/player.js"></script>
+            <% } %>
+                <% if (locals.customJs) { %>
+                    <script src="/js/<%= customJs %>"></script>
+                    <% } %>
+                        </body>
+
+                        </html>
