@@ -29,7 +29,7 @@ const clearCollections = async () => {
 
 // 创建示例数据
 const createSampleData = async () => {
-  // 1. 创建用户 (你准备了100个用户，这里先创建几个主要用户)
+  // 1. 创建用户
   const adminPassword = await bcrypt.hash('admin123', 10);
   const userPassword = await bcrypt.hash('user123', 10);
   
@@ -61,18 +61,71 @@ const createSampleData = async () => {
   console.log('用户创建成功');
   
   // 2. 创建艺术家
-  // 这里会使用您准备的真实艺术家数据
-  // 示例结构（实际使用您提供的数据）:
   const artistsData = [
     {
-      name: '周杰伦',
-      bio: '华语流行乐坛知名歌手、音乐人、词曲创作人',
-      image: '/img/artists/jay.jpg',
-      genres: ['流行', '华语'],
+      name: '陈奕迅',
+      bio: '华语乐坛现象级歌手，以独特唱腔和情感表达著称，擅长将生活感悟融入音乐。',
+      image: '/img/artists/陈奕迅.jpg',
+      genres: ['流行', '摇滚', '粤语'],
       followers: 10000000,
-      detailedIntro: '周杰伦（Jay Chou），1979年1月18日出生于台湾省新北市...'
+      detailedIntro: '陈奕迅（Eason Chan），1974年7月27日出生于中国香港，祖籍广东东莞。1995年以新秀歌唱大赛冠军身份出道，凭借《十年》《浮夸》《富士山下》等代表作奠定华语乐坛地位。其音乐风格多元，涵盖流行、摇滚、电子等，曾获台湾金曲奖最佳国语男歌手（2003、2009、2015、2018）、香港叱咤乐坛男歌手金奖（2006-2014）等多项荣誉。2021年单曲《孤勇者》全球破圈，成为现象级作品。'
     },
-    // ... 其他艺术家数据
+    {
+      name: '周杰伦',
+      bio: '华语流行乐教父级人物，开创"中国风"潮流，影响一代听众。',
+      image: '/img/artists/周杰伦.jpg',
+      genres: ['流行', '嘻哈', '中国风'],
+      followers: 12000000,
+      detailedIntro: '周杰伦（Jay Chou），1979年1月18日出生于中国台湾。2000年以首张专辑《Jay》出道，代表作《双截棍》《青花瓷》《七里香》等融合中西方音乐元素，开创华语乐坛新纪元。其音乐风格独特，擅长将古典乐器与现代节奏结合，曾获台湾金曲奖最佳专辑（2002、2008）、最佳作曲人（2002、2007）等多项大奖，2003年入选美国《时代》周刊"全球百位最具影响力人物"。'
+    },
+    {
+      name: '陶喆',
+      bio: '华语R&B教父，将美式灵魂乐与东方美学完美融合。',
+      image: '/img/artists/陶喆.jpg',
+      genres: ['R&B', '摇滚', '放克'],
+      followers: 8000000,
+      detailedIntro: '陶喆（David Tao），1969年7月11日出生于中国香港。1997年以首张专辑《David Tao》出道，代表作《普通朋友》《Melody》《黑色柳丁》等奠定其在华语R&B领域的地位。其音乐风格融合R&B、摇滚、放克等元素，曾获台湾金曲奖最佳国语男歌手（2003）、最佳专辑制作人（2003）等多项荣誉，2002年专辑《黑色柳丁》被《Time》评为"亚洲年度十大唱片"。'
+    },
+    {
+      name: '王力宏',
+      bio: '全能音乐人，跨界音乐、影视、公益，倡导多元文化融合。',
+      image: '/img/artists/王力宏.jpg',
+      genres: ['流行', '摇滚', '电子'],
+      followers: 7500000,
+      detailedIntro: '王力宏（Leehom Wang），1976年5月17日出生于美国纽约。1995年以首张专辑《情敌贝多芬》出道，代表作《唯一》《龙的传人》《盖世英雄》等融合中西方音乐元素。其音乐风格多元，擅长将古典乐器与现代节奏结合，曾获台湾金曲奖最佳唱片制作人（2000）、最佳国语男演唱人（2000）等多项荣誉，2008年担任北京奥运会火炬手。'
+    },
+    {
+      name: '林俊杰',
+      bio: '新加坡国宝级歌手，以超高音域和创作才华闻名。',
+      image: '/img/artists/林俊杰.jpg',
+      genres: ['流行', '电子', '摇滚'],
+      followers: 9000000,
+      detailedIntro: '林俊杰（JJ Lin），1981年3月27日出生于新加坡。2003年以首张专辑《乐行者》出道，代表作《江南》《曹操》《不为谁而作的歌》等以细腻旋律和情感表达著称。其音乐风格融合流行、电子、摇滚等元素，曾获台湾金曲奖最佳国语男歌手（2014、2018）、最佳专辑制作人（2015）等多项荣誉，2016年入选《福布斯》亚洲"30岁以下俊杰"。'
+    },
+    {
+      name: '孙燕姿',
+      bio: '华语乐坛"天后"，以清新嗓音和独立气质影响一代人。',
+      image: '/img/artists/孙燕姿.jpg',
+      genres: ['流行', '民谣', '电子'],
+      followers: 8500000,
+      detailedIntro: '孙燕姿（Stefanie Sun），1978年7月23日出生于新加坡。2000年以首张专辑《孙燕姿》出道，代表作《天黑黑》《遇见》《逆光》等以清新嗓音和独立气质著称。其音乐风格融合流行、民谣、电子等元素，曾获台湾金曲奖最佳女演唱人（2005）、最佳专辑制作人（2011）等多项荣誉，2014年专辑《克卜勒》全球销量破百万。'
+    },
+    {
+      name: '方大同',
+      bio: '跨界音乐人，融合Soul、R&B与中国风，被誉为"香港陶喆"。',
+      image: '/img/artists/方大同.jpg',
+      genres: ['Soul', 'R&B', '中国风'],
+      followers: 6500000,
+      detailedIntro: '方大同（Khalil Fong），1983年7月14日出生于美国夏威夷。2005年以首张专辑《Soul Boy》出道，代表作《爱爱爱》《三人游》《特别的人》等融合Soul、R&B与中国风元素。其音乐风格独特，擅长将传统乐器与现代节奏结合，曾获台湾金曲奖最佳国语男歌手（2017）、最佳单曲制作人（2021）等多项荣誉，2016年成立个人音乐品牌"赋音乐"。'
+    },
+    {
+      name: '卢广仲',
+      bio: '台湾独立音乐人，以清新民谣和校园风格深受年轻听众喜爱。',
+      image: '/img/artists/卢广仲.jpg',
+      genres: ['民谣', '摇滚', '电子'],
+      followers: 5000000,
+      detailedIntro: '卢广仲（Crowd Lu），1985年7月15日出生于中国台湾。2007年以首张专辑《100种生活》出道，代表作《我爱你》《早安晨之美》《鱼仔》等以清新民谣和校园风格著称。其音乐风格融合民谣、摇滚、电子等元素，曾获台湾金曲奖最佳新人（2008）、最佳作曲人（2018）等多项荣誉，2017年主演电视剧《花甲男孩转大人》并演唱主题曲。'
+    }
   ];
   
   // 创建艺术家记录
@@ -84,8 +137,7 @@ const createSampleData = async () => {
       image: artistData.image,
       genres: artistData.genres,
       followers: artistData.followers,
-      // 存储详细介绍
-      detailedIntro: artistData.detailedIntro || artistData.bio
+      detailedIntro: artistData.detailedIntro
     });
     artists.push(artist);
   }
@@ -93,18 +145,191 @@ const createSampleData = async () => {
   console.log('艺术家创建成功');
   
   // 3. 创建专辑
-  // 这里会使用您准备的真实专辑数据
-  // 示例结构（实际使用您提供的数据）:
   const albumsData = [
     {
+      title: 'U87',
+      artistName: '陈奕迅',
+      coverImage: '/img/albums/U87.jpg',
+      releaseDate: new Date('2005-06-07'),
+      genre: '流行',
+      description: '陈奕迅加盟新艺宝唱片后的首张专辑，以"U87"命名象征录音室编号，收录《浮夸》《葡萄成熟时》《夕阳无限好》等经典作品。专辑融合摇滚、民谣、电子等元素，探讨人生哲理与情感纠葛，获2005年度香港唱片销量大奖十大最高销量广东唱片奖，被《Time》评为"亚洲年度十大唱片"。'
+    },
+    {
       title: '范特西',
-      artistName: '周杰伦', // 用于查找关联的艺术家ID
-      coverImage: '/img/albums/fantasy.jpg',
+      artistName: '周杰伦',
+      coverImage: '/img/albums/范特西.jpg',
       releaseDate: new Date('2001-09-14'),
       genre: '流行',
-      description: '《范特西》是周杰伦发行的第二张专辑，融合中西方音乐元素...'
+      description: '周杰伦第二张专辑，以"幻想"为主题融合R&B、Hip Hop、摇滚等元素，收录《双截棍》《简单爱》《开不了口》等经典作品。专辑获第13届台湾金曲奖最佳流行音乐专辑奖、最佳专辑制作人奖，奠定周杰伦在华语乐坛的地位，全球销量突破170万张。'
     },
-    // ... 其他专辑数据
+    {
+      title: '七里香',
+      artistName: '周杰伦',
+      coverImage: '/img/albums/七里香.jpg',
+      releaseDate: new Date('2004-08-03'),
+      genre: '流行',
+      description: '周杰伦第五张专辑，以同名主打歌《七里香》命名，融合流行、摇滚、中国风等元素，收录《我的地盘》《借口》《止战之殇》等作品。专辑获第27届香港十大中文金曲奖、第5届全球华语歌曲排行榜年度25大金曲奖，全球销量突破300万张。'
+    },
+    {
+      title: '黑色柳丁',
+      artistName: '陶喆',
+      coverImage: '/img/albums/黑色柳丁.jpg',
+      releaseDate: new Date('2002-08-09'),
+      genre: 'R&B',
+      description: '陶喆第三张专辑，以911事件为背景探讨爱与希望，收录《普通朋友》《Melody》《月亮代表谁的心》等经典作品。专辑融合R&B、摇滚、放克等元素，获第14届台湾金曲奖最佳国语男演唱人奖、第3届音乐风云榜港台最佳专辑奖，被《Time》评为"亚洲年度十大唱片"。'
+    },
+    {
+      title: '米·闪',
+      artistName: '陈奕迅',
+      coverImage: '/img/albums/米·闪.jpg',
+      releaseDate: new Date('2013-06-21'),
+      genre: '流行',
+      description: '陈奕迅2013年发行的国语专辑，收录《稳稳的幸福》等作品。'
+    },
+    {
+      title: '黑白灰',
+      artistName: '陈奕迅',
+      coverImage: '/img/albums/黑白灰.jpg',
+      releaseDate: new Date('2003-11-11'),
+      genre: '流行',
+      description: '陈奕迅2003年发行的国语专辑，收录《十年》等经典作品。'
+    },
+    {
+      title: '认了吧',
+      artistName: '陈奕迅',
+      coverImage: '/img/albums/认了吧.jpg',
+      releaseDate: new Date('2007-06-28'),
+      genre: '流行',
+      description: '陈奕迅2007年发行的国语专辑，收录《淘汰》《爱情转移》《红玫瑰》《好久不见》等经典作品。'
+    },
+    {
+      title: "What's Going On...?",
+      artistName: '陈奕迅',
+      coverImage: '/img/albums/Whats_Going_On.jpg',
+      releaseDate: new Date('2006-06-30'),
+      genre: '流行',
+      description: '陈奕迅2006年发行的粤语专辑，收录《富士山下》《不如不见》等经典作品。'
+    },
+    {
+      title: 'Life Continues',
+      artistName: '陈奕迅',
+      coverImage: '/img/albums/Life_Continues.jpg',
+      releaseDate: new Date('2006-12-29'),
+      genre: '流行',
+      description: '陈奕迅2006年发行的粤语专辑，收录《最佳损友》等作品。'
+    },
+    {
+      title: 'Special Thanks To...',
+      artistName: '陈奕迅',
+      coverImage: '/img/albums/Special_Thanks_To.jpg',
+      releaseDate: new Date('2002-01-01'),
+      genre: '流行',
+      description: '陈奕迅2002年发行的国语专辑，收录《你的背包》等作品。'
+    },
+    {
+      title: 'Shall We Dance? Shall We Talk!',
+      artistName: '陈奕迅',
+      coverImage: '/img/albums/Shall_We_Dance_Shall_We_Talk.jpg',
+      releaseDate: new Date('2001-07-17'),
+      genre: '流行',
+      description: '陈奕迅2001年发行的粤语专辑，收录《单车》等作品。'
+    },
+    {
+      title: '叶惠美',
+      artistName: '周杰伦',
+      coverImage: '/img/albums/叶惠美.jpg',
+      releaseDate: new Date('2003-07-31'),
+      genre: '流行',
+      description: '周杰伦2003年发行的专辑，收录《晴天》《以父之名》等经典作品。'
+    },
+    {
+      title: '十一月的萧邦',
+      artistName: '周杰伦',
+      coverImage: '/img/albums/十一月的萧邦.jpg',
+      releaseDate: new Date('2005-11-01'),
+      genre: '流行',
+      description: '周杰伦2005年发行的专辑，收录《夜曲》等经典作品。'
+    },
+    {
+      title: '依然范特西',
+      artistName: '周杰伦',
+      coverImage: '/img/albums/依然范特西.jpg',
+      releaseDate: new Date('2006-09-05'),
+      genre: '流行',
+      description: '周杰伦2006年发行的专辑，收录《退后》等作品。'
+    },
+    {
+      title: '我很忙',
+      artistName: '周杰伦',
+      coverImage: '/img/albums/我很忙.jpg',
+      releaseDate: new Date('2007-11-02'),
+      genre: '流行',
+      description: '周杰伦2007年发行的专辑，收录《青花瓷》等经典作品。'
+    },
+    {
+      title: '太平盛世',
+      artistName: '陶喆',
+      coverImage: '/img/albums/太平盛世.jpg',
+      releaseDate: new Date('2005-07-07'),
+      genre: 'R&B',
+      description: '陶喆2005年发行的专辑，收录《Susan说》《爱我还是他》《就是爱你》等作品。'
+    },
+    {
+      title: "I'm OK",
+      artistName: '陶喆',
+      coverImage: '/img/albums/Im_OK.jpg',
+      releaseDate: new Date('1999-10-01'),
+      genre: 'R&B',
+      description: '陶喆1999年发行的专辑，收录《普通朋友》《小镇姑娘》等作品。'
+    },
+    {
+      title: '陶喆',
+      artistName: '陶喆',
+      coverImage: '/img/albums/david_tao.jpg',
+      releaseDate: new Date('1997-09-05'),
+      genre: 'R&B',
+      description: '陶喆1997年发行的首张专辑，收录《飞机场的10:30》等作品。'
+    },
+    {
+      title: '唯一',
+      artistName: '王力宏',
+      coverImage: '/img/albums/唯一.jpg',
+      releaseDate: new Date('2001-06-11'),
+      genre: 'R&B',
+      description: '王力宏2001年发行的专辑，收录《唯一》等经典作品。'
+    },
+    {
+      title: '第二天堂',
+      artistName: '林俊杰',
+      coverImage: '/img/albums/第二天堂.jpg',
+      releaseDate: new Date('2004-06-04'),
+      genre: '流行',
+      description: '林俊杰2004年发行的专辑，收录《江南》等经典作品。'
+    },
+    {
+      title: 'The Moment',
+      artistName: '孙燕姿',
+      coverImage: '/img/albums/The_Moment.jpg',
+      releaseDate: new Date('2003-10-07'),
+      genre: '流行',
+      description: '孙燕姿2003年发行的专辑，收录《遇见》等经典作品。'
+    },
+    {
+      title: '危险世界',
+      artistName: '方大同',
+      coverImage: '/img/albums/危险世界.jpg',
+      releaseDate: new Date('2014-03-14'),
+      genre: 'R&B',
+      description: '方大同2014年发行的专辑，收录《特别的人》等作品。'
+    },
+    {
+      title: '几分之几',
+      artistName: '卢广仲',
+      coverImage: '/img/albums/几分之几.jpg',
+      releaseDate: new Date('2018-08-01'),
+      genre: '民谣',
+      description: '卢广仲2018年发行的专辑，收录《几分之几》等作品。'
+    }
   ];
   
   // 创建专辑记录
@@ -120,7 +345,7 @@ const createSampleData = async () => {
       coverImage: albumData.coverImage,
       releaseDate: albumData.releaseDate,
       genre: albumData.genre,
-      description: albumData.description || '' // 添加专辑描述
+      description: albumData.description
     });
     albums.push(album);
   }
@@ -128,34 +353,791 @@ const createSampleData = async () => {
   console.log('专辑创建成功');
   
   // 4. 创建歌曲
-  // 这里会使用您准备的真实歌曲数据
-  // 示例结构（实际使用您提供的数据）:
-  const songsData = [
+  // 先创建有MV的歌曲
+  const songsWithMVData = [
     {
-      title: '爱在西元前',
-      artistName: '周杰伦', // 用于查找关联的艺术家ID
-      albumTitle: '范特西', // 用于查找关联的专辑ID
-      duration: 216,
-      releaseYear: 2001,
+      title: '稳稳的幸福',
+      artistName: '陈奕迅',
+      albumTitle: '米·闪',
+      duration: 223,
+      releaseYear: 2013,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '温暖',
+      scene: '安静',
+      coverImage: '/img/songs/稳稳的幸福.jpg',
+      audioFile: '/audio/陈奕迅/稳稳的幸福.mp3',
+      lyricsFile: '/lyrics/稳稳的幸福.lrc',
+      mvFile: '/video/陈奕迅/稳稳的幸福.mp4',
+      playCount: 123456789,
+      likes: 987654321,
+      bpm: 76,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['励志', '温暖', '治愈']
+    },
+    {
+      title: '葡萄成熟时',
+      artistName: '陈奕迅',
+      albumTitle: 'U87',
+      duration: 258,
+      releaseYear: 2005,
+      genre: '流行',
+      subGenre: '',
+      language: '粤语',
+      mood: '励志',
+      scene: '安静',
+      coverImage: '/img/albums/U87.jpg',
+      audioFile: '/audio/陈奕迅/葡萄成熟时.mp3',
+      lyricsFile: '/lyrics/葡萄成熟时.lrc',
+      mvFile: '/video/陈奕迅/葡萄成熟时.mp4',
+      playCount: 987654321,
+      likes: 123456789,
+      bpm: 80,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['励志', '成长', '粤语']
+    },
+    {
+      title: '退后',
+      artistName: '周杰伦',
+      albumTitle: '依然范特西',
+      duration: 236,
+      releaseYear: 2006,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/依然范特西.jpg',
+      audioFile: '/audio/周杰伦/退后.mp3',
+      lyricsFile: '/lyrics/退后.lrc',
+      mvFile: '/video/周杰伦/退后.mp4',
+      playCount: 88888888,
+      likes: 77777777,
+      bpm: 75,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', '失恋', '华语']
+    },
+    {
+      title: '富士山下',
+      artistName: '陈奕迅',
+      albumTitle: "What's Going On...?",
+      duration: 252,
+      releaseYear: 2006,
+      genre: '流行',
+      subGenre: '',
+      language: '粤语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/Whats_Going_On.jpg',
+      audioFile: '/audio/陈奕迅/富士山下.mp3',
+      lyricsFile: '/lyrics/富士山下.lrc',
+      mvFile: '/video/陈奕迅/富士山下.mp4',
+      playCount: 66666666,
+      likes: 55555555,
+      bpm: 70,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', '失恋', '粤语']
+    },
+    {
+      title: '普通朋友',
+      artistName: '陶喆',
+      albumTitle: "I'm OK",
+      duration: 255,
+      releaseYear: 1999,
+      genre: 'R&B',
+      subGenre: '',
+      language: '华语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/Im_OK.jpg',
+      audioFile: '/audio/陶喆/普通朋友.mp3',
+      lyricsFile: '/lyrics/普通朋友.lrc',
+      mvFile: '/video/陶喆/普通朋友.mp4',
+      playCount: 44444444,
+      likes: 33333333,
+      bpm: 85,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', '失恋', 'R&B']
+    }
+  ];
+
+  // 无MV的歌曲
+  const songsWithoutMVData = [
+    {
+      title: '十年',
+      artistName: '陈奕迅',
+      albumTitle: '黑白灰',
+      duration: 280,
+      releaseYear: 2003,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/黑白灰.jpg',
+      audioFile: '/audio/陈奕迅/十年.mp3',
+      lyricsFile: '/lyrics/十年.lrc',
+      playCount: 100000000,
+      likes: 50000000,
+      bpm: 75,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', '怀旧', '华语']
+    },
+    {
+      title: '浮夸',
+      artistName: '陈奕迅',
+      albumTitle: 'U87',
+      duration: 240,
+      releaseYear: 2005,
+      genre: '摇滚',
+      subGenre: '',
+      language: '粤语',
+      mood: '励志',
+      scene: '动感',
+      coverImage: '/img/albums/u87.jpg',
+      audioFile: '/audio/陈奕迅/浮夸.mp3',
+      lyricsFile: '/lyrics/浮夸.lrc',
+      playCount: 80000000,
+      likes: 40000000,
+      bpm: 90,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['励志', '摇滚', '粤语']
+    },
+    {
+      title: 'K歌之王',
+      artistName: '陈奕迅',
+      albumTitle: '打得火热',
+      duration: 250,
+      releaseYear: 2000,
+      genre: '流行',
+      subGenre: '',
+      language: '粤语',
+      mood: '励志',
+      scene: '动感',
+      coverImage: '/img/songs/打得火热.jpg',
+      audioFile: '/audio/陈奕迅/K歌之王.mp3',
+      lyricsFile: '/lyrics/K歌之王.lrc',
+      playCount: 70000000,
+      likes: 35000000,
+      bpm: 95,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['励志', 'KTV', '粤语']
+    },
+    {
+      title: '淘汰',
+      artistName: '陈奕迅',
+      albumTitle: '认了吧',
+      duration: 235,
+      releaseYear: 2007,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/认了吧.jpg',
+      audioFile: '/audio/陈奕迅/淘汰.mp3',
+      lyricsFile: '/lyrics/淘汰.lrc',
+      playCount: 90000000,
+      likes: 45000000,
+      bpm: 72,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', '失恋', '华语']
+    },
+    {
+      title: '爱情转移',
+      artistName: '陈奕迅',
+      albumTitle: '认了吧',
+      duration: 252,
+      releaseYear: 2007,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/认了吧.jpg',
+      audioFile: '/audio/陈奕迅/爱情转移.mp3',
+      lyricsFile: '/lyrics/爱情转移.lrc',
+      playCount: 120000000,
+      likes: 60000000,
+      bpm: 78,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', '成长', '华语']
+    },
+    {
+      title: '红玫瑰',
+      artistName: '陈奕迅',
+      albumTitle: '认了吧',
+      duration: 245,
+      releaseYear: 2007,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '浪漫',
+      scene: '都市',
+      coverImage: '/img/albums/认了吧.jpg',
+      audioFile: '/audio/陈奕迅/红玫瑰.mp3',
+      lyricsFile: '/lyrics/红玫瑰.lrc',
+      playCount: 110000000,
+      likes: 55000000,
+      bpm: 85,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['浪漫', '都市', '华语']
+    },
+    {
+      title: '好久不见',
+      artistName: '陈奕迅',
+      albumTitle: '认了吧',
+      duration: 230,
+      releaseYear: 2007,
       genre: '流行',
       subGenre: '',
       language: '华语',
       mood: '怀旧',
       scene: '安静',
-      coverImage: '/img/albums/fantasy.jpg',
-      audioFile: '/audio/jay/love_before.mp3',
-      lyricsFile: '/lyrics/爱在西元前.lrc', // 仅为有歌词的歌曲添加
-      mvFile: '/video/jay/love_before.mp4', // 仅为有MV的歌曲添加
-      playCount: 1500000,
-      likes: 980000,
+      coverImage: '/img/albums/认了吧.jpg',
+      audioFile: '/audio/陈奕迅/好久不见.mp3',
+      lyricsFile: '/lyrics/好久不见.lrc',
+      playCount: 95000000,
+      likes: 47500000,
       bpm: 76,
       isVIP: false,
       isHot: true,
       isNew: false,
-      tags: ['经典', '怀旧', '青春']
+      tags: ['怀旧', '重逢', '华语']
     },
-    // ... 其他歌曲数据
+    {
+      title: '不如不见',
+      artistName: '陈奕迅',
+      albumTitle: "What's Going On...?",
+      duration: 248,
+      releaseYear: 2006,
+      genre: '流行',
+      subGenre: '',
+      language: '粤语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/Whats_Going_On.jpg',
+      audioFile: '/audio/陈奕迅/不如不见.mp3',
+      lyricsFile: '/lyrics/不如不见.lrc',
+      playCount: 85000000,
+      likes: 42500000,
+      bpm: 70,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', '遗憾', '粤语']
+    },
+    {
+      title: '最佳损友',
+      artistName: '陈奕迅',
+      albumTitle: 'Life Continues',
+      duration: 237,
+      releaseYear: 2006,
+      genre: '流行',
+      subGenre: '',
+      language: '粤语',
+      mood: '友情',
+      scene: '动感',
+      coverImage: '/img/albums/Life_Continues.jpg',
+      audioFile: '/audio/陈奕迅/最佳损友.mp3',
+      lyricsFile: '/lyrics/最佳损友.lrc',
+      playCount: 88000000,
+      likes: 44000000,
+      bpm: 90,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['友情', '成长', '粤语']
+    },
+    {
+      title: '阴天快乐',
+      artistName: '陈奕迅',
+      albumTitle: '米·闪',
+      duration: 242,
+      releaseYear: 2014,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '治愈',
+      scene: '安静',
+      coverImage: '/img/albums/米·闪.jpg',
+      audioFile: '/audio/陈奕迅/阴天快乐.mp3',
+      lyricsFile: '/lyrics/阴天快乐.lrc',
+      playCount: 75000000,
+      likes: 37500000,
+      bpm: 74,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['治愈', '温暖', '华语']
+    },
+    {
+      title: '你的背包',
+      artistName: '陈奕迅',
+      albumTitle: 'Special Thanks To...',
+      duration: 234,
+      releaseYear: 2002,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '怀旧',
+      scene: '安静',
+      coverImage: '/img/albums/Special_Thanks_To.jpg',
+      audioFile: '/audio/陈奕迅/你的背包.mp3',
+      lyricsFile: '/lyrics/你的背包.lrc',
+      playCount: 72000000,
+      likes: 36000000,
+      bpm: 75,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['怀旧', '成长', '华语']
+    },
+    {
+      title: '单车',
+      artistName: '陈奕迅',
+      albumTitle: 'Shall We Dance? Shall We Talk!',
+      duration: 228,
+      releaseYear: 2001,
+      genre: '流行',
+      subGenre: '',
+      language: '粤语',
+      mood: '亲情',
+      scene: '安静',
+      coverImage: '/img/albums/Shall_We_Dance_Shall_We_Talk.jpg',
+      audioFile: '/audio/陈奕迅/单车.mp3',
+      lyricsFile: '/lyrics/单车.lrc',
+      playCount: 70000000,
+      likes: 35000000,
+      bpm: 75,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['亲情', '成长', '粤语']
+    },
+    {
+      title: '七里香',
+      artistName: '周杰伦',
+      albumTitle: '七里香',
+      duration: 230,
+      releaseYear: 2004,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '浪漫',
+      scene: '安静',
+      coverImage: '/img/albums/七里香.jpg',
+      audioFile: '/audio/周杰伦/七里香.mp3',
+      lyricsFile: '/lyrics/七里香.lrc',
+      playCount: 150000000,
+      likes: 75000000,
+      bpm: 76,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['浪漫', '夏日', '华语']
+    },
+    {
+      title: '双截棍',
+      artistName: '周杰伦',
+      albumTitle: '范特西',
+      duration: 215,
+      releaseYear: 2001,
+      genre: '嘻哈',
+      subGenre: '',
+      language: '华语',
+      mood: '励志',
+      scene: '动感',
+      coverImage: '/img/albums/范特西.jpg',
+      audioFile: '/audio/周杰伦/双截棍.mp3',
+      lyricsFile: '/lyrics/双截棍.lrc',
+      playCount: 140000000,
+      likes: 70000000,
+      bpm: 100,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['励志', '动感', '华语']
+    },
+    {
+      title: '青花瓷',
+      artistName: '周杰伦',
+      albumTitle: '我很忙',
+      duration: 265,
+      releaseYear: 2007,
+      genre: '中国风',
+      subGenre: '',
+      language: '华语',
+      mood: '浪漫',
+      scene: '安静',
+      coverImage: '/img/albums/我很忙.jpg',
+      audioFile: '/audio/周杰伦/青花瓷.mp3',
+      lyricsFile: '/lyrics/青花瓷.lrc',
+      playCount: 160000000,
+      likes: 80000000,
+      bpm: 72,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['中国风', '古典', '浪漫']
+    },
+    {
+      title: '晴天',
+      artistName: '周杰伦',
+      albumTitle: '叶惠美',
+      duration: 240,
+      releaseYear: 2003,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '青春',
+      scene: '安静',
+      coverImage: '/img/albums/叶惠美.jpg',
+      audioFile: '/audio/周杰伦/晴天.mp3',
+      lyricsFile: '/lyrics/晴天.lrc',
+      playCount: 170000000,
+      likes: 85000000,
+      bpm: 76,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['青春', '怀旧', '华语']
+    },
+    {
+      title: '以父之名',
+      artistName: '周杰伦',
+      albumTitle: '叶惠美',
+      duration: 290,
+      releaseYear: 2003,
+      genre: '嘻哈',
+      subGenre: '',
+      language: '华语',
+      mood: '叙事',
+      scene: '安静',
+      coverImage: '/img/albums/叶惠美.jpg',
+      audioFile: '/audio/周杰伦/以父之名.mp3',
+      lyricsFile: '/lyrics/以父之名.lrc',
+      playCount: 130000000,
+      likes: 65000000,
+      bpm: 85,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['叙事', '嘻哈', '华语']
+    },
+    {
+      title: '夜曲',
+      artistName: '周杰伦',
+      albumTitle: '十一月的萧邦',
+      duration: 250,
+      releaseYear: 2005,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/十一月的萧邦.jpg',
+      audioFile: '/audio/周杰伦/夜曲.mp3',
+      lyricsFile: '/lyrics/夜曲.lrc',
+      playCount: 120000000,
+      likes: 60000000,
+      bpm: 70,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', '浪漫', '华语']
+    },
+    {
+      title: 'Melody',
+      artistName: '陶喆',
+      albumTitle: '黑色柳丁',
+      duration: 270,
+      releaseYear: 2002,
+      genre: 'R&B',
+      subGenre: '',
+      language: '华语',
+      mood: '悲伤',
+      scene: '安静',
+      coverImage: '/img/albums/黑色柳丁.jpg',
+      audioFile: '/audio/陶喆/Melody.mp3',
+      lyricsFile: '/lyrics/Melody.lrc',
+      playCount: 60000000,
+      likes: 30000000,
+      bpm: 75,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['悲伤', 'R&B', '华语']
+    },
+    {
+      title: '黑色柳丁',
+      artistName: '陶喆',
+      albumTitle: '黑色柳丁',
+      duration: 245,
+      releaseYear: 2002,
+      genre: '摇滚',
+      subGenre: '',
+      language: '华语',
+      mood: '社会',
+      scene: '动感',
+      coverImage: '/img/albums/黑色柳丁.jpg',
+      audioFile: '/audio/陶喆/黑色柳丁.mp3',
+      lyricsFile: '/lyrics/黑色柳丁.lrc',
+      playCount: 55000000,
+      likes: 27500000,
+      bpm: 95,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['摇滚', '社会', '华语']
+    },
+    {
+      title: 'Susan说',
+      artistName: '陶喆',
+      albumTitle: '太平盛世',
+      duration: 260,
+      releaseYear: 2005,
+      genre: 'R&B',
+      subGenre: '',
+      language: '华语',
+      mood: '叙事',
+      scene: '安静',
+      coverImage: '/img/albums/太平盛世.jpg',
+      audioFile: '/audio/陶喆/Susan说.mp3',
+      lyricsFile: '/lyrics/Susan说.lrc',
+      playCount: 50000000,
+      likes: 25000000,
+      bpm: 80,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['叙事', 'R&B', '华语']
+    },
+    {
+      title: '爱我还是他',
+      artistName: '陶喆',
+      albumTitle: '太平盛世',
+      duration: 240,
+      releaseYear: 2005,
+      genre: 'R&B',
+      subGenre: '',
+      language: '华语',
+      mood: '情感',
+      scene: '安静',
+      coverImage: '/img/albums/太平盛世.jpg',
+      audioFile: '/audio/陶喆/爱我还是他.mp3',
+      lyricsFile: '/lyrics/爱我还是他.lrc',
+      playCount: 58000000,
+      likes: 29000000,
+      bpm: 82,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['情感', 'R&B', '华语']
+    },
+    {
+      title: '就是爱你',
+      artistName: '陶喆',
+      albumTitle: '太平盛世',
+      duration: 245,
+      releaseYear: 2005,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '浪漫',
+      scene: '安静',
+      coverImage: '/img/albums/太平盛世.jpg',
+      audioFile: '/audio/陶喆/就是爱你.mp3',
+      lyricsFile: '/lyrics/就是爱你.lrc',
+      playCount: 65000000,
+      likes: 32500000,
+      bpm: 85,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['浪漫', '告白', '华语']
+    },
+    {
+      title: '小镇姑娘',
+      artistName: '陶喆',
+      albumTitle: "I'm OK",
+      duration: 250,
+      releaseYear: 1999,
+      genre: '摇滚',
+      subGenre: '',
+      language: '华语',
+      mood: '叙事',
+      scene: '动感',
+      coverImage: '/img/albums/Im_OK.jpg',
+      audioFile: '/audio/陶喆/小镇姑娘.mp3',
+      lyricsFile: '/lyrics/小镇姑娘.lrc',
+      playCount: 48000000,
+      likes: 24000000,
+      bpm: 90,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['叙事', '摇滚', '华语']
+    },
+    {
+      title: '飞机场的10：30',
+      artistName: '陶喆',
+      albumTitle: '陶喆',
+      duration: 280,
+      releaseYear: 1997,
+      genre: 'R&B',
+      subGenre: '',
+      language: '华语',
+      mood: '情感',
+      scene: '安静',
+      coverImage: '/img/albums/david_tao.jpg',
+      audioFile: '/audio/陶喆/:飞机场的1030.mp3',
+      lyricsFile: '/lyrics/:飞机场的1030.lrc',
+      playCount: 45000000,
+      likes: 22500000,
+      bpm: 78,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['情感', 'R&B', '华语']
+    },
+    {
+      title: '唯一',
+      artistName: '王力宏',
+      albumTitle: '唯一',
+      duration: 255,
+      releaseYear: 2001,
+      genre: 'R&B',
+      subGenre: '',
+      language: '华语',
+      mood: '浪漫',
+      scene: '安静',
+      coverImage: '/img/albums/唯一.jpg',
+      audioFile: '/audio/王力宏/唯一.mp3',
+      lyricsFile: '/lyrics/唯一.lrc',
+      playCount: 40000000,
+      likes: 20000000,
+      bpm: 80,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['浪漫', 'R&B', '华语']
+    },
+    {
+      title: '江南',
+      artistName: '林俊杰',
+      albumTitle: '第二天堂',
+      duration: 240,
+      releaseYear: 2004,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '浪漫',
+      scene: '安静',
+      coverImage: '/img/albums/第二天堂.jpg',
+      audioFile: '/audio/林俊杰/江南.mp3',
+      lyricsFile: '/lyrics/江南.lrc',
+      playCount: 50000000,
+      likes: 25000000,
+      bpm: 75,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['中国风', '浪漫', '华语']
+    },
+    {
+      title: '遇见',
+      artistName: '孙燕姿',
+      albumTitle: 'The Moment',
+      duration: 230,
+      releaseYear: 2003,
+      genre: '流行',
+      subGenre: '',
+      language: '华语',
+      mood: '清新',
+      scene: '安静',
+      coverImage: '/img/albums/The_Moment.jpg',
+      audioFile: '/audio/孙燕姿/遇见.mp3',
+      lyricsFile: '/lyrics/遇见.lrc',
+      playCount: 42000000,
+      likes: 21000000,
+      bpm: 76,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['清新', '治愈', '华语']
+    },
+    {
+      title: '特别的人',
+      artistName: '方大同',
+      albumTitle: '危险世界',
+      duration: 259,
+      releaseYear: 2014,
+      genre: 'R&B',
+      subGenre: '',
+      language: '华语',
+      mood: '浪漫',
+      scene: '安静',
+      coverImage: '/img/albums/危险世界.jpg',
+      audioFile: '/audio/方大同/特别的人.mp3',
+      lyricsFile: '/lyrics/特别的人.lrc',
+      playCount: 38000000,
+      likes: 19000000,
+      bpm: 80,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['浪漫', 'R&B', '华语']
+    },
+    {
+      title: '几分之几',
+      artistName: '卢广仲',
+      albumTitle: '几分之几',
+      duration: 228,
+      releaseYear: 2018,
+      genre: '民谣',
+      subGenre: '流行',
+      language: '华语',
+      mood: '情感',
+      scene: '安静',
+      coverImage: '/img/albums/几分之几.jpg',
+      audioFile: '/audio/卢广仲/几分之几.mp3',
+      lyricsFile: '/lyrics/几分之几.lrc',
+      playCount: 35000000,
+      likes: 17500000,
+      bpm: 74,
+      isVIP: false,
+      isHot: true,
+      isNew: false,
+      tags: ['情感', '成长', '民谣']
+    }
   ];
+
+  // 合并有MV和无MV的歌曲数据
+  const songsData = [...songsWithMVData, ...songsWithoutMVData];
   
   // 创建歌曲记录
   const songs = [];
@@ -187,22 +1169,22 @@ const createSampleData = async () => {
       duration: songData.duration,
       releaseYear: songData.releaseYear,
       genre: songData.genre,
-      subGenre: songData.subGenre,
+      subGenre: songData.subGenre || '',
       language: songData.language,
-      mood: songData.mood,
-      scene: songData.scene,
+      mood: songData.mood || '',
+      scene: songData.scene || '',
       coverImage: songData.coverImage,
       audioFile: songData.audioFile,
-      audioFileHQ: songData.audioFileHQ || songData.audioFile, // 可选的高质量音频
+      audioFileHQ: songData.audioFileHQ || songData.audioFile,
       lyrics: lyrics,
-      mvUrl: songData.mvFile, // 添加MV路径
+      mvUrl: songData.mvFile || null,
       playCount: songData.playCount,
       likes: songData.likes,
-      bpm: songData.bpm,
-      isVIP: songData.isVIP,
-      isHot: songData.isHot,
-      isNew: songData.isNew,
-      tags: songData.tags
+      bpm: songData.bpm || 75,
+      isVIP: songData.isVIP || false,
+      isHot: songData.isHot || false,
+      isNew: songData.isNew || false,
+      tags: songData.tags || []
     });
     songs.push(song);
   }
@@ -243,22 +1225,49 @@ const createSampleData = async () => {
   console.log('艺术家热门歌曲和专辑关联成功');
   
   // 7. 创建歌单
-  // 这里会使用您准备的真实歌单数据
-  // 示例结构（实际使用您提供的数据）:
   const playlistsData = [
     {
-      name: '流行华语精选',
-      creatorUsername: 'admin', // 用于查找关联的用户ID
-      description: '精选华语流行歌曲，陪伴你的每一天',
-      songTitles: ['爱在西元前', '简单爱', '十年'], // 用于查找关联的歌曲ID
+      name: '华语经典情歌',
+      creatorUsername: 'user1',
+      description: '收录周杰伦、孙燕姿、王力宏等歌手的经典情歌，带你重温华语乐坛黄金时代。',
+      songTitles: ['十年', '晴天', '唯一', '特别的人', '遇见'],
       isPublic: true,
-      isOfficial: true,
-      likes: 5000,
-      tags: ['华语', '流行', '精选'],
-      category: '华语',
-      coverImage: '/img/playlists/chinese_pop.jpg'
+      isOfficial: false,
+      isHot: true,
+      playCount: 1000000,
+      likes: 500000,
+      tags: ['浪漫', '怀旧', '华语'],
+      category: '心情',
+      coverImage: '/img/playlists/classic_love_songs.jpg'
     },
-    // ... 其他歌单数据
+    {
+      name: '通勤必备轻松音乐',
+      creatorUsername: 'user2',
+      description: '精选舒缓轻松音乐，助你在通勤路上放松身心。',
+      songTitles: ['你的背包', '夜曲', '江南', '几分之几', '稳稳的幸福'],
+      isPublic: true,
+      isOfficial: false,
+      isHot: true,
+      playCount: 800000,
+      likes: 400000,
+      tags: ['舒缓', '放松', '通勤'],
+      category: '场景',
+      coverImage: '/img/playlists/commute_light_music.jpg'
+    },
+    {
+      name: '派对热歌精选',
+      creatorUsername: 'user3',
+      description: '收录周杰伦、林俊杰、陶喆等歌手的动感热歌，点燃派对气氛。',
+      songTitles: ['双截棍', '浮夸', 'K歌之王', '黑色柳丁', '小镇姑娘'],
+      isPublic: true,
+      isOfficial: false,
+      isHot: true,
+      playCount: 600000,
+      likes: 300000,
+      tags: ['动感', '节奏', '派对'],
+      category: '场景',
+      coverImage: '/img/playlists/party_hits.jpg'
+    }
   ];
   
   // 创建歌单记录
@@ -282,12 +1291,12 @@ const createSampleData = async () => {
       songs: playlistSongs,
       isPublic: playlistData.isPublic,
       isOfficial: playlistData.isOfficial,
-      isHot: playlistData.likes > 1000, // 根据点赞数设置是否热门
-      playCount: playlistData.likes * 2, // 模拟播放次数
+      isHot: playlistData.isHot,
+      playCount: playlistData.playCount,
       likes: playlistData.likes,
       tags: playlistData.tags,
       category: playlistData.category,
-      coverImage: playlistData.coverImage || '/img/default-playlist.jpg',
+      coverImage: playlistData.coverImage,
       createdAt: new Date(),
       updatedAt: new Date()
     });
@@ -297,7 +1306,7 @@ const createSampleData = async () => {
   console.log('歌单创建成功');
   
   // 8. 设置用户喜欢的歌曲和播放历史
-  // 为主要用户添加喜欢的歌曲和最近播放
+  // 为用户添加喜欢的歌曲和最近播放
   for(let i = 0; i < users.length; i++) {
     // 随机选择5-15首歌喜欢
     const likedSongsCount = 5 + Math.floor(Math.random() * 11);
