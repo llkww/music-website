@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const ArtistSchema = new mongoose.Schema({
+  detailedIntro: {
+  type: String
+  },
   name: {
     type: String,
     required: true

@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const SongSchema = new mongoose.Schema({
+  mvUrl: {
+  type: String
+  },
   title: {
     type: String,
     required: true
