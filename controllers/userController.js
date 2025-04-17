@@ -87,22 +87,29 @@ exports.getLikedSongs = async (req, res) => {
         populate: { path: 'artist' }
       });
     
+    if (!user) {
+      return res.status(404).render('404', { title: '用户不存在' });
+    }
+    
+    // 确保songs是一个数组，即使是空的
+    const songs = user.likedSongs || [];
+    
     // 如果是AJAX请求，返回HTML片段
     if (req.xhr) {
       return res.render('partials/liked-songs-content', {
-        songs: user.likedSongs
+        songs: songs
       });
     }
     
     res.render('liked-songs', {
       title: '我喜欢的音乐',
-      songs: user.likedSongs
+      songs: songs
     });
   } catch (error) {
-    console.error(error);
+    console.error('获取喜欢的音乐失败:', error);
     res.status(500).render('error', {
       title: '服务器错误',
-      message: '获取喜欢的音乐失败'
+      message: '获取喜欢的音乐失败: ' + error.message
     });
   }
 };

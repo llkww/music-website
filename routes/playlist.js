@@ -97,4 +97,23 @@ router.post('/:id/upload-cover', isAuthenticated, upload.single('cover'), async 
   }
 });
 
+// 我的歌单页面
+router.get('/user-playlists', isAuthenticated, async (req, res) => {
+  try {
+    const playlists = await Playlist.find({ creator: req.session.user.id })
+      .sort({ updatedAt: -1 });
+    
+    res.render('user-playlists', {
+      title: '我的歌单',
+      playlists
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', {
+      title: '服务器错误',
+      message: '获取歌单失败'
+    });
+  }
+});
+
 module.exports = router;
