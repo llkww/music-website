@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const songAudio = playButton.dataset.audio;
       
       if (window.musicPlayer) {
+        // 如果musicPlayer已初始化，使用它播放歌曲
         window.musicPlayer.playSong({
           id: songId,
           title: songTitle,
@@ -49,9 +50,15 @@ document.addEventListener('DOMContentLoaded', function() {
           audio: songAudio
         });
       } else {
-        // 如果musicPlayer还未初始化，直接播放
-        const audio = new Audio(songAudio);
-        audio.play();
+        // 如果musicPlayer还未初始化，先停止可能正在播放的音频
+        if (window.tempAudio) {
+          window.tempAudio.pause();
+        }
+        // 创建新的临时音频对象并播放
+        window.tempAudio = new Audio(songAudio);
+        window.tempAudio.play();
+        
+        console.warn('播放器尚未完全初始化，可能影响播放体验');
       }
     }
   });

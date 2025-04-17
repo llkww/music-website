@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 加载歌词设置
     loadLyricsSettings();
 
-     // 初始化浮动歌词
+    // 初始化浮动歌词 - 添加这行，确保浮动歌词功能被初始化
     initDraggableLyrics();
   }
   
@@ -284,20 +284,20 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 切换歌词可见性
   function toggleLyricsVisibility() {
-  lyricsVisible = !lyricsVisible;
-  
-  const floatingLyricsContainer = document.getElementById('floating-lyrics-container');
-  
-  if (lyricsVisible) {
-    floatingLyricsContainer.style.display = 'block';
-    lyricsButton.innerHTML = '<i class="bi bi-chat-quote-fill"></i>';
-  } else {
-    floatingLyricsContainer.style.display = 'none';
-    lyricsButton.innerHTML = '<i class="bi bi-chat-quote"></i>';
-  }
-  
-  // 保存设置
-  saveLyricsSettings({ visible: lyricsVisible });
+    lyricsVisible = !lyricsVisible;
+    
+    const floatingLyricsContainer = document.getElementById('floating-lyrics-container');
+    
+    if (lyricsVisible) {
+      floatingLyricsContainer.style.display = 'block';
+      lyricsButton.innerHTML = '<i class="bi bi-chat-quote-fill"></i>';
+    } else {
+      floatingLyricsContainer.style.display = 'none';
+      lyricsButton.innerHTML = '<i class="bi bi-chat-quote"></i>';
+    }
+    
+    // 保存设置
+    saveLyricsSettings({ visible: lyricsVisible });
   }
   
   // 切换歌词设置面板
@@ -633,12 +633,21 @@ document.addEventListener('DOMContentLoaded', function() {
           const lines = parseLyrics(data.lyrics);
           displayLyrics(lines);
         } else {
+          // 无歌词时设置默认显示
           mainLyricsContent.innerHTML = '<p class="main-lyrics-line">暂无歌词</p>';
+          const currentLyricElement = document.getElementById('current-lyric');
+          if (currentLyricElement) {
+            currentLyricElement.textContent = '暂无歌词';
+          }
         }
       })
       .catch(error => {
         console.error('获取歌词失败:', error);
         mainLyricsContent.innerHTML = '<p class="main-lyrics-line">暂无歌词</p>';
+        const currentLyricElement = document.getElementById('current-lyric');
+        if (currentLyricElement) {
+          currentLyricElement.textContent = '暂无歌词';
+        }
       });
   }
   
@@ -679,18 +688,41 @@ document.addEventListener('DOMContentLoaded', function() {
     return result.sort((a, b) => a.time - b.time);
   }
   
-  // 显示歌词的函数
+  // 显示歌词的函数 - 修改为更现代化的显示方式
   function displayLyrics(lines) {
     if (lines.length === 0) {
-        document.getElementById('current-lyric').textContent = '暂无歌词';
-        return;
+      const currentLyricElement = document.getElementById('current-lyric');
+      if (currentLyricElement) {
+        currentLyricElement.textContent = '暂无歌词';
+      }
+      mainLyricsContent.innerHTML = '<p class="main-lyrics-line">暂无歌词</p>';
+      return;
     }
     
+    // 保存歌词数据
     window.currentLyricLines = lines;
+    
+    // 在主歌词区域中生成所有歌词行
+    let html = '';
+    lines.forEach((line, index) => {
+      html += `<p class="main-lyrics-line" data-time="${line.time}">${line.text}</p>`;
+    });
+    
+    mainLyricsContent.innerHTML = html;
+    
+    // 初始化时显示第一行歌词
+    const currentLyricElement = document.getElementById('current-lyric');
+    if (currentLyricElement) {
+      currentLyricElement.textContent = lines[0].text;
+    }
+    
+    // 显示主歌词容器
+    if (mainLyricsContainer) {
+      mainLyricsContainer.style.display = 'block';
+    }
   }
   
-  // 更新当前歌词
-
+  // 更新当前歌词 - 重写为支持高亮和滚动
   function updateActiveLyric(currentTime) {
     if (!window.currentLyricLines || !window.currentLyricLines.length) return;
     
@@ -700,15 +732,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // 查找当前歌词行
     let activeIndex = -1;
     for (let i = 0; i < lines.length; i++) {
-        if (i === lines.length - 1 || (currentTime >= lines[i].time && currentTime < lines[i + 1].time)) {
-            activeIndex = i;
-            break;
-        }
+      if (i === lines.length - 1 || (currentTime >= lines[i].time && currentTime < lines[i + 1].time)) {
+        activeIndex = i;
+        break;
+      }
     }
     
     // 更新当前歌词文本
     if (activeIndex >= 0 && activeIndex < lines.length) {
+      // 更新浮动歌词
+      if (currentLyricElement) {
         currentLyricElement.textContent = lines[activeIndex].text;
+      }
+      
+      // 更新主歌词区域的高亮和滚动
+      const lyricsLines = document.querySelectorAll('.main-lyrics-line');
+      lyricsLines.forEach((line, index) => {
+        if (index === activeIndex) {
+          line.classList.add('active');
+          
+          // 将当前行滚动到可视区域中心
+          if (mainLyricsContainer && mainLyricsContainer.style.display !== 'none') {
+            const containerHeight = mainLyricsContainer.clientHeight;
+            const lineHeight = line.clientHeight;
+            const lineTop = line.offsetTop;
+            
+            mainLyricsContainer.scrollTop = lineTop - containerHeight / 2 + lineHeight / 2;
+          }
+        } else {
+          line.classList.remove('active');
+        }
+      });
     }
   }
   
