@@ -613,6 +613,8 @@ body {
     cursor: move;
     user-select: none;
     transition: background-color 0.3s ease;
+    /* 确保初始显示 */
+    display: block;
 }
 
 .current-lyric {

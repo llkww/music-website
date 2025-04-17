@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 新的主歌词区域
   const mainLyricsContainer = document.getElementById('main-lyrics-container');
+  const floatingLyricsContainer = document.getElementById('floating-lyrics-container');
   const mainLyricsContent = document.getElementById('main-lyrics-content');
   
   // 歌词设置按钮
@@ -153,35 +154,68 @@ document.addEventListener('DOMContentLoaded', function() {
   // 加载歌词设置
   function loadLyricsSettings() {
     const savedSettings = localStorage.getItem('lyricsSettings');
+    const floatingLyricsContainer = document.getElementById('floating-lyrics-container');
+    const currentLyric = document.getElementById('current-lyric');
     
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
       
       // 应用字体大小
       if (settings.fontSize) {
-        setLyricsFontSize(settings.fontSize, false);
+        // 为新的浮动歌词应用字体大小
+        if (currentLyric) {
+          currentLyric.style.fontSize = `${settings.fontSize}px`;
+        }
       }
       
       // 应用高亮颜色
       if (settings.activeColor) {
-        setLyricsActiveColor(settings.activeColor, false);
+        // 激活对应的颜色按钮
+        const colorButtons = document.querySelectorAll('.color-btn');
+        colorButtons.forEach(button => {
+          button.classList.toggle('active', button.dataset.color === settings.activeColor);
+        });
+        
+        // 应用颜色类到当前歌词
+        if (currentLyric) {
+          currentLyric.className = 'current-lyric';
+          currentLyric.classList.add(`lyric-color-${settings.activeColor}`);
+        }
       }
       
       // 应用背景透明度
       if (settings.bgOpacity) {
-        setLyricsBgOpacity(settings.bgOpacity, false);
+        // 对于新的浮动歌词，我们不再使用背景透明度
       }
       
       // 应用歌词可见性
       if (settings.visible !== undefined) {
         lyricsVisible = settings.visible;
         if (!lyricsVisible) {
-          mainLyricsContainer.classList.add('hidden');
+          floatingLyricsContainer.style.display = 'none';
           lyricsButton.innerHTML = '<i class="bi bi-chat-quote"></i>';
         } else {
-          mainLyricsContainer.classList.remove('hidden');
+          floatingLyricsContainer.style.display = 'block';
           lyricsButton.innerHTML = '<i class="bi bi-chat-quote-fill"></i>';
         }
+      } else {
+        // 默认显示歌词
+        lyricsVisible = true;
+        floatingLyricsContainer.style.display = 'block';
+      }
+    } else {
+      // 如果没有保存的设置，设置默认值
+      lyricsVisible = true;
+      floatingLyricsContainer.style.display = 'block';
+      
+      // 默认颜色为白色
+      if (currentLyric) {
+        currentLyric.classList.add('lyric-color-white');
+      }
+      
+      // 默认字体大小
+      if (currentLyric) {
+        currentLyric.style.fontSize = '24px';
       }
     }
   }
@@ -250,18 +284,20 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 切换歌词可见性
   function toggleLyricsVisibility() {
-    lyricsVisible = !lyricsVisible;
-    
-    if (lyricsVisible) {
-      mainLyricsContainer.classList.remove('hidden');
-      lyricsButton.innerHTML = '<i class="bi bi-chat-quote-fill"></i>';
-    } else {
-      mainLyricsContainer.classList.add('hidden');
-      lyricsButton.innerHTML = '<i class="bi bi-chat-quote"></i>';
-    }
-    
-    // 保存设置
-    saveLyricsSettings({ visible: lyricsVisible });
+  lyricsVisible = !lyricsVisible;
+  
+  const floatingLyricsContainer = document.getElementById('floating-lyrics-container');
+  
+  if (lyricsVisible) {
+    floatingLyricsContainer.style.display = 'block';
+    lyricsButton.innerHTML = '<i class="bi bi-chat-quote-fill"></i>';
+  } else {
+    floatingLyricsContainer.style.display = 'none';
+    lyricsButton.innerHTML = '<i class="bi bi-chat-quote"></i>';
+  }
+  
+  // 保存设置
+  saveLyricsSettings({ visible: lyricsVisible });
   }
   
   // 切换歌词设置面板
