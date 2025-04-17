@@ -8,7 +8,7 @@ exports.getHotSongs = async (req, res) => {
   try {
     const songs = await Song.find()
       .sort({ playCount: -1 })
-      .limit(10)
+      .limit(13) 
       .populate('artist');
     
     res.json(songs);

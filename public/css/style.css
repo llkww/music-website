@@ -562,3 +562,51 @@ body {
     background-color: var(--primary-color);
     color: white;
 }
+
+/* 歌词显示区域 */
+.main-lyrics-container {
+    position: fixed;
+    bottom: 80px;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    z-index: 990;
+    display: block;
+    /* 默认显示 */
+    transition: all 0.3s ease;
+}
+
+.main-lyrics-container.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+.main-lyrics-line {
+    margin: 10px 0;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.main-lyrics-line.active {
+    font-weight: bold;
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* 修改原有歌词面板样式，将其变为设置面板 */
+.lyrics-panel {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+}

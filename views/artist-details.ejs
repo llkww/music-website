@@ -1,0 +1,151 @@
+<%- include('partials/header') %>
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="<%= artist.image %>" alt="<%= artist.name %>" class="img-fluid rounded-circle shadow mb-4"
+                    style="max-width: 300px; margin: 0 auto; display: block;">
+                <h1 class="mb-2 text-center">
+                    <%= artist.name %>
+                </h1>
+                <p class="text-center"><strong>
+                        <%= artist.followers.toLocaleString() %>
+                    </strong> 粉丝</p>
+
+                <% if (artist.bio || artist.detailedIntro) { %>
+                    <div class="mt-3">
+                        <h5>歌手简介</h5>
+                        <p>
+                            <%= artist.detailedIntro || artist.bio %>
+                        </p>
+                    </div>
+                    <% } %>
+
+                        <% if (artist.genres && artist.genres.length> 0) { %>
+                            <div class="mt-3">
+                                <h5>音乐风格</h5>
+                                <div>
+                                    <% artist.genres.forEach(genre=> { %>
+                                        <span class="badge bg-primary me-1">
+                                            <%= genre %>
+                                        </span>
+                                        <% }) %>
+                                </div>
+                            </div>
+                            <% } %>
+            </div>
+            <div class="col-md-8">
+                <h2 class="mb-3">热门歌曲</h2>
+                <% if (songs && songs.length> 0) { %>
+                    <div class="table-responsive mb-5">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>歌曲</th>
+                                    <th>专辑</th>
+                                    <th>时长</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% songs.slice(0, 10).forEach((song, index)=> { %>
+                                    <tr>
+                                        <td>
+                                            <%= index + 1 %>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="<%= song.coverImage %>" alt="<%= song.title %>"
+                                                    class="song-cover me-3" style="width: 40px; height: 40px;">
+                                                <a href="/music/song/<%= song._id %>">
+                                                    <%= song.title %>
+                                                </a>
+                                                <% if (song.isVIP) { %><span
+                                                        class="badge bg-warning text-dark ms-2">VIP</span>
+                                                    <% } %>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <% if (song.album) { %>
+                                                <a href="/album/<%= song.album %>">
+                                                    <%= song.album.title %>
+                                                </a>
+                                                <% } else { %>
+                                                    -
+                                                    <% } %>
+                                        </td>
+                                        <td>
+                                            <%= Math.floor(song.duration / 60) %>:<%= (song.duration %
+                                                    60).toString().padStart(2, '0' ) %>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary rounded-circle btn-play"
+                                                data-id="<%= song._id %>" data-title="<%= song.title %>"
+                                                data-artist="<%= artist.name %>" data-cover="<%= song.coverImage %>"
+                                                data-audio="<%= song.audioFile %>">
+                                                <i class="bi bi-play-fill"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                        <p class="text-muted">暂无歌曲</p>
+                        <% } %>
+
+                            <h2 class="mb-3">专辑</h2>
+                            <% if (albums && albums.length> 0) { %>
+                                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+                                    <% albums.forEach(album=> { %>
+                                        <div class="col">
+                                            <div class="card h-100 album-card">
+                                                <img src="<%= album.coverImage %>" class="card-img-top"
+                                                    alt="<%= album.title %>">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">
+                                                        <%= album.title %>
+                                                    </h5>
+                                                    <p class="card-text"><small class="text-muted">
+                                                            <%= new Date(album.releaseDate).getFullYear() %>
+                                                        </small></p>
+                                                    <a href="/album/<%= album._id %>" class="stretched-link"></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                                <% } else { %>
+                                    <p class="text-muted">暂无专辑</p>
+                                    <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 播放按钮事件
+            document.querySelectorAll('.btn-play').forEach(button => {
+                button.addEventListener('click', function () {
+                    const songData = {
+                        id: this.dataset.id,
+                        title: this.dataset.title,
+                        artist: this.dataset.artist,
+                        cover: this.dataset.cover,
+                        audio: this.dataset.audio
+                    };
+
+                    if (window.musicPlayer) {
+                        window.musicPlayer.playSong(songData);
+                    } else {
+                        const audioElement = new Audio(songData.audio);
+                        audioElement.play();
+                    }
+                });
+            });
+        });
+    </script>
+
+    <%- include('partials/footer') %>

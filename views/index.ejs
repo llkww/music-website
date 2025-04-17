@@ -23,7 +23,7 @@
     <section class="hot-songs mb-5">
         <div class="section-header d-flex justify-content-between align-items-center mb-4">
             <h2>热门歌曲</h2>
-            <a href="/music/hot-songs" class="btn btn-sm btn-outline-primary">查看全部</a>
+            <!-- 移除了查看全部按钮 -->
         </div>
 
         <div class="row">
@@ -60,7 +60,7 @@
     <section class="new-albums mb-5">
         <div class="section-header d-flex justify-content-between align-items-center mb-4">
             <h2>最新专辑</h2>
-            <a href="/search?type=album" class="btn btn-sm btn-outline-primary">查看全部</a>
+            <a href="/album" class="btn btn-sm btn-outline-primary">查看全部</a>
         </div>
 
         <div class="row">
@@ -75,7 +75,7 @@
                             <p class="card-text text-muted text-truncate">
                                 <%= album.artist.name %>
                             </p>
-                            <a href="/music/album/<%= album._id %>" class="stretched-link"></a>
+                            <a href="/album/<%= album._id %>" class="stretched-link"></a>
                         </div>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
     <section class="popular-artists mb-5">
         <div class="section-header d-flex justify-content-between align-items-center mb-4">
             <h2>流行歌手</h2>
-            <a href="/search?type=artist" class="btn btn-sm btn-outline-primary">查看全部</a>
+            <a href="/artist" class="btn btn-sm btn-outline-primary">查看全部</a>
         </div>
 
         <div class="row">
@@ -102,7 +102,7 @@
                             <p class="card-text text-muted">
                                 <%= artist.followers %> 粉丝
                             </p>
-                            <a href="/music/artist/<%= artist._id %>" class="stretched-link"></a>
+                            <a href="/artist/<%= artist._id %>" class="stretched-link"></a>
                         </div>
                     </div>
                 </div>

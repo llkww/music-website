@@ -13,6 +13,8 @@ const musicRoutes = require('./routes/music');
 const playlistRoutes = require('./routes/playlist');
 const apiRoutes = require('./routes/api');
 const socialRoutes = require('./routes/social');
+const albumRoutes = require('./routes/album');
+const artistRoutes = require('./routes/artist');
 
 const app = express();
 
@@ -49,6 +51,8 @@ app.use('/music', musicRoutes);
 app.use('/playlist', playlistRoutes);
 app.use('/api', apiRoutes);
 app.use('/social', socialRoutes);
+app.use('/album', albumRoutes);
+app.use('/artist', artistRoutes);
 
 // 错误处理
 app.use((req, res) => {

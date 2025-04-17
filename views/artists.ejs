@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+    <div class="container my-4">
+        <h1 class="mb-4">全部歌手</h1>
+
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+            <% artists.forEach(artist=> { %>
+                <div class="col">
+                    <div class="card h-100 artist-card text-center">
+                        <img src="<%= artist.image %>" class="card-img-top rounded-circle mx-auto mt-3"
+                            style="width: 120px; height: 120px; object-fit: cover;" alt="<%= artist.name %>">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%= artist.name %>
+                            </h5>
+                            <p class="card-text"><small>
+                                    <%= artist.followers.toLocaleString() %> 粉丝
+                                </small></p>
+                            <a href="/artist/<%= artist._id %>" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+
+    <div class="container my-4">
+        <h1 class="mb-4">全部专辑</h1>
+
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+            <% albums.forEach(album=> { %>
+                <div class="col">
+                    <div class="card h-100 album-card">
+                        <img src="<%= album.coverImage %>" class="card-img-top" alt="<%= album.title %>">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%= album.title %>
+                            </h5>
+                            <p class="card-text">
+                                <%= album.artist.name %>
+                            </p>
+                            <p class="card-text"><small class="text-muted">
+                                    <%= new Date(album.releaseDate).getFullYear() %>
+                                </small></p>
+                            <a href="/album/<%= album._id %>" class="stretched-link"></a>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

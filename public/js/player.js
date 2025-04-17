@@ -24,12 +24,15 @@ document.addEventListener('DOMContentLoaded', function() {
   const playlistPanel = document.getElementById('playlist-panel');
   const closeLyrics = document.getElementById('close-lyrics');
   const closePlaylist = document.getElementById('close-playlist');
-  const lyricsContent = document.getElementById('lyrics-content');
-  const playlistItems = document.getElementById('playlist-items');
+  
+  // 新的主歌词区域
+  const mainLyricsContainer = document.getElementById('main-lyrics-container');
+  const mainLyricsContent = document.getElementById('main-lyrics-content');
   
   // 歌词设置按钮
   const fontSizeButtons = document.querySelectorAll('.lyrics-font-size');
-  const fontColorButtons = document.querySelectorAll('.lyrics-font-color');
+  const lyricsActiveColorButtons = document.querySelectorAll('.lyrics-active-color');
+  const lyricsBgOpacity = document.getElementById('lyrics-bg-opacity');
   
   // 添加收藏按钮
   const favoriteButton = document.getElementById('btn-favorite');
@@ -41,12 +44,11 @@ document.addEventListener('DOMContentLoaded', function() {
   let currentVolume = 1;
   let currentPlaylist = [];
   let currentIndex = 0;
+  let lyricsVisible = true; // 歌词默认显示
   let audioContext = null;
   let sourceNode = null;
   let gainNode = null;
   let analyserNode = null;
-  let equalizerNodes = [];
-  let equalizerBands = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 16000];
   
   // 初始化播放器
   function initPlayer() {
@@ -84,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.volume-progress').addEventListener('click', setVolume);
     
     // 歌词和播放列表面板
-    lyricsButton.addEventListener('click', toggleLyricsPanel);
+    lyricsButton.addEventListener('click', toggleLyricsVisibility);
     playlistButton.addEventListener('click', togglePlaylistPanel);
     closeLyrics.addEventListener('click', toggleLyricsPanel);
     closePlaylist.addEventListener('click', togglePlaylistPanel);
@@ -96,11 +98,17 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
     
-    fontColorButtons.forEach(button => {
+    lyricsActiveColorButtons.forEach(button => {
       button.addEventListener('click', function() {
-        setLyricsFontColor(this.dataset.color);
+        setLyricsActiveColor(this.dataset.color);
       });
     });
+    
+    if (lyricsBgOpacity) {
+      lyricsBgOpacity.addEventListener('input', function() {
+        setLyricsBgOpacity(this.value);
+      });
+    }
     
     // 初始化 Web Audio API
     initAudioContext();
@@ -144,9 +152,26 @@ document.addEventListener('DOMContentLoaded', function() {
         setLyricsFontSize(settings.fontSize, false);
       }
       
-      // 应用字体颜色
-      if (settings.fontColor) {
-        setLyricsFontColor(settings.fontColor, false);
+      // 应用高亮颜色
+      if (settings.activeColor) {
+        setLyricsActiveColor(settings.activeColor, false);
+      }
+      
+      // 应用背景透明度
+      if (settings.bgOpacity) {
+        setLyricsBgOpacity(settings.bgOpacity, false);
+      }
+      
+      // 应用歌词可见性
+      if (settings.visible !== undefined) {
+        lyricsVisible = settings.visible;
+        if (!lyricsVisible) {
+          mainLyricsContainer.classList.add('hidden');
+          lyricsButton.innerHTML = '<i class="bi bi-chat-quote"></i>';
+        } else {
+          mainLyricsContainer.classList.remove('hidden');
+          lyricsButton.innerHTML = '<i class="bi bi-chat-quote-fill"></i>';
+        }
       }
     }
   }
@@ -165,10 +190,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // 设置歌词字体大小
   function setLyricsFontSize(size, save = true) {
     // 移除所有字体大小类
-    lyricsContent.classList.remove('font-size-small', 'font-size-medium', 'font-size-large');
+    mainLyricsContainer.classList.remove('lyrics-font-small', 'lyrics-font-medium', 'lyrics-font-large');
     
     // 添加新的字体大小类
-    lyricsContent.classList.add(`font-size-${size}`);
+    mainLyricsContainer.classList.add(`lyrics-font-${size}`);
     
     // 更新按钮状态
     fontSizeButtons.forEach(button => {
@@ -181,22 +206,62 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // 设置歌词字体颜色
-  function setLyricsFontColor(color, save = true) {
-    // 移除所有字体颜色类
-    lyricsContent.classList.remove('font-color-default', 'font-color-white', 'font-color-blue', 'font-color-green');
-    
-    // 添加新的字体颜色类
-    lyricsContent.classList.add(`font-color-${color}`);
-    
+  // 设置当前歌词高亮颜色
+  function setLyricsActiveColor(color, save = true) {
     // 更新按钮状态
-    fontColorButtons.forEach(button => {
+    lyricsActiveColorButtons.forEach(button => {
       button.classList.toggle('active', button.dataset.color === color);
+    });
+    
+    // 移除所有颜色类
+    const activeLines = document.querySelectorAll('.main-lyrics-line.active');
+    activeLines.forEach(line => {
+      line.classList.remove('text-primary', 'text-danger', 'text-warning', 'text-info');
+      line.classList.add(`text-${color}`);
     });
     
     // 保存设置
     if (save) {
-      saveLyricsSettings({ fontColor: color });
+      saveLyricsSettings({ activeColor: color });
+    }
+  }
+  
+  // 设置歌词背景透明度
+  function setLyricsBgOpacity(opacity, save = true) {
+    // 设置背景透明度
+    const opacityValue = opacity / 100;
+    mainLyricsContainer.style.backgroundColor = `rgba(0, 0, 0, ${opacityValue})`;
+    
+    // 保存设置
+    if (save) {
+      saveLyricsSettings({ bgOpacity: opacity });
+    }
+  }
+  
+  // 切换歌词可见性
+  function toggleLyricsVisibility() {
+    lyricsVisible = !lyricsVisible;
+    
+    if (lyricsVisible) {
+      mainLyricsContainer.classList.remove('hidden');
+      lyricsButton.innerHTML = '<i class="bi bi-chat-quote-fill"></i>';
+    } else {
+      mainLyricsContainer.classList.add('hidden');
+      lyricsButton.innerHTML = '<i class="bi bi-chat-quote"></i>';
+    }
+    
+    // 保存设置
+    saveLyricsSettings({ visible: lyricsVisible });
+  }
+  
+  // 切换歌词设置面板
+  function toggleLyricsPanel() {
+    const isVisible = lyricsPanel.style.display === 'flex';
+    lyricsPanel.style.display = isVisible ? 'none' : 'flex';
+    
+    // 关闭其他面板
+    if (!isVisible) {
+      playlistPanel.style.display = 'none';
     }
   }
   
@@ -216,24 +281,8 @@ document.addEventListener('DOMContentLoaded', function() {
       // 创建音量控制节点
       gainNode = audioContext.createGain();
       
-      // 创建均衡器节点
-      equalizerNodes = equalizerBands.map(frequency => {
-        const filter = audioContext.createBiquadFilter();
-        filter.type = 'peaking';
-        filter.frequency.value = frequency;
-        filter.Q.value = 1;
-        filter.gain.value = 0;
-        return filter;
-      });
-      
       // 连接节点
-      sourceNode.connect(equalizerNodes[0]);
-      
-      for (let i = 0; i < equalizerNodes.length - 1; i++) {
-        equalizerNodes[i].connect(equalizerNodes[i + 1]);
-      }
-      
-      equalizerNodes[equalizerNodes.length - 1].connect(gainNode);
+      sourceNode.connect(gainNode);
       gainNode.connect(analyserNode);
       analyserNode.connect(audioContext.destination);
       
@@ -308,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 更新收藏按钮状态
     updateFavoriteButton(song.id);
     
-    // 加载歌词（如果有）
+    // 加载歌词
     loadLyrics(song.id);
     
     // 记录播放记录
@@ -514,17 +563,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
   
-  // 切换歌词面板
-  function toggleLyricsPanel() {
-    const isVisible = lyricsPanel.style.display === 'flex';
-    lyricsPanel.style.display = isVisible ? 'none' : 'flex';
-    
-    // 关闭其他面板
-    if (!isVisible) {
-      playlistPanel.style.display = 'none';
-    }
-  }
-  
   // 切换播放列表面板
   function togglePlaylistPanel() {
     const isVisible = playlistPanel.style.display === 'flex';
@@ -546,12 +584,12 @@ document.addEventListener('DOMContentLoaded', function() {
           const lines = parseLyrics(data.lyrics);
           displayLyrics(lines);
         } else {
-          lyricsContent.innerHTML = '<p class="text-center">暂无歌词</p>';
+          mainLyricsContent.innerHTML = '<p class="main-lyrics-line">暂无歌词</p>';
         }
       })
       .catch(error => {
         console.error('获取歌词失败:', error);
-        lyricsContent.innerHTML = '<p class="text-center">暂无歌词</p>';
+        mainLyricsContent.innerHTML = '<p class="main-lyrics-line">暂无歌词</p>';
       });
   }
   
@@ -595,16 +633,16 @@ document.addEventListener('DOMContentLoaded', function() {
   // 显示歌词
   function displayLyrics(lines) {
     if (lines.length === 0) {
-      lyricsContent.innerHTML = '<p class="text-center">暂无歌词</p>';
+      mainLyricsContent.innerHTML = '<p class="main-lyrics-line">暂无歌词</p>';
       return;
     }
     
     let html = '';
     for (let i = 0; i < lines.length; i++) {
-      html += `<p data-time="${lines[i].time}">${lines[i].text}</p>`;
+      html += `<p class="main-lyrics-line" data-time="${lines[i].time}">${lines[i].text}</p>`;
     }
     
-    lyricsContent.innerHTML = html;
+    mainLyricsContent.innerHTML = html;
     window.currentLyricLines = lines;
   }
   
@@ -613,10 +651,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!window.currentLyricLines || !window.currentLyricLines.length) return;
     
     const lines = window.currentLyricLines;
-    const paragraphs = lyricsContent.querySelectorAll('p');
+    const lyricsLines = mainLyricsContent.querySelectorAll('.main-lyrics-line');
     
     // 清除之前的激活状态
-    paragraphs.forEach(p => p.classList.remove('active'));
+    lyricsLines.forEach(p => p.classList.remove('active', 'text-primary', 'text-danger', 'text-warning', 'text-info'));
     
     // 查找当前歌词行
     let activeIndex = -1;
@@ -628,13 +666,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // 激活当前行
-    if (activeIndex >= 0 && activeIndex < paragraphs.length) {
-      paragraphs[activeIndex].classList.add('active');
+    if (activeIndex >= 0 && activeIndex < lyricsLines.length) {
+      lyricsLines[activeIndex].classList.add('active');
+      
+      // 应用当前选中的高亮颜色
+      const activeColorButton = document.querySelector('.lyrics-active-color.active');
+      if (activeColorButton) {
+        const color = activeColorButton.dataset.color;
+        lyricsLines[activeIndex].classList.add(`text-${color}`);
+      } else {
+        lyricsLines[activeIndex].classList.add('text-primary');
+      }
       
       // 滚动到当前歌词
-      const activeTop = paragraphs[activeIndex].offsetTop;
-      const containerHeight = lyricsContent.clientHeight;
-      lyricsContent.scrollTop = activeTop - containerHeight / 2;
+      const activeTop = lyricsLines[activeIndex].offsetTop;
+      const containerHeight = mainLyricsContainer.clientHeight;
+      mainLyricsContainer.scrollTop = activeTop - containerHeight / 2;
     }
   }
   
@@ -797,6 +844,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 更新收藏按钮状态
         updateFavoriteButton(currentSong.id);
+        
+        // 加载歌词
+        loadLyrics(currentSong.id);
       }
     }
   }

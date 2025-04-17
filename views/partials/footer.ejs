@@ -1,6 +1,11 @@
 </div>
 
 <% if (!locals.hidePlayer) { %>
+    <!-- 这是新增的主歌词显示区域 -->
+    <div id="main-lyrics-container" class="main-lyrics-container">
+        <div id="main-lyrics-content"></div>
+    </div>
+
     <div id="player-bar" class="player-bar bg-dark text-white">
         <div class="container">
             <div class="row">
@@ -45,7 +50,7 @@
                 <div class="col-md-3">
                     <div class="player-options d-flex align-items-center justify-content-end">
                         <button id="btn-lyrics" class="btn btn-link text-white">
-                            <i class="bi bi-chat-quote"></i>
+                            <i class="bi bi-chat-quote-fill"></i>
                         </button>
                         <button id="btn-playlist" class="btn btn-link text-white">
                             <i class="bi bi-music-note-list"></i>
@@ -65,15 +70,13 @@
         </div>
     </div>
 
+    <!-- 歌词设置面板 -->
     <div id="lyrics-panel" class="lyrics-panel">
         <div class="lyrics-header">
-            <h5>歌词</h5>
+            <h5>歌词设置</h5>
             <button id="close-lyrics" class="btn btn-link text-dark">
                 <i class="bi bi-x-lg"></i>
             </button>
-        </div>
-        <div id="lyrics-content" class="lyrics-content">
-            <p class="text-center">暂无歌词</p>
         </div>
         <div class="lyrics-settings">
             <div class="lyrics-setting-item">
@@ -86,13 +89,19 @@
                 </div>
             </div>
             <div class="lyrics-setting-item">
-                <label>字体颜色:</label>
+                <label>当前歌词颜色:</label>
                 <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-secondary lyrics-font-color" data-color="default">默认</button>
-                    <button class="btn btn-sm btn-outline-secondary lyrics-font-color" data-color="white">白色</button>
-                    <button class="btn btn-sm btn-outline-secondary lyrics-font-color" data-color="blue">蓝色</button>
-                    <button class="btn btn-sm btn-outline-secondary lyrics-font-color" data-color="green">绿色</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-active-color active"
+                        data-color="primary">默认</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-active-color" data-color="danger">红色</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-active-color"
+                        data-color="warning">黄色</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-active-color" data-color="info">蓝色</button>
                 </div>
+            </div>
+            <div class="lyrics-setting-item">
+                <label>背景透明度:</label>
+                <input type="range" class="form-range" min="0" max="100" value="70" id="lyrics-bg-opacity">
             </div>
         </div>
     </div>
