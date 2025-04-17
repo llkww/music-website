@@ -50,6 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
   let gainNode = null;
   let analyserNode = null;
   
+  // 检查DOM元素是否存在
+  if (!playButton || !mainLyricsContainer) {
+    console.error('播放器元素未找到，播放器初始化失败');
+    return; // 终止初始化
+  }
+  
   // 初始化播放器
   function initPlayer() {
     // 设置音量

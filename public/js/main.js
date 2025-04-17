@@ -29,6 +29,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // 全局事件委托方式绑定所有播放按钮
+  document.body.addEventListener('click', function(e) {
+    // 查找最近的播放按钮
+    const playButton = e.target.closest('.btn-play');
+    if (playButton) {
+      const songId = playButton.dataset.id;
+      const songTitle = playButton.dataset.title;
+      const songArtist = playButton.dataset.artist;
+      const songCover = playButton.dataset.cover;
+      const songAudio = playButton.dataset.audio;
+      
+      if (window.musicPlayer) {
+        window.musicPlayer.playSong({
+          id: songId,
+          title: songTitle,
+          artist: songArtist,
+          cover: songCover,
+          audio: songAudio
+        });
+      } else {
+        // 如果musicPlayer还未初始化，直接播放
+        const audio = new Audio(songAudio);
+        audio.play();
+      }
+    }
+  });
+  
   // 搜索建议功能
   const searchInput = document.querySelector('input[name="query"]');
   if (searchInput) {
