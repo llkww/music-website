@@ -61,12 +61,4 @@ router.get('/liked-songs', isAuthenticated, userController.getLikedSongs);
 // 播放历史页面
 router.get('/play-history', isAuthenticated, userController.getPlayHistory);
 
-// 开通VIP页面
-router.get('/vip', isAuthenticated, (req, res) => {
-  res.render('vip', { title: 'VIP会员' });
-});
-
-// 开通VIP处理
-router.post('/vip', isAuthenticated, userController.upgradeVIP);
-
 module.exports = router;
