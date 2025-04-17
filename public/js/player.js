@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const playlistPanel = document.getElementById('playlist-panel');
   const closeLyrics = document.getElementById('close-lyrics');
   const closePlaylist = document.getElementById('close-playlist');
+  const playlistItems = document.getElementById('playlist-items');
   
   // 新的主歌词区域
   const mainLyricsContainer = document.getElementById('main-lyrics-container');
@@ -332,7 +333,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 更新播放列表显示
     updatePlaylistDisplay();
-    
+
+    // 显示播放列表面板
+    playlistPanel.style.display = 'flex';
+
     // 保存播放列表到本地存储
     savePlaylistToStorage();
     
