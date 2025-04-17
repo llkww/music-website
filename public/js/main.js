@@ -50,15 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
           audio: songAudio
         });
       } else {
-        // 如果musicPlayer还未初始化，先停止可能正在播放的音频
-        if (window.tempAudio) {
-          window.tempAudio.pause();
-        }
-        // 创建新的临时音频对象并播放
-        window.tempAudio = new Audio(songAudio);
-        window.tempAudio.play();
-        
-        console.warn('播放器尚未完全初始化，可能影响播放体验');
+        console.error('播放器未初始化');
       }
     }
   });

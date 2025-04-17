@@ -96,8 +96,7 @@
                     if (window.musicPlayer) {
                         window.musicPlayer.playSong(songData);
                     } else {
-                        const audioElement = new Audio(songData.audio);
-                        audioElement.play();
+                        console.error('播放器未初始化');
                     }
                 });
             });

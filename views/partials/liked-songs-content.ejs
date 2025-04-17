@@ -115,8 +115,7 @@
                             if (window.musicPlayer) {
                                 window.musicPlayer.playSong(songData);
                             } else {
-                                const audioElement = new Audio(songData.audio);
-                                audioElement.play();
+                                console.error('播放器未初始化');
                             }
                         });
                     });
@@ -144,14 +143,14 @@
                                             // 如果没有歌曲了，显示空状态
                                             if (currentCount === 0) {
                                                 document.querySelector('.table-responsive').innerHTML = `
-                <div class="no-liked-songs">
-                  <div class="icon">
-                    <i class="bi bi-music-note"></i>
-                  </div>
-                  <p class="lead">您还没有收藏任何歌曲</p>
-                  <a href="/search?type=song" class="btn btn-primary">去发现音乐</a>
-                </div>
-              `;
+                            <div class="no-liked-songs">
+                              <div class="icon">
+                                <i class="bi bi-music-note"></i>
+                              </div>
+                              <p class="lead">您还没有收藏任何歌曲</p>
+                              <a href="/search?type=song" class="btn btn-primary">去发现音乐</a>
+                            </div>
+                          `;
                                             }
                                         }
                                     } else {
