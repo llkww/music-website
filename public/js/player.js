@@ -145,6 +145,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 加载歌词设置
     loadLyricsSettings();
+
+     // 初始化浮动歌词
+    initDraggableLyrics();
   }
   
   // 加载歌词设置
@@ -640,58 +643,36 @@ document.addEventListener('DOMContentLoaded', function() {
     return result.sort((a, b) => a.time - b.time);
   }
   
-  // 显示歌词
+  // 显示歌词的函数
   function displayLyrics(lines) {
     if (lines.length === 0) {
-      mainLyricsContent.innerHTML = '<p class="main-lyrics-line">暂无歌词</p>';
-      return;
+        document.getElementById('current-lyric').textContent = '暂无歌词';
+        return;
     }
     
-    let html = '';
-    for (let i = 0; i < lines.length; i++) {
-      html += `<p class="main-lyrics-line" data-time="${lines[i].time}">${lines[i].text}</p>`;
-    }
-    
-    mainLyricsContent.innerHTML = html;
     window.currentLyricLines = lines;
   }
   
   // 更新当前歌词
+
   function updateActiveLyric(currentTime) {
     if (!window.currentLyricLines || !window.currentLyricLines.length) return;
     
     const lines = window.currentLyricLines;
-    const lyricsLines = mainLyricsContent.querySelectorAll('.main-lyrics-line');
-    
-    // 清除之前的激活状态
-    lyricsLines.forEach(p => p.classList.remove('active', 'text-primary', 'text-danger', 'text-warning', 'text-info'));
+    const currentLyricElement = document.getElementById('current-lyric');
     
     // 查找当前歌词行
     let activeIndex = -1;
     for (let i = 0; i < lines.length; i++) {
-      if (i === lines.length - 1 || (currentTime >= lines[i].time && currentTime < lines[i + 1].time)) {
-        activeIndex = i;
-        break;
-      }
+        if (i === lines.length - 1 || (currentTime >= lines[i].time && currentTime < lines[i + 1].time)) {
+            activeIndex = i;
+            break;
+        }
     }
     
-    // 激活当前行
-    if (activeIndex >= 0 && activeIndex < lyricsLines.length) {
-      lyricsLines[activeIndex].classList.add('active');
-      
-      // 应用当前选中的高亮颜色
-      const activeColorButton = document.querySelector('.lyrics-active-color.active');
-      if (activeColorButton) {
-        const color = activeColorButton.dataset.color;
-        lyricsLines[activeIndex].classList.add(`text-${color}`);
-      } else {
-        lyricsLines[activeIndex].classList.add('text-primary');
-      }
-      
-      // 滚动到当前歌词
-      const activeTop = lyricsLines[activeIndex].offsetTop;
-      const containerHeight = mainLyricsContainer.clientHeight;
-      mainLyricsContainer.scrollTop = activeTop - containerHeight / 2;
+    // 更新当前歌词文本
+    if (activeIndex >= 0 && activeIndex < lines.length) {
+        currentLyricElement.textContent = lines[activeIndex].text;
     }
   }
   
@@ -910,6 +891,104 @@ document.addEventListener('DOMContentLoaded', function() {
   // 初始化播放器
   initPlayer();
 
+  // 初始化浮动歌词的拖动功能
+  function initDraggableLyrics() {
+    const lyricsContainer = document.getElementById('floating-lyrics-container');
+    
+    if (!lyricsContainer) return;
+    
+    let isDragging = false;
+    let offsetX, offsetY;
+    
+    lyricsContainer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - lyricsContainer.getBoundingClientRect().left;
+        offsetY = e.clientY - lyricsContainer.getBoundingClientRect().top;
+        lyricsContainer.style.cursor = 'grabbing';
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        
+        const x = e.clientX - offsetX;
+        const y = e.clientY - offsetY;
+        
+        lyricsContainer.style.left = `${x}px`;
+        lyricsContainer.style.top = `${y}px`;
+        lyricsContainer.style.transform = 'none';
+    });
+    
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        lyricsContainer.style.cursor = 'move';
+    });
+    
+    // 初始化歌词控件
+    initLyricsControls();
+  }
+
+  // 初始化歌词控制按钮
+  function initLyricsControls() {
+    const colorButtons = document.querySelectorAll('.color-btn');
+    const decreaseSizeBtn = document.querySelector('.size-btn.size-decrease');
+    const increaseSizeBtn = document.querySelector('.size-btn.size-increase');
+    const currentLyric = document.getElementById('current-lyric');
+    
+    // 当前字体大小（像素）
+    let currentFontSize = 24;
+    
+    // 颜色切换
+    colorButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const color = button.dataset.color;
+            
+            // 更新活动按钮
+            colorButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // 更新歌词颜色
+            currentLyric.className = 'current-lyric';
+            currentLyric.classList.add(`lyric-color-${color}`);
+            
+            // 保存设置
+            localStorage.setItem('lyricColor', color);
+        });
+    });
+    
+    // 字体大小调整
+    decreaseSizeBtn.addEventListener('click', () => {
+        if (currentFontSize > 16) {
+            currentFontSize -= 2;
+            currentLyric.style.fontSize = `${currentFontSize}px`;
+            localStorage.setItem('lyricFontSize', currentFontSize);
+        }
+    });
+    
+    increaseSizeBtn.addEventListener('click', () => {
+        if (currentFontSize < 48) {
+            currentFontSize += 2;
+            currentLyric.style.fontSize = `${currentFontSize}px`;
+            localStorage.setItem('lyricFontSize', currentFontSize);
+        }
+    });
+    
+    // 加载已保存的设置
+    const savedColor = localStorage.getItem('lyricColor') || 'white';
+    const savedFontSize = localStorage.getItem('lyricFontSize') || 24;
+    
+    // 应用保存的设置
+    currentLyric.classList.add(`lyric-color-${savedColor}`);
+    currentFontSize = parseInt(savedFontSize);
+    currentLyric.style.fontSize = `${currentFontSize}px`;
+    
+    // 激活对应的颜色按钮
+    const activeColorBtn = document.querySelector(`.color-btn.color-${savedColor}`);
+    if (activeColorBtn) {
+        colorButtons.forEach(btn => btn.classList.remove('active'));
+        activeColorBtn.classList.add('active');
+    }
+  }
+  
   // 导出需要在其他地方使用的函数
   window.musicPlayer = {
     playSong,

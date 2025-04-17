@@ -565,18 +565,7 @@ body {
 
 /* 歌词显示区域 */
 .main-lyrics-container {
-    position: fixed;
-    bottom: 80px;
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    text-align: center;
-    padding: 20px 0;
-    z-index: 990;
-    display: block;
-    /* 默认显示 */
-    transition: all 0.3s ease;
+    display: none;
 }
 
 .main-lyrics-container.hidden {
@@ -609,4 +598,117 @@ body {
     display: none;
     flex-direction: column;
     z-index: 1000;
+}
+
+/* 浮动歌词显示区域 */
+.floating-lyrics-container {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 300px;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 990;
+    cursor: move;
+    user-select: none;
+    transition: background-color 0.3s ease;
+}
+
+.current-lyric {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    transition: color 0.3s ease;
+}
+
+.lyrics-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.floating-lyrics-container:hover .lyrics-controls {
+    opacity: 1;
+}
+
+.color-picker {
+    display: flex;
+    gap: 5px;
+}
+
+.color-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.color-btn.active {
+    border-color: #ffffff;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+.color-white {
+    background-color: white;
+}
+
+.color-yellow {
+    background-color: #ffeb3b;
+}
+
+.color-green {
+    background-color: #4caf50;
+}
+
+.color-blue {
+    background-color: #2196f3;
+}
+
+.color-pink {
+    background-color: #e91e63;
+}
+
+.size-control {
+    display: flex;
+    gap: 5px;
+}
+
+.size-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
+.size-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 歌词颜色类 */
+.lyric-color-white {
+    color: white;
+}
+
+.lyric-color-yellow {
+    color: #ffeb3b;
+}
+
+.lyric-color-green {
+    color: #4caf50;
+}
+
+.lyric-color-blue {
+    color: #2196f3;
+}
+
+.lyric-color-pink {
+    color: #e91e63;
 }
