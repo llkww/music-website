@@ -13,6 +13,12 @@
     <% if (locals.customCss) { %>
         <link rel="stylesheet" href="/css/<%= customCss %>">
         <% } %>
+    <!-- 添加更艺术的中文字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700&family=ZCOOL+XiaoWei&display=swap"
+        rel="stylesheet">
 </head>
 
 <body class="<%= locals.darkMode ? 'dark-mode' : '' %>">

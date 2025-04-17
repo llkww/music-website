@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
     saveLyricsSettings({ visible: lyricsVisible });
   }
   
-  // 初始化浮动歌词功能
+    // 初始化浮动歌词功能
   function initFloatingLyrics() {
     if (!floatingLyricsContainer) return;
     
@@ -634,12 +634,12 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // 应用字体大小
       if (settings.fontSize) {
-        currentLyricFontSize = settings.fontSize;
-        currentLyricElement.style.fontSize = `${settings.fontSize}px`;
+        currentLyricFontSize = parseInt(settings.fontSize);
+        currentLyricElement.style.fontSize = `${currentLyricFontSize}px`;
       } else {
-        // 默认大字体
-        currentLyricFontSize = 24;
-        currentLyricElement.style.fontSize = '24px';
+        // 设置更大的默认字体
+        currentLyricFontSize = 32;
+        currentLyricElement.style.fontSize = '32px';
       }
       
       // 应用颜色
@@ -681,8 +681,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (floatingLyricsContainer && currentLyricElement) {
         lyricsVisible = true;
         floatingLyricsContainer.style.display = 'block';
-        currentLyricFontSize = 24;
-        currentLyricElement.style.fontSize = '24px';
+        currentLyricFontSize = 32; 
+        currentLyricElement.style.fontSize = '32px';
         currentLyricColor = 'white';
         currentLyricElement.classList.add('lyric-color-white');
         

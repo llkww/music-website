@@ -188,37 +188,45 @@ body {
     cursor: pointer;
 }
 
-/* 浮动歌词容器 */
+/* 浮动歌词容器 - 移除背景和阴影 */
 .floating-lyrics-container {
     position: fixed;
     top: 30%;
     left: 50%;
     transform: translateX(-50%);
-    min-width: 300px;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.7);
+    min-width: 350px;
+    padding: 15px;
+    background-color: transparent;
+    /* 移除背景色 */
     border-radius: 15px;
     z-index: 990;
     cursor: move;
     user-select: none;
     transition: background-color 0.3s ease;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     text-align: center;
+    box-shadow: none;
+    /* 移除阴影 */
 }
 
+/* 优化当前歌词样式 */
 .current-lyric {
-    font-size: 24px;
+    font-size: 32px;
+    /* 更大的默认字体 */
     font-weight: 700;
     text-align: center;
     margin: 10px 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+    /* 保留文字阴影以提高可读性 */
     transition: color 0.3s ease, font-size 0.3s ease;
     padding: 10px;
     color: white;
-    line-height: 1.3;
+    line-height: 1.4;
+    font-family: 'ZCOOL XiaoWei', 'Ma Shan Zheng', 'Noto Sans SC', 'Source Han Sans CN', sans-serif;
+    /* 更艺术的字体 */
+    letter-spacing: 1px;
 }
 
+/* 控制面板样式优化 */
 .lyrics-controls {
     display: flex;
     justify-content: space-between;
@@ -226,14 +234,17 @@ body {
     opacity: 0;
     transition: opacity 0.3s ease;
     margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 只给控制面板添加半透明背景 */
 }
 
 .floating-lyrics-container:hover .lyrics-controls {
     opacity: 1;
 }
 
+/* 颜色选择器样式优化 */
 .color-picker {
     display: flex;
     gap: 8px;
@@ -277,24 +288,26 @@ body {
     background-color: #e91e63;
 }
 
+/* 字体大小控制按钮优化 */
 .size-control {
     display: flex;
     gap: 8px;
 }
 
 .size-btn {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.5);
     border: none;
     border-radius: 4px;
     color: white;
-    padding: 4px 8px;
+    padding: 4px 10px;
     cursor: pointer;
     transition: background 0.2s ease;
     font-weight: bold;
+    font-size: 14px;
 }
 
 .size-btn:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.7);
 }
 
 /* 歌词颜色类 */
@@ -467,11 +480,11 @@ body {
         min-width: auto;
         left: 5%;
         transform: none;
-        padding: 15px;
+        padding: 10px;
     }
 
     .current-lyric {
-        font-size: 20px;
+        font-size: 24px;
     }
 
     .playlist-panel {
