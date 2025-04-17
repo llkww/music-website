@@ -77,7 +77,7 @@ exports.search = async (req, res) => {
             } 
           } : {}
         ]
-      }).populate('artist').limit(20);
+      }).populate('artist').populate('album').limit(20);
     }
     
     if (type === 'all' || type === 'artist') {
@@ -92,7 +92,7 @@ exports.search = async (req, res) => {
           } : {},
           genre ? { genres: searchOptions.genre } : {}
         ]
-      }).limit(10);
+      }).populate('albums').limit(10); // 添加populate以获取专辑信息
     }
     
     if (type === 'all' || type === 'album') {

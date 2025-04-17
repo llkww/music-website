@@ -1,6 +1,28 @@
 </div>
 
 <% if (!locals.hidePlayer) { %>
+    <!-- 全屏歌词视图 -->
+    <div id="fullscreen-lyrics" class="fullscreen-lyrics">
+        <div class="fullscreen-lyrics-header">
+            <button id="close-fullscreen-lyrics" class="btn btn-link text-white">
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <div class="song-info text-center">
+                <h4 id="fs-song-title"></h4>
+                <p id="fs-song-artist"></p>
+            </div>
+            <div style="width: 40px;"></div> <!-- 居中占位元素 -->
+        </div>
+
+        <div class="fullscreen-lyrics-content">
+            <div class="fullscreen-cover-container">
+                <img id="fs-song-cover" src="/img/default-cover.jpg" alt="封面" class="fullscreen-cover">
+            </div>
+
+            <div id="fullscreen-lyrics-text" class="fullscreen-lyrics-text"></div>
+        </div>
+    </div>
+
     <!-- 浮动歌词容器 -->
     <div id="floating-lyrics-container" class="floating-lyrics-container">
         <div id="current-lyric" class="current-lyric"></div>
@@ -48,6 +70,10 @@
                             </button>
                             <button id="btn-repeat" class="btn btn-link text-white">
                                 <i class="bi bi-arrow-repeat"></i>
+                            </button>
+                            <!-- 新增收藏按钮 -->
+                            <button id="btn-favorite" class="btn btn-link text-white">
+                                <i class="bi bi-heart"></i>
                             </button>
                         </div>
                         <div class="progress-area">

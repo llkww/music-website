@@ -137,9 +137,10 @@
                                 <hr class="my-4">
                                 <% } %>
 
+                                    <!-- 歌手结果部分 -->
                                     <% if (type==='all' || type==='artist' ) { %>
-                                        <h2 class="mb-3">歌手 <% if (results.artists.length> 0) { %><small
-                                                    class="text-muted">(<%= results.artists.length %>)</small>
+                                        <h2 class="mb-3">歌手 <% if (results.artists.length> 0) { %><small class="text-muted">(<%= results.artists.length %>
+                                                        )</small>
                                                 <% } %>
                                         </h2>
                                         <% if (results.artists.length> 0) { %>
@@ -147,10 +148,8 @@
                                                 <% results.artists.forEach(artist=> { %>
                                                     <div class="col">
                                                         <div class="card h-100 artist-card">
-                                                            <img src="<%= artist.image %>"
-                                                                class="card-img-top rounded-circle mx-auto mt-3"
-                                                                style="width: 120px; height: 120px; object-fit: cover;"
-                                                                alt="<%= artist.name %>">
+                                                            <img src="<%= artist.image %>" class="card-img-top rounded-circle mx-auto mt-3"
+                                                                style="width: 120px; height: 120px; object-fit: cover;" alt="<%= artist.name %>">
                                                             <div class="card-body text-center">
                                                                 <h5 class="card-title">
                                                                     <%= artist.name %>
@@ -158,7 +157,13 @@
                                                                 <p class="card-text"><small>
                                                                         <%= artist.followers.toLocaleString() %> 粉丝
                                                                     </small></p>
-                                                                <!-- 移除链接 -->
+                                                                <!-- 添加专辑信息显示 -->
+                                                                <% if (artist.albums && artist.albums.length> 0) { %>
+                                                                    <p class="card-text"><small>专辑: <%= artist.albums.length %></small></p>
+                                                                    <% } else { %>
+                                                                        <p class="card-text"><small>暂无专辑信息</small></p>
+                                                                        <% } %>
+                                                                            <!-- 移除链接 -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -167,7 +172,7 @@
                                             <% } else { %>
                                                 <p class="text-muted">没有找到匹配的歌手</p>
                                                 <% } %>
-
+                                    
                                                     <hr class="my-4">
                                                     <% } %>
 

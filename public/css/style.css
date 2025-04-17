@@ -775,3 +775,107 @@ body {
     margin-top: 10px;
     margin-left: 50px;
 }
+
+/* 添加封面旋转动画 */
+.player-cover {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    object-fit: cover;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    /* 增加指针样式，提示可点击 */
+}
+
+.player-cover.rotating {
+    animation: rotate 20s linear infinite;
+}
+
+.fullscreen-cover.rotating {
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 全屏歌词视图 */
+.fullscreen-lyrics {
+    position: fixed;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
+    color: white;
+    transition: top 0.5s ease;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.fullscreen-lyrics.active {
+    top: 0;
+}
+
+.fullscreen-lyrics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 2001;
+}
+
+.fullscreen-lyrics-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fullscreen-cover-container {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.fullscreen-cover {
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.fullscreen-lyrics-text {
+    max-width: 600px;
+    width: 100%;
+    line-height: 2;
+    padding-bottom: 100px;
+}
+
+.fullscreen-lyrics-line {
+    margin-bottom: 20px;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-size: 18px;
+}
+
+.fullscreen-lyrics-line.active {
+    opacity: 1;
+    font-size: 24px;
+    font-weight: bold;
+    color: #1db954;
+}

@@ -31,6 +31,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // 添加收藏按钮
   const favoriteButton = document.getElementById('btn-favorite');
   
+  // 添加全屏歌词相关变量
+  const fullscreenLyrics = document.getElementById('fullscreen-lyrics');
+  const closeFullscreenLyrics = document.getElementById('close-fullscreen-lyrics');
+  const fullscreenLyricsText = document.getElementById('fullscreen-lyrics-text');
+  const fsSongTitle = document.getElementById('fs-song-title');
+  const fsSongArtist = document.getElementById('fs-song-artist');
+  const fsSongCover = document.getElementById('fs-song-cover');
+  
   // 播放器状态
   let isPlaying = false;
   let isShuffle = false;
@@ -174,10 +182,20 @@ document.addEventListener('DOMContentLoaded', function() {
       audioElement.pause();
       isPlaying = false;
       playButton.innerHTML = '<i class="bi bi-play-circle-fill"></i>';
+      
+      // 停止封面旋转
+      playingCover.classList.remove('rotating');
+      if (fsSongCover) fsSongCover.classList.remove('rotating');
     } else {
       audioElement.play();
       isPlaying = true;
       playButton.innerHTML = '<i class="bi bi-pause-circle-fill"></i>';
+      
+      // 开始封面旋转
+      playingCover.classList.add('rotating');
+      if (fsSongCover && fullscreenLyrics && fullscreenLyrics.classList.contains('active')) {
+        fsSongCover.classList.add('rotating');
+      }
     }
     
     // 保存播放状态
@@ -220,6 +238,12 @@ document.addEventListener('DOMContentLoaded', function() {
         isPlaying = true;
         playButton.innerHTML = '<i class="bi bi-pause-circle-fill"></i>';
         
+        // 开始封面旋转
+        playingCover.classList.add('rotating');
+        if (fsSongCover && fullscreenLyrics && fullscreenLyrics.classList.contains('active')) {
+          fsSongCover.classList.add('rotating');
+        }
+        
         // 保存播放状态
         savePlayStateToStorage();
       })
@@ -227,6 +251,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('播放失败:', error);
         isPlaying = false;
         playButton.innerHTML = '<i class="bi bi-play-circle-fill"></i>';
+        
+        // 停止封面旋转
+        playingCover.classList.remove('rotating');
+        if (fsSongCover) fsSongCover.classList.remove('rotating');
       });
     
     // 更新播放器显示
@@ -239,6 +267,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 加载歌词
     loadLyrics(song.id);
+    
+    // 更新全屏歌词（如果已打开）
+    if (fullscreenLyrics && fullscreenLyrics.classList.contains('active')) {
+      updateFullscreenLyrics();
+    }
     
     // 记录播放记录
     recordPlayHistory(song.id);
@@ -298,6 +331,10 @@ document.addEventListener('DOMContentLoaded', function() {
       // 播放结束，重置
       isPlaying = false;
       playButton.innerHTML = '<i class="bi bi-play-circle-fill"></i>';
+      
+      // 停止封面旋转
+      playingCover.classList.remove('rotating');
+      if (fsSongCover) fsSongCover.classList.remove('rotating');
       
       // 保存状态
       savePlayStateToStorage();
@@ -426,7 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        favoriteButton.classList.toggle('active', data.liked);
+        // 更新收藏按钮样式
         favoriteButton.innerHTML = data.liked ? 
           '<i class="bi bi-heart-fill text-danger"></i>' : 
           '<i class="bi bi-heart"></i>';
@@ -439,12 +476,11 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 更新收藏按钮状态
   function updateFavoriteButton(songId) {
-    if (!favoriteButton) return;
+    if (!favoriteButton || !songId) return;
     
     fetch(`/api/song/${songId}/is-liked`)
       .then(response => response.json())
       .then(data => {
-        favoriteButton.classList.toggle('active', data.isLiked);
         favoriteButton.innerHTML = data.isLiked ? 
           '<i class="bi bi-heart-fill text-danger"></i>' : 
           '<i class="bi bi-heart"></i>';
@@ -479,6 +515,11 @@ document.addEventListener('DOMContentLoaded', function() {
           // 无歌词时不显示任何文本
           currentLyrics = [];
           updateCurrentLyric('');
+        }
+        
+        // 如果全屏歌词已打开，更新全屏歌词
+        if (fullscreenLyrics && fullscreenLyrics.classList.contains('active')) {
+          updateFullscreenLyrics();
         }
       })
       .catch(error => {
@@ -606,6 +647,9 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
       }
+      
+      // 同时更新全屏歌词视图中的高亮
+      updateFullscreenActiveLyric(currentTime);
     }
   }
   
@@ -678,28 +722,116 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
     
-    // 初始化字体大小控制按钮 - 直接使用类选择器
-    const decreaseSizeBtn = document.querySelector('.size-btn.size-decrease');
-    const increaseSizeBtn = document.querySelector('.size-btn.size-increase');
+    // 修复：使用更精确的选择器，并添加事件捕获和冒泡防止
+    const decreaseSizeBtn = floatingLyricsContainer.querySelector('.size-btn.size-decrease');
+    const increaseSizeBtn = floatingLyricsContainer.querySelector('.size-btn.size-increase');
     
     if (decreaseSizeBtn) {
-      decreaseSizeBtn.addEventListener('click', function() {
+      decreaseSizeBtn.addEventListener('click', function(e) {
+        e.preventDefault(); // 防止默认行为
+        e.stopPropagation(); // 防止事件冒泡
+        console.log('减小字体按钮点击'); // 调试日志
         if (currentLyricFontSize > 16) {
           currentLyricFontSize -= 2;
           currentLyricElement.style.fontSize = `${currentLyricFontSize}px`;
           saveLyricsSettings({ fontSize: currentLyricFontSize });
+          console.log('字体大小已减小至:', currentLyricFontSize);
         }
       });
     }
     
     if (increaseSizeBtn) {
-      increaseSizeBtn.addEventListener('click', function() {
+      increaseSizeBtn.addEventListener('click', function(e) {
+        e.preventDefault(); // 防止默认行为
+        e.stopPropagation(); // 防止事件冒泡
+        console.log('增大字体按钮点击'); // 调试日志
         if (currentLyricFontSize < 48) {
           currentLyricFontSize += 2;
           currentLyricElement.style.fontSize = `${currentLyricFontSize}px`;
           saveLyricsSettings({ fontSize: currentLyricFontSize });
+          console.log('字体大小已增大至:', currentLyricFontSize);
         }
       });
+    }
+  }
+  
+  // 切换全屏歌词显示
+  function toggleFullscreenLyrics() {
+    if (fullscreenLyrics) {
+      fullscreenLyrics.classList.toggle('active');
+      
+      if (fullscreenLyrics.classList.contains('active')) {
+        updateFullscreenLyrics();
+        
+        // 同步封面旋转状态
+        if (isPlaying) {
+          fsSongCover.classList.add('rotating');
+        } else {
+          fsSongCover.classList.remove('rotating');
+        }
+      }
+    }
+  }
+  
+  // 更新全屏歌词内容
+  function updateFullscreenLyrics() {
+    if (!fullscreenLyrics || currentPlaylist.length === 0 || currentIndex < 0) return;
+    
+    const currentSong = currentPlaylist[currentIndex];
+    
+    // 更新歌曲信息
+    fsSongTitle.textContent = currentSong.title;
+    fsSongArtist.textContent = currentSong.artist;
+    fsSongCover.src = currentSong.cover;
+    
+    // 更新歌词
+    if (currentLyrics.length > 0) {
+      let html = '';
+      
+      currentLyrics.forEach((lyric, index) => {
+        html += `<div id="lyric-line-${index}" class="fullscreen-lyrics-line">${lyric.text}</div>`;
+      });
+      
+      fullscreenLyricsText.innerHTML = html;
+      
+      // 高亮当前歌词
+      updateFullscreenActiveLyric(audioElement.currentTime);
+    } else {
+      fullscreenLyricsText.innerHTML = '<div class="text-center py-4">暂无歌词</div>';
+    }
+  }
+  
+  // 更新全屏视图中的活动歌词
+  function updateFullscreenActiveLyric(currentTime) {
+    if (!fullscreenLyrics || !fullscreenLyrics.classList.contains('active') || currentLyrics.length === 0) return;
+    
+    let currentLyricIndex = -1;
+    
+    for (let i = 0; i < currentLyrics.length; i++) {
+      if (i === currentLyrics.length - 1) {
+        if (currentTime >= currentLyrics[i].time) {
+          currentLyricIndex = i;
+        }
+      } else if (currentTime >= currentLyrics[i].time && currentTime < currentLyrics[i + 1].time) {
+        currentLyricIndex = i;
+        break;
+      }
+    }
+    
+    if (currentLyricIndex >= 0) {
+      // 移除所有行的高亮
+      document.querySelectorAll('.fullscreen-lyrics-line').forEach(line => {
+        line.classList.remove('active');
+      });
+      
+      // 给当前行添加高亮
+      const currentLine = document.getElementById(`lyric-line-${currentLyricIndex}`);
+      if (currentLine) {
+        currentLine.classList.add('active');
+        
+        // 滚动到当前行
+        currentLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   }
   
@@ -789,24 +921,64 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isNaN(audioElement.currentTime)) {
       localStorage.setItem('currentTime', audioElement.currentTime);
     }
+    // 保存当前播放的歌曲ID，用于跨页面恢复
+    if (currentPlaylist.length > 0 && currentIndex >= 0) {
+      localStorage.setItem('currentSongId', currentPlaylist[currentIndex].id);
+    }
   }
   
   // 从本地存储加载播放状态
   function loadPlayStateFromStorage() {
     const savedIsPlaying = localStorage.getItem('isPlaying') === 'true';
     const savedCurrentTime = parseFloat(localStorage.getItem('currentTime') || '0');
+    const savedSongId = localStorage.getItem('currentSongId');
     
-    // 如果上次正在播放，恢复播放
-    if (savedIsPlaying && currentPlaylist.length > 0 && currentIndex >= 0) {
+    // 如果有保存的播放列表和当前歌曲，恢复播放状态
+    if (currentPlaylist.length > 0 && currentIndex >= 0) {
+      // 如果有保存的歌曲ID，尝试在播放列表中找到对应的歌曲
+      if (savedSongId) {
+        const savedSongIndex = currentPlaylist.findIndex(song => song.id === savedSongId);
+        if (savedSongIndex !== -1) {
+          currentIndex = savedSongIndex;
+        }
+      }
+      
+      // 设置音频源和时间
+      audioElement.src = currentPlaylist[currentIndex].audio;
+      audioElement.load();
+      
       if (!isNaN(savedCurrentTime)) {
         audioElement.currentTime = savedCurrentTime;
       }
-      // 稍后再恢复播放，确保页面已完全加载
-      setTimeout(() => {
-        if (!isPlaying) {
-          togglePlay();
-        }
-      }, 1000);
+      
+      // 更新播放器界面
+      updatePlayerDisplay();
+      
+      // 如果上次正在播放，恢复播放
+      if (savedIsPlaying) {
+        // 稍后再恢复播放，确保页面已完全加载
+        setTimeout(() => {
+          if (!isPlaying) {
+            togglePlay();
+          }
+        }, 1000);
+      }
+    }
+  }
+  
+  // 更新播放器显示
+  function updatePlayerDisplay() {
+    if (currentPlaylist.length > 0 && currentIndex >= 0) {
+      const currentSong = currentPlaylist[currentIndex];
+      playingTitle.textContent = currentSong.title;
+      playingArtist.textContent = currentSong.artist;
+      playingCover.src = currentSong.cover;
+      
+      // 更新收藏按钮状态
+      updateFavoriteButton(currentSong.id);
+      
+      // 加载歌词
+      loadLyrics(currentSong.id);
     }
   }
   
@@ -888,6 +1060,11 @@ document.addEventListener('DOMContentLoaded', function() {
         playingCover.src = '/img/default-cover.jpg';
         isPlaying = false;
         playButton.innerHTML = '<i class="bi bi-play-circle-fill"></i>';
+        
+        // 停止封面旋转
+        playingCover.classList.remove('rotating');
+        if (fsSongCover) fsSongCover.classList.remove('rotating');
+        
         updatePlaylistDisplay();
       }
     } else {
@@ -1004,11 +1181,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // 在页面离开前保存状态
-  window.addEventListener('beforeunload', function() {
-    savePlayStateToStorage();
-    savePlaylistToStorage();
-    saveSettingsToStorage();
+  // 绑定全屏歌词相关事件
+  if (playingCover) {
+    playingCover.addEventListener('click', toggleFullscreenLyrics);
+  }
+  
+  if (closeFullscreenLyrics) {
+    closeFullscreenLyrics.addEventListener('click', toggleFullscreenLyrics);
+  }
+  
+  // 在页面加载和卸载时保存/恢复状态
+  window.addEventListener('load', function() {
+    loadPlayStateFromStorage();
+    // 立即保存正在播放状态，确保跨页面跳转
+    window.addEventListener('beforeunload', function() {
+      savePlayStateToStorage();
+    });
   });
   
   // 初始化播放器
