@@ -22,13 +22,8 @@
                 <div class="mb-3">
                     <ul class="nav nav-pills search-type-nav">
                         <li class="nav-item">
-                            <input type="radio" class="btn-check" name="type" id="type-all" value="all" <%=type==='all'
-                                ? 'checked' : '' %>>
-                            <label class="btn btn-outline-primary" for="type-all">全部</label>
-                        </li>
-                        <li class="nav-item">
                             <input type="radio" class="btn-check" name="type" id="type-song" value="song"
-                                <%=type==='song' ? 'checked' : '' %>>
+                                <%=type==='song' || type==='all' ? 'checked' : '' %>>
                             <label class="btn btn-outline-primary" for="type-song">歌曲</label>
                         </li>
                         <li class="nav-item">
@@ -50,413 +45,236 @@
                 </div>
 
                 <div id="search-suggestions" class="search-suggestions"></div>
-
-                <div class="mt-3">
-                    <button type="button" id="advanced-search-toggle" class="btn btn-link">
-                        <i class="bi bi-chevron-down"></i> <span>展开高级搜索</span>
-                    </button>
-                </div>
-
-                <div id="advanced-search-panel" class="card p-3 mt-2" style="display: none;">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="genre-filter" class="form-label">流派</label>
-                            <select id="genre-filter" name="genre" class="form-select">
-                                <option value="">所有流派</option>
-                                <!-- 流派选项将通过JS动态加载 -->
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="language-filter" class="form-label">语言</label>
-                            <select id="language-filter" name="language" class="form-select">
-                                <option value="">所有语言</option>
-                                <!-- 语言选项将通过JS动态加载 -->
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="year-filter" class="form-label">年份</label>
-                            <select id="year-filter" name="year" class="form-select">
-                                <option value="">所有年份</option>
-                                <!-- 年份选项将通过JS动态加载 -->
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="duration-filter" class="form-label">时长</label>
-                            <select id="duration-filter" name="duration" class="form-select">
-                                <option value="">所有时长</option>
-                                <!-- 时长选项将通过JS动态加载 -->
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="bpm-filter" class="form-label">BPM范围</label>
-                            <select id="bpm-filter" name="bpm" class="form-select">
-                                <option value="">所有BPM</option>
-                                <!-- BPM选项将通过JS动态加载 -->
-                            </select>
-                        </div>
-                    </div>
-                </div>
             </form>
         </div>
 
-        <% if (!query && !results) { %>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">搜索历史</h5>
+        <% if (results) { %>
+            <div class="search-results">
+                <% if (type==='all' || type==='song' ) { %>
+                    <h2 class="mb-3">歌曲 <% if (results.songs.length> 0) { %><small class="text-muted">(<%=
+                                    results.songs.length %>)</small>
+                            <% } %>
+                    </h2>
+                    <% if (results.songs.length> 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>歌曲</th>
+                                        <th>歌手</th>
+                                        <th>专辑</th>
+                                        <th>时长</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% results.songs.forEach((song, index)=> { %>
+                                        <tr>
+                                            <td>
+                                                <%= index + 1 %>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="<%= song.coverImage %>" alt="<%= song.title %>"
+                                                        class="song-cover me-3" style="width: 40px; height: 40px;">
+                                                    <!-- 移除链接，只显示文本 -->
+                                                    <div>
+                                                        <span>
+                                                            <%= song.title %>
+                                                        </span>
+                                                        <% if (song.isVIP) { %>
+                                                            <span class="badge bg-warning text-dark ms-2">VIP</span>
+                                                            <% } %>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <!-- 移除链接，只显示文本 -->
+                                            <td><span>
+                                                    <%= song.artist.name %>
+                                                </span></td>
+                                            <td>
+                                                <% if (song.album) { %>
+                                                    <span>
+                                                        <%= song.album.title %>
+                                                    </span>
+                                                    <% } else { %>-<% } %>
+                                            </td>
+                                            <td>
+                                                <%= Math.floor(song.duration / 60) %>:<%= (song.duration %
+                                                        60).toString().padStart(2, '0' ) %>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex">
+                                                    <button class="btn btn-primary rounded-circle btn-play me-2"
+                                                        data-id="<%= song._id %>" data-title="<%= song.title %>"
+                                                        data-artist="<%= song.artist.name %>"
+                                                        data-cover="<%= song.coverImage %>"
+                                                        data-audio="<%= song.audioFile %>">
+                                                        <i class="bi bi-play-fill"></i>
+                                                    </button>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-outline-secondary dropdown-toggle"
+                                                            type="button" data-bs-toggle="dropdown">
+                                                            <i class="bi bi-three-dots"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><button class="dropdown-item btn-add-to-playlist"
+                                                                    data-song-id="<%= song._id %>">添加到歌单</button></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="card-body">
-                            <div id="search-history"></div>
-                            <div class="text-center mt-3">
-                                <button id="clear-history" class="btn btn-outline-secondary btn-sm">清空历史记录</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">热门搜索</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap gap-2">
-                                <a href="/search?query=周杰伦&type=all" class="btn btn-outline-primary">周杰伦</a>
-                                <a href="/search?query=Taylor Swift&type=all" class="btn btn-outline-primary">Taylor
-                                    Swift</a>
-                                <a href="/search?query=流行&type=all" class="btn btn-outline-primary">流行音乐</a>
-                                <a href="/search?query=2023&type=all" class="btn btn-outline-primary">2023热门</a>
-                                <a href="/search?query=经典&type=all" class="btn btn-outline-primary">经典老歌</a>
-                                <a href="/search?query=华语&type=all" class="btn btn-outline-primary">华语金曲</a>
-                                <a href="/search?query=摇滚&type=all" class="btn btn-outline-primary">摇滚歌曲</a>
-                                <a href="/search?query=钢琴&type=all" class="btn btn-outline-primary">钢琴曲</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        <% } else { %>
+                            <p class="text-muted">没有找到匹配的歌曲</p>
+                            <% } %>
+
+                                <hr class="my-4">
+                                <% } %>
+
+                                    <% if (type==='all' || type==='artist' ) { %>
+                                        <h2 class="mb-3">歌手 <% if (results.artists.length> 0) { %><small
+                                                    class="text-muted">(<%= results.artists.length %>)</small>
+                                                <% } %>
+                                        </h2>
+                                        <% if (results.artists.length> 0) { %>
+                                            <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
+                                                <% results.artists.forEach(artist=> { %>
+                                                    <div class="col">
+                                                        <div class="card h-100 artist-card">
+                                                            <img src="<%= artist.image %>"
+                                                                class="card-img-top rounded-circle mx-auto mt-3"
+                                                                style="width: 120px; height: 120px; object-fit: cover;"
+                                                                alt="<%= artist.name %>">
+                                                            <div class="card-body text-center">
+                                                                <h5 class="card-title">
+                                                                    <%= artist.name %>
+                                                                </h5>
+                                                                <p class="card-text"><small>
+                                                                        <%= artist.followers.toLocaleString() %> 粉丝
+                                                                    </small></p>
+                                                                <!-- 移除链接 -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% }) %>
+                                            </div>
+                                            <% } else { %>
+                                                <p class="text-muted">没有找到匹配的歌手</p>
+                                                <% } %>
+
+                                                    <hr class="my-4">
+                                                    <% } %>
+
+                                                        <% if (type==='all' || type==='album' ) { %>
+                                                            <h2 class="mb-3">专辑 <% if (results.albums.length> 0) {
+                                                                    %><small class="text-muted">(<%=
+                                                                            results.albums.length %>)</small>
+                                                                    <% } %>
+                                                            </h2>
+                                                            <% if (results.albums.length> 0) { %>
+                                                                <div
+                                                                    class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+                                                                    <% results.albums.forEach(album=> { %>
+                                                                        <div class="col">
+                                                                            <div class="card h-100 album-card">
+                                                                                <img src="<%= album.coverImage %>"
+                                                                                    class="card-img-top"
+                                                                                    alt="<%= album.title %>">
+                                                                                <div class="card-body">
+                                                                                    <h5 class="card-title">
+                                                                                        <%= album.title %>
+                                                                                    </h5>
+                                                                                    <p class="card-text">
+                                                                                        <%= album.artist.name %>
+                                                                                    </p>
+                                                                                    <p class="card-text"><small
+                                                                                            class="text-muted">
+                                                                                            <%= new
+                                                                                                Date(album.releaseDate).getFullYear()
+                                                                                                %>
+                                                                                        </small></p>
+                                                                                    <!-- 移除链接 -->
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <% }) %>
+                                                                </div>
+                                                                <% } else { %>
+                                                                    <p class="text-muted">没有找到匹配的专辑</p>
+                                                                    <% } %>
+
+                                                                        <hr class="my-4">
+                                                                        <% } %>
+
+                                                                            <% if (type==='all' || type==='playlist' ) {
+                                                                                %>
+                                                                                <h2 class="mb-3">歌单 <% if
+                                                                                        (results.playlists.length> 0) {
+                                                                                        %><small class="text-muted">(<%=
+                                                                                                results.playlists.length
+                                                                                                %>)</small>
+                                                                                        <% } %>
+                                                                                </h2>
+                                                                                <% if (results.playlists.length> 0) { %>
+                                                                                    <div
+                                                                                        class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+                                                                                        <%
+                                                                                            results.playlists.forEach(playlist=>
+                                                                                            { %>
+                                                                                            <div class="col">
+                                                                                                <div
+                                                                                                    class="card h-100 playlist-card">
+                                                                                                    <img src="<%= playlist.coverImage %>"
+                                                                                                        class="card-img-top"
+                                                                                                        alt="<%= playlist.name %>">
+                                                                                                    <div
+                                                                                                        class="card-body">
+                                                                                                        <h5
+                                                                                                            class="card-title">
+                                                                                                            <%= playlist.name
+                                                                                                                %>
+                                                                                                        </h5>
+                                                                                                        <p
+                                                                                                            class="card-text">
+                                                                                                            by <%=
+                                                                                                                playlist.creator.username
+                                                                                                                %>
+                                                                                                        </p>
+                                                                                                        <p
+                                                                                                            class="card-text">
+                                                                                                            <small
+                                                                                                                class="text-muted"><i
+                                                                                                                    class="bi bi-music-note"></i>
+                                                                                                                <%= playlist.songs.length
+                                                                                                                    %>
+                                                                                                                    首歌曲
+                                                                                                            </small>
+                                                                                                            <small
+                                                                                                                class="text-muted ms-2"><i
+                                                                                                                    class="bi bi-heart"></i>
+                                                                                                                <%= playlist.likes
+                                                                                                                    %>
+                                                                                                            </small>
+                                                                                                        </p>
+                                                                                                        <!-- 移除链接 -->
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <% }) %>
+                                                                                    </div>
+                                                                                    <% } else { %>
+                                                                                        <p class="text-muted">没有找到匹配的歌单
+                                                                                        </p>
+                                                                                        <% } %>
+                                                                                            <% } %>
             </div>
             <% } %>
-
-                <% if (results) { %>
-                    <div class="search-results">
-                        <% if (type==='all' || type==='song' ) { %>
-                            <h2 class="mb-3">歌曲 <% if (results.songs.length> 0) { %><small class="text-muted">(<%=
-                                            results.songs.length %>)</small>
-                                    <% } %>
-                            </h2>
-                            <% if (results.songs.length> 0) { %>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 50px;">#</th>
-                                                <th>歌曲</th>
-                                                <th>歌手</th>
-                                                <th>专辑</th>
-                                                <th>时长</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% results.songs.forEach((song, index)=> { %>
-                                                <tr>
-                                                    <td>
-                                                        <%= index+1 %>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="<%= song.coverImage %>" alt="<%= song.title %>"
-                                                                class="song-cover me-3"
-                                                                style="width: 40px; height: 40px;">
-                                                            <a href="/music/song/<%= song._id %>">
-                                                                <%= song.title %>
-                                                            </a>
-                                                            <% if (song.isVIP) { %><span
-                                                                    class="badge bg-warning text-dark ms-2">VIP</span>
-                                                                <% } %>
-                                                        </div>
-                                                    </td>
-                                                    <td><a href="/music/artist/<%= song.artist._id %>">
-                                                            <%= song.artist.name %>
-                                                        </a></td>
-                                                    <td>
-                                                        <% if (song.album) { %>
-                                                            href="/music/album/<%= song.album._id %>">
-                                                                <%= song.album.title %>
-                                                                    </a>
-                                                                    <% } else { %>-<% } %>
-                                                    </td>
-                                                    <td>
-                                                        <%= Math.floor(song.duration / 60) %>:<%= (song.duration %
-                                                                60).toString().padStart(2, '0' ) %>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex">
-                                                            <button class="btn btn-primary rounded-circle btn-play me-2"
-                                                                data-id="<%= song._id %>" data-title="<%= song.title %>"
-                                                                data-artist="<%= song.artist.name %>"
-                                                                data-cover="<%= song.coverImage %>"
-                                                                data-audio="<%= song.audioFile %>">
-                                                                <i class="bi bi-play-fill"></i>
-                                                            </button>
-                                                            <div class="dropdown">
-                                                                <button
-                                                                    class="btn btn-outline-secondary dropdown-toggle"
-                                                                    type="button" data-bs-toggle="dropdown">
-                                                                    <i class="bi bi-three-dots"></i>
-                                                                </button>
-                                                                <ul class="dropdown-menu">
-                                                                    <li><button
-                                                                            class="dropdown-item btn-add-to-playlist"
-                                                                            data-song-id="<%= song._id %>">添加到歌单</button>
-                                                                    </li>
-                                                                    <li><a class="dropdown-item"
-                                                                            href="/music/song/<%= song._id %>">查看详情</a>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <% }) %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <% } else { %>
-                                    <p class="text-muted">没有找到匹配的歌曲</p>
-                                    <% } %>
-
-                                        <hr class="my-4">
-                                        <% } %>
-
-                                            <% if (type==='all' || type==='artist' ) { %>
-                                                <h2 class="mb-3">歌手 <% if (results.artists.length> 0) { %><small
-                                                            class="text-muted">(<%= results.artists.length %>)</small>
-                                                        <% } %>
-                                                </h2>
-                                                <% if (results.artists.length> 0) { %>
-                                                    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
-                                                        <% results.artists.forEach(artist=> { %>
-                                                            <div class="col">
-                                                                <div class="card h-100 artist-card">
-                                                                    <img src="<%= artist.image %>"
-                                                                        class="card-img-top rounded-circle mx-auto mt-3"
-                                                                        style="width: 120px; height: 120px; object-fit: cover;"
-                                                                        alt="<%= artist.name %>">
-                                                                    <div class="card-body text-center">
-                                                                        <h5 class="card-title">
-                                                                            <%= artist.name %>
-                                                                        </h5>
-                                                                        <p class="card-text"><small>
-                                                                                <%= artist.followers.toLocaleString() %>
-                                                                                    粉丝
-                                                                            </small></p>
-                                                                        <a href="/music/artist/<%= artist._id %>"
-                                                                            class="stretched-link"></a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <% }) %>
-                                                    </div>
-                                                    <% } else { %>
-                                                        <p class="text-muted">没有找到匹配的歌手</p>
-                                                        <% } %>
-
-                                                            <hr class="my-4">
-                                                            <% } %>
-
-                                                                <% if (type==='all' || type==='album' ) { %>
-                                                                    <h2 class="mb-3">专辑 <% if (results.albums.length> 0)
-                                                                            { %><small class="text-muted">(<%=
-                                                                                    results.albums.length %>)</small>
-                                                                            <% } %>
-                                                                    </h2>
-                                                                    <% if (results.albums.length> 0) { %>
-                                                                        <div
-                                                                            class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
-                                                                            <% results.albums.forEach(album=> { %>
-                                                                                <div class="col">
-                                                                                    <div class="card h-100 album-card">
-                                                                                        <img src="<%= album.coverImage %>"
-                                                                                            class="card-img-top"
-                                                                                            alt="<%= album.title %>">
-                                                                                        <div class="card-body">
-                                                                                            <h5 class="card-title">
-                                                                                                <%= album.title %>
-                                                                                            </h5>
-                                                                                            <p class="card-text">
-                                                                                                <%= album.artist.name %>
-                                                                                            </p>
-                                                                                            <p class="card-text"><small
-                                                                                                    class="text-muted">
-                                                                                                    <%= new
-                                                                                                        Date(album.releaseDate).getFullYear()
-                                                                                                        %>
-                                                                                                </small></p>
-                                                                                            <a href="/music/album/<%= album._id %>"
-                                                                                                class="stretched-link"></a>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <% }) %>
-                                                                        </div>
-                                                                        <% } else { %>
-                                                                            <p class="text-muted">没有找到匹配的专辑</p>
-                                                                            <% } %>
-
-                                                                                <hr class="my-4">
-                                                                                <% } %>
-
-                                                                                    <% if (type==='all' ||
-                                                                                        type==='playlist' ) { %>
-                                                                                        <h2 class="mb-3">歌单 <% if
-                                                                                                (results.playlists.length>
-                                                                                                0) { %><small
-                                                                                                    class="text-muted">(
-                                                                                                    <%= results.playlists.length
-                                                                                                        %>)
-                                                                                                </small>
-                                                                                                <% } %>
-                                                                                        </h2>
-                                                                                        <% if (results.playlists.length>
-                                                                                            0) { %>
-                                                                                            <div
-                                                                                                class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
-                                                                                                <%
-                                                                                                    results.playlists.forEach(playlist=>
-                                                                                                    { %>
-                                                                                                    <div class="col">
-                                                                                                        <div
-                                                                                                            class="card h-100 playlist-card">
-                                                                                                            <img src="<%= playlist.coverImage %>"
-                                                                                                                class="card-img-top"
-                                                                                                                alt="<%= playlist.name %>">
-                                                                                                            <div
-                                                                                                                class="card-body">
-                                                                                                                <h5
-                                                                                                                    class="card-title">
-                                                                                                                    <%= playlist.name
-                                                                                                                        %>
-                                                                                                                </h5>
-                                                                                                                <p
-                                                                                                                    class="card-text">
-                                                                                                                    by
-                                                                                                                    <%= playlist.creator.username
-                                                                                                                        %>
-                                                                                                                </p>
-                                                                                                                <p
-                                                                                                                    class="card-text">
-                                                                                                                    <small
-                                                                                                                        class="text-muted"><i
-                                                                                                                            class="bi bi-music-note"></i>
-                                                                                                                        <%= playlist.songs.length
-                                                                                                                            %>
-                                                                                                                            首歌曲
-                                                                                                                    </small>
-                                                                                                                    <small
-                                                                                                                        class="text-muted ms-2"><i
-                                                                                                                            class="bi bi-heart"></i>
-                                                                                                                        <%= playlist.likes
-                                                                                                                            %>
-                                                                                                                    </small>
-                                                                                                                </p>
-                                                                                                                <a href="/playlist/<%= playlist._id %>"
-                                                                                                                    class="stretched-link"></a>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <% }) %>
-                                                                                            </div>
-                                                                                            <% } else { %>
-                                                                                                <p class="text-muted">
-                                                                                                    没有找到匹配的歌单</p>
-                                                                                                <% } %>
-
-                                                                                                    <hr class="my-4">
-                                                                                                    <% } %>
-
-                                                                                                        <% if
-                                                                                                            (type==='all'
-                                                                                                            ||
-                                                                                                            type==='user'
-                                                                                                            ) { %>
-                                                                                                            <h2
-                                                                                                                class="mb-3">
-                                                                                                                用户 <% if
-                                                                                                                    (results.users
-                                                                                                                    &&
-                                                                                                                    results.users.length>
-                                                                                                                    0) {
-                                                                                                                    %><small
-                                                                                                                        class="text-muted">(
-                                                                                                                        <%= results.users.length
-                                                                                                                            %>
-                                                                                                                            )
-                                                                                                                    </small>
-                                                                                                                    <% }
-                                                                                                                        %>
-                                                                                                            </h2>
-                                                                                                            <% if
-                                                                                                                (results.users
-                                                                                                                &&
-                                                                                                                results.users.length>
-                                                                                                                0) { %>
-                                                                                                                <div
-                                                                                                                    class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
-                                                                                                                    <%
-                                                                                                                        results.users.forEach(user=>
-                                                                                                                        {
-                                                                                                                        %>
-                                                                                                                        <div
-                                                                                                                            class="col">
-                                                                                                                            <div
-                                                                                                                                class="card h-100">
-                                                                                                                                <div
-                                                                                                                                    class="card-body text-center">
-                                                                                                                                    <img src="<%= user.avatar %>"
-                                                                                                                                        class="rounded-circle mb-3"
-                                                                                                                                        style="width: 80px; height: 80px; object-fit: cover;"
-                                                                                                                                        alt="<%= user.username %>">
-                                                                                                                                    <h5
-                                                                                                                                        class="card-title">
-                                                                                                                                        <%= user.username
-                                                                                                                                            %>
-                                                                                                                                            <% if
-                                                                                                                                                (user.isVIP)
-                                                                                                                                                {
-                                                                                                                                                %>
-                                                                                                                                                <span
-                                                                                                                                                    class="badge bg-warning text-dark">VIP</span>
-                                                                                                                                                <% }
-                                                                                                                                                    %>
-                                                                                                                                    </h5>
-                                                                                                                                    <p
-                                                                                                                                        class="card-text text-truncate">
-                                                                                                                                        <%= user.bio
-                                                                                                                                            %>
-                                                                                                                                    </p>
-                                                                                                                                    <a href="/user/profile/<%= user._id %>"
-                                                                                                                                        class="btn btn-outline-primary btn-sm">查看主页</a>
-                                                                                                                                </div>
-                                                                                                                            </div>
-                                                                                                                        </div>
-                                                                                                                        <% })
-                                                                                                                            %>
-                                                                                                                </div>
-                                                                                                                <% } else
-                                                                                                                    { %>
-                                                                                                                    <p
-                                                                                                                        class="text-muted">
-                                                                                                                        没有找到匹配的用户
-                                                                                                                    </p>
-                                                                                                                    <% }
-                                                                                                                        %>
-                                                                                                                        <% }
-                                                                                                                            %>
-                    </div>
-                    <% } %>
     </div>
 
     <!-- 添加到歌单模态框 -->

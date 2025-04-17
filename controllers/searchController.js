@@ -7,9 +7,9 @@ const User = require('../models/User');
 // 执行搜索
 exports.search = async (req, res) => {
   try {
-    const { query, type = 'all', genre, language, year, duration, bpm } = req.query;
+    const { query, type = 'song', genre, language, year, duration, bpm } = req.query;
     
-    if (!query && type === 'all') {
+    if (!query && type === 'song') {
       return res.render('search', {
         title: '搜索',
         results: null,
@@ -123,12 +123,6 @@ exports.search = async (req, res) => {
           { isPublic: true }
         ]
       }).populate('creator').limit(10);
-    }
-    
-    if (type === 'all' || type === 'user') {
-      users = await User.find({
-        username: searchOptions.basic
-      }).limit(10);
     }
     
     // 保存搜索历史

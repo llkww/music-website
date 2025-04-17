@@ -40,23 +40,26 @@
                                     <img src="<%= song.coverImage %>" alt="<%= song.title %>" class="song-cover me-3"
                                         style="width: 40px; height: 40px;">
                                     <div>
-                                        <a href="/music/song/<%= song._id %>">
+                                        <!-- 移除链接，只用文本 -->
+                                        <span>
                                             <%= song.title %>
-                                        </a>
+                                        </span>
                                         <% if (song.isVIP) { %>
                                             <span class="badge bg-warning text-dark ms-1">VIP</span>
                                             <% } %>
                                     </div>
                                 </div>
                             </td>
-                            <td><a href="/music/artist/<%= song.artist._id %>">
+                            <!-- 移除链接，只用文本 -->
+                            <td><span>
                                     <%= song.artist.name %>
-                                </a></td>
+                                </span></td>
                             <td>
                                 <% if (song.album) { %>
-                                    <a href="/music/album/<%= song.album %>">
+                                    <!-- 移除链接，只用文本 -->
+                                    <span>
                                         <%= song.album.title %>
-                                    </a>
+                                    </span>
                                     <% } else { %>
                                         -
                                         <% } %>
@@ -81,8 +84,6 @@
                                         <ul class="dropdown-menu">
                                             <li><button class="dropdown-item btn-add-to-playlist"
                                                     data-song-id="<%= song._id %>">添加到歌单</button></li>
-                                            <li><a class="dropdown-item" href="/music/song/<%= song._id %>">查看详情</a>
-                                            </li>
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>

@@ -46,14 +46,6 @@
                                         <li><a class="dropdown-item" href="<%= song.audioFile %>" download>
                                                 <i class="bi bi-download"></i> 下载
                                             </a></li>
-                                        <li><a class="dropdown-item" href="<%= song.artist._id %>">
-                                                <i class="bi bi-person"></i> 查看歌手
-                                            </a></li>
-                                        <% if (song.album) { %>
-                                            <li><a class="dropdown-item" href="/music/album/<%= song.album._id %>">
-                                                    <i class="bi bi-disc"></i> 查看专辑
-                                                </a></li>
-                                            <% } %>
                                     </ul>
                     </div>
                 </div>
@@ -62,13 +54,13 @@
                     <h1 class="mb-2">
                         <%= song.title %>
                     </h1>
-                    <p class="mb-1"><strong>歌手:</strong> <a href="/music/artist/<%= song.artist._id %>">
+                    <p class="mb-1"><strong>歌手:</strong> <span>
                             <%= song.artist.name %>
-                        </a></p>
+                        </span></p>
                     <% if (song.album) { %>
-                        <p class="mb-1"><strong>专辑:</strong> <a href="/music/album/<%= song.album._id %>">
+                        <p class="mb-1"><strong>专辑:</strong> <span>
                                 <%= song.album.title %>
-                            </a></p>
+                            </span></p>
                         <% } %>
                             <p class="mb-1"><strong>发行年份:</strong>
                                 <%= song.releaseYear %>
@@ -80,13 +72,13 @@
                             <div class="d-flex mb-1">
                                 <strong class="me-2">风格:</strong>
                                 <div>
-                                    <a href="/music/genre/<%= song.genre %>" class="badge bg-primary me-1">
+                                    <span class="badge bg-primary me-1">
                                         <%= song.genre %>
-                                    </a>
+                                    </span>
                                     <% if (song.language) { %>
-                                        <a href="/music/language/<%= song.language %>" class="badge bg-secondary">
+                                        <span class="badge bg-secondary">
                                             <%= song.language %>
-                                        </a>
+                                        </span>
                                         <% } %>
                                 </div>
                             </div>
@@ -184,8 +176,6 @@
                                             data-audio="<%= similarSong.audioFile %>">
                                             <i class="bi bi-play-fill"></i>
                                         </button>
-                                        <a href="/music/song/<%= similarSong._id %>"
-                                            class="btn btn-outline-secondary btn-sm">详情</a>
                                     </div>
                                 </div>
                             </div>

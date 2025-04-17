@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
       .populate('creator');
     
     res.render('index', {
-      title: '音乐网站 - 首页',
+      title: '首页',
       hotSongs,
       newAlbums,
       popularArtists,
@@ -47,61 +47,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 搜索页面
-router.get('/search', async (req, res) => {
-  try {
-    const { query, type = 'all' } = req.query;
-    
-    if (!query) {
-      return res.render('search', {
-        title: '搜索',
-        results: null,
-        query: '',
-        type
-      });
-    }
-    
-    let songs = [], artists = [], albums = [], playlists = [];
-    
-    // 根据查询类型执行相应搜索
-    if (type === 'all' || type === 'song') {
-      songs = await Song.find({
-        title: { $regex: query, $options: 'i' }
-      }).populate('artist').limit(10);
-    }
-    
-    if (type === 'all' || type === 'artist') {
-      artists = await Artist.find({
-        name: { $regex: query, $options: 'i' }
-      }).limit(10);
-    }
-    
-    if (type === 'all' || type === 'album') {
-      albums = await Album.find({
-        title: { $regex: query, $options: 'i' }
-      }).populate('artist').limit(10);
-    }
-    
-    if (type === 'all' || type === 'playlist') {
-      playlists = await Playlist.find({
-        name: { $regex: query, $options: 'i' },
-        isPublic: true
-      }).populate('creator').limit(10);
-    }
-    
-    res.render('search', {
-      title: `搜索"${query}"的结果`,
-      results: { songs, artists, albums, playlists },
-      query,
-      type
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).render('error', {
-      title: '服务器错误',
-      message: '搜索失败'
-    });
-  }
-});
+// 搜索页面 - 使用修改后的搜索控制器
+router.get('/search', require('../controllers/searchController').search);
 
 module.exports = router;

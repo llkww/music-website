@@ -10,7 +10,7 @@
                         <a href="/auth/register" class="btn btn-primary btn-lg me-2">免费注册</a>
                         <a href="/auth/login" class="btn btn-outline-primary btn-lg">登录</a>
                         <% } else { %>
-                            <a href="/music/genre/流行" class="btn btn-primary btn-lg">开始探索</a>
+                            <a href="/search?type=song" class="btn btn-primary btn-lg">开始探索</a>
                             <% } %>
                 </div>
                 <div class="col-md-6">
@@ -60,7 +60,7 @@
     <section class="new-albums mb-5">
         <div class="section-header d-flex justify-content-between align-items-center mb-4">
             <h2>最新专辑</h2>
-            <a href="/album" class="btn btn-sm btn-outline-primary">查看全部</a>
+            <!-- 移除"查看全部"链接 -->
         </div>
 
         <div class="row">
@@ -75,7 +75,7 @@
                             <p class="card-text text-muted text-truncate">
                                 <%= album.artist.name %>
                             </p>
-                            <a href="/album/<%= album._id %>" class="stretched-link"></a>
+                            <!-- 移除链接 -->
                         </div>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
     <section class="popular-artists mb-5">
         <div class="section-header d-flex justify-content-between align-items-center mb-4">
             <h2>流行歌手</h2>
-            <a href="/artist" class="btn btn-sm btn-outline-primary">查看全部</a>
+            <!-- 移除"查看全部"链接 -->
         </div>
 
         <div class="row">
@@ -102,7 +102,7 @@
                             <p class="card-text text-muted">
                                 <%= artist.followers %> 粉丝
                             </p>
-                            <a href="/artist/<%= artist._id %>" class="stretched-link"></a>
+                            <!-- 移除链接 -->
                         </div>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
     <section class="playlists mb-5">
         <div class="section-header d-flex justify-content-between align-items-center mb-4">
             <h2>推荐歌单</h2>
-            <a href="/search?type=playlist" class="btn btn-sm btn-outline-primary">查看全部</a>
+            <!-- 移除"查看全部"链接 -->
         </div>
 
         <div class="row">
@@ -127,7 +127,7 @@
                             </h5>
                             <p class="card-text text-muted text-truncate">by <%= playlist.creator.username %>
                             </p>
-                            <a href="/playlist/<%= playlist._id %>" class="stretched-link"></a>
+                            <!-- 移除链接 -->
                         </div>
                     </div>
                 </div>
