@@ -5,24 +5,48 @@
 
         <div class="search-container mb-5">
             <form id="search-form" action="/search" method="GET">
-                <div class="input-group mb-3">
-                    <input type="text" id="search-input" name="query" class="form-control form-control-lg"
-                        placeholder="搜索歌曲、歌手、专辑或歌单..." value="<%= query || '' %>">
-                    <select id="search-type" name="type" class="form-select form-select-lg" style="max-width: 120px;">
-                        <option value="all" <%=type==='all' ? 'selected' : '' %>>全部</option>
-                        <option value="song" <%=type==='song' ? 'selected' : '' %>>歌曲</option>
-                        <option value="artist" <%=type==='artist' ? 'selected' : '' %>>歌手</option>
-                        <option value="album" <%=type==='album' ? 'selected' : '' %>>专辑</option>
-                        <option value="playlist" <%=type==='playlist' ? 'selected' : '' %>>歌单</option>
-                        <option value="user" <%=type==='user' ? 'selected' : '' %>>用户</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="bi bi-search"></i>
-                    </button>
-                    <button type="button" id="clear-search" class="btn btn-outline-secondary position-absolute"
-                        style="right: 170px; display: <%= query ? 'block' : 'none' %>;">
-                        <i class="bi bi-x"></i>
-                    </button>
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" id="search-input" name="query" class="form-control form-control-lg"
+                            placeholder="搜索歌曲、歌手、专辑或歌单..." value="<%= query || '' %>">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        <button type="button" id="clear-search" class="btn btn-outline-secondary position-absolute"
+                            style="right: 70px; display: <%= query ? 'block' : 'none' %>;">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <ul class="nav nav-pills search-type-nav">
+                        <li class="nav-item">
+                            <input type="radio" class="btn-check" name="type" id="type-all" value="all" <%=type==='all'
+                                ? 'checked' : '' %>>
+                            <label class="btn btn-outline-primary" for="type-all">全部</label>
+                        </li>
+                        <li class="nav-item">
+                            <input type="radio" class="btn-check" name="type" id="type-song" value="song"
+                                <%=type==='song' ? 'checked' : '' %>>
+                            <label class="btn btn-outline-primary" for="type-song">歌曲</label>
+                        </li>
+                        <li class="nav-item">
+                            <input type="radio" class="btn-check" name="type" id="type-artist" value="artist"
+                                <%=type==='artist' ? 'checked' : '' %>>
+                            <label class="btn btn-outline-primary" for="type-artist">歌手</label>
+                        </li>
+                        <li class="nav-item">
+                            <input type="radio" class="btn-check" name="type" id="type-album" value="album"
+                                <%=type==='album' ? 'checked' : '' %>>
+                            <label class="btn btn-outline-primary" for="type-album">专辑</label>
+                        </li>
+                        <li class="nav-item">
+                            <input type="radio" class="btn-check" name="type" id="type-playlist" value="playlist"
+                                <%=type==='playlist' ? 'checked' : '' %>>
+                            <label class="btn btn-outline-primary" for="type-playlist">歌单</label>
+                        </li>
+                    </ul>
                 </div>
 
                 <div id="search-suggestions" class="search-suggestions"></div>
@@ -158,11 +182,11 @@
                                                             <%= song.artist.name %>
                                                         </a></td>
                                                     <td>
-                                                        <% if (song.album) { %><a
-                                                                href="/music/album/<%= song.album._id %>">
+                                                        <% if (song.album) { %>
+                                                            href="/music/album/<%= song.album._id %>">
                                                                 <%= song.album.title %>
-                                                            </a>
-                                                            <% } else { %>-<% } %>
+                                                                    </a>
+                                                                    <% } else { %>-<% } %>
                                                     </td>
                                                     <td>
                                                         <%= Math.floor(song.duration / 60) %>:<%= (song.duration %
@@ -292,7 +316,8 @@
                                                                                                 0) { %><small
                                                                                                     class="text-muted">(
                                                                                                     <%= results.playlists.length
-                                                                                                        %>)</small>
+                                                                                                        %>)
+                                                                                                </small>
                                                                                                 <% } %>
                                                                                         </h2>
                                                                                         <% if (results.playlists.length>
@@ -368,7 +393,8 @@
                                                                                                                         class="text-muted">(
                                                                                                                         <%= results.users.length
                                                                                                                             %>
-                                                                                                                            )</small>
+                                                                                                                            )
+                                                                                                                    </small>
                                                                                                                     <% }
                                                                                                                         %>
                                                                                                             </h2>

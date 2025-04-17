@@ -410,3 +410,155 @@ body {
     font-size: 1.3rem;
     margin-right: 15px;
 }
+
+/* 歌词面板设置样式 */
+.lyrics-settings {
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.dark-mode .lyrics-settings {
+    border-top-color: #444;
+    background: rgba(51, 51, 51, 0.95);
+}
+
+.lyrics-setting-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.lyrics-setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.lyrics-setting-item label {
+    margin-right: 10px;
+    min-width: 70px;
+}
+
+/* 歌词字体大小 */
+.lyrics-content.font-size-small p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.lyrics-content.font-size-medium p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.lyrics-content.font-size-large p {
+    font-size: 1.3rem;
+    line-height: 2;
+}
+
+/* 歌词字体颜色 */
+.lyrics-content.font-color-default p {
+    color: inherit;
+}
+
+.lyrics-content.font-color-white p {
+    color: #ffffff;
+}
+
+.lyrics-content.font-color-white p.active {
+    color: #1db954;
+}
+
+.lyrics-content.font-color-blue p {
+    color: #3490dc;
+}
+
+.lyrics-content.font-color-blue p.active {
+    color: #ff5722;
+}
+
+.lyrics-content.font-color-green p {
+    color: #38c172;
+}
+
+.lyrics-content.font-color-green p.active {
+    color: #e91e63;
+}
+
+/* 同步歌词样式 */
+.lyrics-content {
+    transition: all 0.3s ease;
+    padding-top: 30%;
+    padding-bottom: 30%;
+}
+
+.lyrics-content p {
+    transition: color 0.3s ease, transform 0.3s ease;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.lyrics-content p.active {
+    transform: scale(1.05);
+    opacity: 1;
+    font-weight: bold;
+}
+
+/* 我的收藏页面样式 */
+.liked-songs-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.liked-songs-header .icon {
+    font-size: 3rem;
+    color: #e91e63;
+    margin-right: 1rem;
+}
+
+.liked-songs-info h1 {
+    margin-bottom: 0.5rem;
+}
+
+.liked-songs-info p {
+    color: #777;
+    margin-bottom: 0;
+}
+
+.dark-mode .liked-songs-info p {
+    color: #ccc;
+}
+
+.no-liked-songs {
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.no-liked-songs .icon {
+    font-size: 4rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+}
+
+.dark-mode .no-liked-songs .icon {
+    color: #555;
+}
+
+/* 搜索类型导航 */
+.search-type-nav {
+    display: flex;
+    gap: 10px;
+}
+
+.search-type-nav .nav-item {
+    margin-right: 0;
+}
+
+.search-type-nav .btn {
+    border-radius: 20px;
+    padding: 6px 15px;
+}
+
+.btn-check:checked+.btn-outline-primary {
+    background-color: var(--primary-color);
+    color: white;
+}

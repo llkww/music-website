@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+
+    <div class="container my-4">
+        <div id="liked-songs-container">
+            <%- include('partials/liked-songs-content', { songs }) %>
+        </div>
+    </div>
+
+    <!-- 添加到歌单模态框 -->
+    <div class="modal fade" id="add-to-playlist-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加到歌单</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-to-playlist-form">
+                        <input type="hidden" id="song-id" name="songId">
+                        <div class="mb-3">
+                            <label for="playlist-select" class="form-label">选择歌单</label>
+                            <select class="form-select" id="playlist-select" required>
+                                <option value="">选择歌单</option>
+                            </select>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">添加</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/playlist.js"></script>
+
+    <%- include('partials/footer') %>

@@ -29,7 +29,7 @@ const clearCollections = async () => {
 
 // 创建示例数据
 const createSampleData = async () => {
-  // 1. 创建用户
+// 1. 创建用户
   const adminPassword = await bcrypt.hash('admin123', 10);
   const userPassword = await bcrypt.hash('user123', 10);
   
@@ -43,17 +43,31 @@ const createSampleData = async () => {
     gender: 'male'
   });
   
-  // 创建5个普通用户
+  // 创建50个普通用户
   const users = [admin];
-  for(let i = 1; i <= 5; i++) {
+  const chineseNames = [
+    '张伟', '王芳', '李娜', '刘洋', '陈明', '赵静', '杨帆', '周红', '吴强', '朱丽',
+    '郑方', '马超', '孙艳', '胡军', '郭敏', '何涛', '高峰', '林萍', '徐杰', '梁鑫',
+    '康乐', '唐磊', '许丽', '韩雪', '冯刚', '董娟', '萧亮', '曹颖', '彭勇', '蒋怡',
+    '谢辉', '潘婷', '姚明', '宋波', '熊莉', '孟强', '秦雪', '江涛', '尹红', '魏鹏',
+    '程静', '邓丽', '白强', '崔艳', '田野', '石磊', '侯娟', '黎明', '江小白'
+  ];
+  
+  for(let i = 1; i <= 49; i++) {
+    const isVIP = i % 5 === 0; // 每5个用户中有1个是VIP
+    const gender = i % 2 === 0 ? 'male' : 'female';
+    const userName = chineseNames[i-1] || `user${i}`;
+    
     const user = await User.create({
-      username: `user${i}`,
+      username: userName,
       email: `user${i}@example.com`,
       password: userPassword,
-      isVIP: i % 3 === 0, // 每3个用户中有1个是VIP
-      vipExpiry: i % 3 === 0 ? new Date(Date.now() + 15 * 24 * 60 * 60 * 1000) : null,
-      bio: `我是用户${i}，喜欢听音乐`,
-      gender: i % 2 === 0 ? 'male' : 'female'
+      isVIP: isVIP,
+      vipExpiry: isVIP ? new Date(Date.now() + 15 * 24 * 60 * 60 * 1000) : null,
+      bio: `喜欢${['流行音乐', '摇滚音乐', '古典音乐', '爵士音乐', '电子音乐'][i % 5]}的${gender === 'male' ? '小伙子' : '姑娘'}`,
+      gender: gender,
+      // 随机生成生日，18-40岁
+      birthday: new Date(Date.now() - (18 + Math.floor(Math.random() * 22)) * 365 * 24 * 60 * 60 * 1000)
     });
     users.push(user);
   }

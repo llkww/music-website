@@ -75,6 +75,26 @@
         <div id="lyrics-content" class="lyrics-content">
             <p class="text-center">暂无歌词</p>
         </div>
+        <div class="lyrics-settings">
+            <div class="lyrics-setting-item">
+                <label>字体大小:</label>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-secondary lyrics-font-size" data-size="small">小</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-font-size active"
+                        data-size="medium">中</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-font-size" data-size="large">大</button>
+                </div>
+            </div>
+            <div class="lyrics-setting-item">
+                <label>字体颜色:</label>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-secondary lyrics-font-color" data-color="default">默认</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-font-color" data-color="white">白色</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-font-color" data-color="blue">蓝色</button>
+                    <button class="btn btn-sm btn-outline-secondary lyrics-font-color" data-color="green">绿色</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="playlist-panel" class="playlist-panel">
@@ -93,11 +113,11 @@
         <footer class="footer bg-light py-4 mt-5">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <h5>音乐网站</h5>
                         <p>发现、聆听、分享美妙音乐</p>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <h5>快速链接</h5>
                         <ul class="list-unstyled">
                             <li><a href="/">首页</a></li>
@@ -105,15 +125,6 @@
                             <li><a href="/search?type=artist">搜索歌手</a></li>
                             <li><a href="/search?type=playlist">搜索歌单</a></li>
                         </ul>
-                    </div>
-                    <div class="col-md-4">
-                        <h5>关注我们</h5>
-                        <div class="social-links">
-                            <a href="#" class="me-2"><i class="bi bi-facebook"></i></a>
-                            <a href="#" class="me-2"><i class="bi bi-twitter"></i></a>
-                            <a href="#" class="me-2"><i class="bi bi-instagram"></i></a>
-                            <a href="#" class="me-2"><i class="bi bi-github"></i></a>
-                        </div>
                     </div>
                 </div>
                 <hr>

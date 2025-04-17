@@ -110,6 +110,13 @@ exports.getLikedSongs = async (req, res) => {
         populate: { path: 'artist' }
       });
     
+    // 如果是AJAX请求，返回HTML片段
+    if (req.xhr) {
+      return res.render('partials/liked-songs-content', {
+        songs: user.likedSongs
+      });
+    }
+    
     res.render('liked-songs', {
       title: '我喜欢的音乐',
       songs: user.likedSongs

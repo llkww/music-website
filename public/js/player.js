@@ -27,12 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const lyricsContent = document.getElementById('lyrics-content');
   const playlistItems = document.getElementById('playlist-items');
   
-  // 音效控制
-  const equalizerButton = document.getElementById('btn-equalizer');
-  const equalizerPanel = document.getElementById('equalizer-panel');
-  const closeEqualizer = document.getElementById('close-equalizer');
-  const presetButtons = document.querySelectorAll('.preset-button');
-  const eqSliders = document.querySelectorAll('.eq-slider');
+  // 歌词设置按钮
+  const fontSizeButtons = document.querySelectorAll('.lyrics-font-size');
+  const fontColorButtons = document.querySelectorAll('.lyrics-font-color');
   
   // 添加收藏按钮
   const favoriteButton = document.getElementById('btn-favorite');
@@ -92,23 +89,18 @@ document.addEventListener('DOMContentLoaded', function() {
     closeLyrics.addEventListener('click', toggleLyricsPanel);
     closePlaylist.addEventListener('click', togglePlaylistPanel);
     
-    // 均衡器面板
-    if (equalizerButton) {
-      equalizerButton.addEventListener('click', toggleEqualizerPanel);
-      closeEqualizer.addEventListener('click', toggleEqualizerPanel);
-      
-      // 预设按钮
-      presetButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          applyEqualizerPreset(this.dataset.preset);
-        });
+    // 歌词设置事件监听
+    fontSizeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        setLyricsFontSize(this.dataset.size);
       });
-      
-      // 均衡器滑块
-      eqSliders.forEach(slider => {
-        slider.addEventListener('input', updateEqualizer);
+    });
+    
+    fontColorButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        setLyricsFontColor(this.dataset.color);
       });
-    }
+    });
     
     // 初始化 Web Audio API
     initAudioContext();
@@ -135,6 +127,77 @@ document.addEventListener('DOMContentLoaded', function() {
     // 尝试从本地存储加载播放列表和设置
     loadPlaylistFromStorage();
     loadSettingsFromStorage();
+    
+    // 加载歌词设置
+    loadLyricsSettings();
+  }
+  
+  // 加载歌词设置
+  function loadLyricsSettings() {
+    const savedSettings = localStorage.getItem('lyricsSettings');
+    
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      
+      // 应用字体大小
+      if (settings.fontSize) {
+        setLyricsFontSize(settings.fontSize, false);
+      }
+      
+      // 应用字体颜色
+      if (settings.fontColor) {
+        setLyricsFontColor(settings.fontColor, false);
+      }
+    }
+  }
+  
+  // 保存歌词设置
+  function saveLyricsSettings(settings) {
+    const savedSettings = localStorage.getItem('lyricsSettings');
+    let lyricsSettings = savedSettings ? JSON.parse(savedSettings) : {};
+    
+    // 合并新设置
+    lyricsSettings = { ...lyricsSettings, ...settings };
+    
+    localStorage.setItem('lyricsSettings', JSON.stringify(lyricsSettings));
+  }
+  
+  // 设置歌词字体大小
+  function setLyricsFontSize(size, save = true) {
+    // 移除所有字体大小类
+    lyricsContent.classList.remove('font-size-small', 'font-size-medium', 'font-size-large');
+    
+    // 添加新的字体大小类
+    lyricsContent.classList.add(`font-size-${size}`);
+    
+    // 更新按钮状态
+    fontSizeButtons.forEach(button => {
+      button.classList.toggle('active', button.dataset.size === size);
+    });
+    
+    // 保存设置
+    if (save) {
+      saveLyricsSettings({ fontSize: size });
+    }
+  }
+  
+  // 设置歌词字体颜色
+  function setLyricsFontColor(color, save = true) {
+    // 移除所有字体颜色类
+    lyricsContent.classList.remove('font-color-default', 'font-color-white', 'font-color-blue', 'font-color-green');
+    
+    // 添加新的字体颜色类
+    lyricsContent.classList.add(`font-color-${color}`);
+    
+    // 更新按钮状态
+    fontColorButtons.forEach(button => {
+      button.classList.toggle('active', button.dataset.color === color);
+    });
+    
+    // 保存设置
+    if (save) {
+      saveLyricsSettings({ fontColor: color });
+    }
   }
   
   // 初始化 Web Audio API
@@ -176,77 +239,6 @@ document.addEventListener('DOMContentLoaded', function() {
       
     } catch (e) {
       console.error('Web Audio API 初始化失败:', e);
-    }
-  }
-  
-  // 应用均衡器预设
-  function applyEqualizerPreset(preset) {
-    let gains = [];
-    
-    switch (preset) {
-      case 'flat':
-        gains = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-        break;
-      case 'pop':
-        gains = [-1, 3, 5, 3, 1, 0, 2, 3, 1];
-        break;
-      case 'rock':
-        gains = [4, 3, -1, -2, -1, 2, 5, 6, 6];
-        break;
-      case 'jazz':
-        gains = [3, 2, 1, 2, -1, -1, 0, 1, 3];
-        break;
-      case 'classical':
-        gains = [4, 3, 2, 1, -1, -1, 0, 2, 3];
-        break;
-      case 'dance':
-        gains = [6, 5, 2, 0, 0, -2, 0, 4, 5];
-        break;
-      default:
-        gains = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    }
-    
-    // 更新均衡器滑块并应用设置
-    eqSliders.forEach((slider, index) => {
-      slider.value = gains[index];
-      if (equalizerNodes[index]) {
-        equalizerNodes[index].gain.value = gains[index];
-      }
-    });
-    
-    // 保存均衡器设置
-    saveSettingsToStorage({ equalizerPreset: preset, equalizerGains: gains });
-    
-    // 高亮当前预设按钮
-    presetButtons.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.preset === preset);
-    });
-  }
-  
-  // 更新均衡器
-  function updateEqualizer() {
-    const index = parseInt(this.dataset.band);
-    const gain = parseFloat(this.value);
-    
-    if (equalizerNodes[index]) {
-      equalizerNodes[index].gain.value = gain;
-    }
-    
-    // 获取当前所有均衡器增益值
-    const gains = Array.from(eqSliders).map(slider => parseFloat(slider.value));
-    
-    // 保存均衡器设置
-    saveSettingsToStorage({ equalizerGains: gains, equalizerPreset: 'custom' });
-    
-    // 取消所有预设按钮的高亮
-    presetButtons.forEach(btn => {
-      btn.classList.remove('active');
-    });
-    
-    // 高亮自定义预设按钮
-    const customButton = document.querySelector('[data-preset="custom"]');
-    if (customButton) {
-      customButton.classList.add('active');
     }
   }
   
@@ -530,7 +522,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 关闭其他面板
     if (!isVisible) {
       playlistPanel.style.display = 'none';
-      if (equalizerPanel) equalizerPanel.style.display = 'none';
     }
   }
   
@@ -542,19 +533,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 关闭其他面板
     if (!isVisible) {
       lyricsPanel.style.display = 'none';
-      if (equalizerPanel) equalizerPanel.style.display = 'none';
-    }
-  }
-  
-  // 切换均衡器面板
-  function toggleEqualizerPanel() {
-    const isVisible = equalizerPanel.style.display === 'flex';
-    equalizerPanel.style.display = isVisible ? 'none' : 'flex';
-    
-    // 关闭其他面板
-    if (!isVisible) {
-      lyricsPanel.style.display = 'none';
-      playlistPanel.style.display = 'none';
     }
   }
   
@@ -585,18 +563,27 @@ document.addEventListener('DOMContentLoaded', function() {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
       if (line) {
-        const timeRegExp = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
-        const match = line.match(timeRegExp);
+        const timeRegExp = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/g;
+        const timeMatches = line.match(timeRegExp);
         
-        if (match) {
-          const minutes = parseInt(match[1]);
-          const seconds = parseInt(match[2]);
-          const milliseconds = parseInt(match[3]);
-          const time = minutes * 60 + seconds + milliseconds / 1000;
+        if (timeMatches) {
           const text = line.replace(timeRegExp, '').trim();
           
           if (text) {
-            result.push({ time, text });
+            // 一行可能有多个时间标记
+            timeMatches.forEach(timeMatch => {
+              const timeRegExpSingle = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
+              const match = timeMatch.match(timeRegExpSingle);
+              
+              if (match) {
+                const minutes = parseInt(match[1]);
+                const seconds = parseInt(match[2]);
+                const milliseconds = parseInt(match[3]);
+                const time = minutes * 60 + seconds + milliseconds / 1000;
+                
+                result.push({ time, text });
+              }
+            });
           }
         }
       }
@@ -856,26 +843,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           repeatButton.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
         }
-      }
-      
-      // 应用均衡器设置
-      if (settings.equalizerPreset && equalizerButton) {
-        // 高亮预设按钮
-        presetButtons.forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.preset === settings.equalizerPreset);
-        });
-      }
-      
-      if (settings.equalizerGains && equalizerNodes.length) {
-        // 设置均衡器滑块和节点增益
-        settings.equalizerGains.forEach((gain, index) => {
-          if (index < eqSliders.length) {
-            eqSliders[index].value = gain;
-          }
-          if (index < equalizerNodes.length) {
-            equalizerNodes[index].gain.value = gain;
-          }
-        });
       }
     }
   }
