@@ -34,10 +34,7 @@
                 <div class="color-btn color-blue" data-color="blue"></div>
                 <div class="color-btn color-pink" data-color="pink"></div>
             </div>
-            <div class="size-control">
-                <button class="size-btn size-decrease" title="减小字体">A-</button>
-                <button class="size-btn size-increase" title="增大字体">A+</button>
-            </div>
+            <!-- 删除字体大小控制按钮 -->
         </div>
     </div>
 
@@ -55,6 +52,17 @@
                 </div>
                 <div class="col-md-6">
                     <div class="player-controls text-center">
+                        <!-- 添加音频可视化效果 -->
+                        <div class="audio-visualizer">
+                            <div class="visualizer-bar"></div>
+                            <div class="visualizer-bar"></div>
+                            <div class="visualizer-bar"></div>
+                            <div class="visualizer-bar"></div>
+                            <div class="visualizer-bar"></div>
+                            <div class="visualizer-bar"></div>
+                            <div class="visualizer-bar"></div>
+                        </div>
+
                         <div class="control-buttons mb-2">
                             <button id="btn-shuffle" class="btn btn-link text-white">
                                 <i class="bi bi-shuffle"></i>
@@ -120,6 +128,11 @@
             <li class="list-group-item text-center">播放列表为空</li>
         </ul>
     </div>
+
+    <!-- 添加回到顶部按钮 -->
+    <div class="back-to-top" style="display: none;">
+        <i class="bi bi-arrow-up"></i>
+    </div>
     <% } %>
 
         <footer class="footer bg-light py-4 mt-5">
@@ -154,6 +167,24 @@
                 <% if (locals.customJs) { %>
                     <script src="/js/<%= customJs %>"></script>
                     <% } %>
+
+                        <script>
+                            // 回到顶部功能
+                            $(document).ready(function () {
+                                $(window).scroll(function () {
+                                    if ($(this).scrollTop() > 300) {
+                                        $('.back-to-top').fadeIn();
+                                    } else {
+                                        $('.back-to-top').fadeOut();
+                                    }
+                                });
+
+                                $('.back-to-top').click(function () {
+                                    $('html, body').animate({ scrollTop: 0 }, 800);
+                                    return false;
+                                });
+                            });
+                        </script>
                         </body>
 
                         </html>

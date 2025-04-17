@@ -78,29 +78,6 @@ exports.uploadAvatar = async (req, res) => {
   }
 };
 
-// 开通VIP会员
-exports.upgradeVIP = async (req, res) => {
-  try {
-    // 模拟支付过程 - 实际应用中会有真实支付处理
-    const vipExpiry = new Date();
-    vipExpiry.setMonth(vipExpiry.getMonth() + 1); // 一个月VIP
-    
-    // 更新用户VIP状态
-    await User.findByIdAndUpdate(req.session.user.id, {
-      isVIP: true,
-      vipExpiry
-    });
-    
-    // 更新会话
-    req.session.user.isVIP = true;
-    
-    res.json({ success: true, expiry: vipExpiry });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: '开通VIP失败' });
-  }
-};
-
 // 获取收藏的歌曲
 exports.getLikedSongs = async (req, res) => {
   try {
