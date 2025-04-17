@@ -505,32 +505,83 @@ document.addEventListener('DOMContentLoaded', function() {
     return result.sort((a, b) => a.time - b.time);
   }
   
-  // 更新当前显示的歌词文本
+  // 修改歌词显示功能相关代码
+
+  // 更新当前歌词文本 - 改为逐字高亮显示
   function updateCurrentLyric(text) {
     if (currentLyricElement) {
-      currentLyricElement.textContent = text;
+      // 将文本分成单个字符并添加span标签
+      currentLyricElement.innerHTML = '';
+      for (let i = 0; i < text.length; i++) {
+        const charSpan = document.createElement('span');
+        charSpan.textContent = text[i];
+        charSpan.className = 'lyric-char';
+        currentLyricElement.appendChild(charSpan);
+      }
     }
   }
-  
-  // 更新当前活跃歌词
+
+  // 更新当前活跃歌词 - 改为支持逐字高亮
   function updateActiveLyric(currentTime) {
     if (!currentLyrics || currentLyrics.length === 0) return;
     
-    // 查找当前时间对应的歌词
+    // 查找当前时间对应的歌词行
     let currentLyricIndex = -1;
+    let nextLyricTime = Infinity;
     
     for (let i = 0; i < currentLyrics.length; i++) {
-      // 如果是最后一行或者当前时间在当前行和下一行之间
-      if (i === currentLyrics.length - 1 || 
-         (currentTime >= currentLyrics[i].time && currentTime < currentLyrics[i + 1].time)) {
+      if (i === currentLyrics.length - 1) {
+        // 最后一行
+        if (currentTime >= currentLyrics[i].time) {
+          currentLyricIndex = i;
+        }
+      } else if (currentTime >= currentLyrics[i].time && currentTime < currentLyrics[i + 1].time) {
+        // 当前行
         currentLyricIndex = i;
+        nextLyricTime = currentLyrics[i + 1].time;
         break;
       }
     }
     
     // 如果找到了当前行，更新显示
     if (currentLyricIndex >= 0) {
-      updateCurrentLyric(currentLyrics[currentLyricIndex].text);
+      const currentLyricText = currentLyrics[currentLyricIndex].text;
+      
+      // 如果当前显示的不是这句歌词，更新整句歌词
+      if (currentLyricElement.textContent !== currentLyricText) {
+        updateCurrentLyric(currentLyricText);
+      }
+      
+      // 计算当前行已经播放的进度比例
+      const lineStartTime = currentLyrics[currentLyricIndex].time;
+      let lineDuration;
+      
+      if (currentLyricIndex < currentLyrics.length - 1) {
+        lineDuration = nextLyricTime - lineStartTime;
+      } else {
+        // 最后一句歌词，假设持续5秒
+        lineDuration = 5;
+      }
+      
+      const lineProgress = (currentTime - lineStartTime) / lineDuration;
+      
+      // 根据进度计算应该高亮到哪个字
+      const charElements = currentLyricElement.querySelectorAll('.lyric-char');
+      const totalChars = charElements.length;
+      
+      if (totalChars > 0) {
+        // 计算应该高亮的字数
+        const highlightCount = Math.min(Math.ceil(lineProgress * totalChars), totalChars);
+        
+        // 设置每个字的样式
+        for (let i = 0; i < totalChars; i++) {
+          if (i < highlightCount) {
+            charElements[i].classList.add('lyric-char-active');
+          } else {
+            charElements[i].classList.remove('lyric-char-active');
+          }
+        }
+      }
     }
   }
   

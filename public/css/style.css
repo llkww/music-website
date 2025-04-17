@@ -219,11 +219,44 @@ body {
     /* 保留文字阴影以提高可读性 */
     transition: color 0.3s ease, font-size 0.3s ease;
     padding: 10px;
-    color: white;
     line-height: 1.4;
     font-family: 'ZCOOL XiaoWei', 'Ma Shan Zheng', 'Noto Sans SC', 'Source Han Sans CN', sans-serif;
     /* 更艺术的字体 */
     letter-spacing: 1px;
+}
+
+/* 逐字高亮相关样式 */
+.lyric-char {
+    display: inline-block;
+    transition: color 0.1s ease;
+    color: rgba(255, 255, 255, 0.4);
+    /* 未高亮的字符颜色为半透明 */
+}
+
+.lyric-char-active {
+    color: white;
+    /* 高亮时的默认颜色 */
+}
+
+/* 高亮颜色与用户选择的颜色同步 */
+.lyric-color-white .lyric-char-active {
+    color: white;
+}
+
+.lyric-color-yellow .lyric-char-active {
+    color: #ffeb3b;
+}
+
+.lyric-color-green .lyric-char-active {
+    color: #4caf50;
+}
+
+.lyric-color-blue .lyric-char-active {
+    color: #2196f3;
+}
+
+.lyric-color-pink .lyric-char-active {
+    color: #e91e63;
 }
 
 /* 控制面板样式优化 */
@@ -308,27 +341,6 @@ body {
 
 .size-btn:hover {
     background: rgba(255, 255, 255, 0.7);
-}
-
-/* 歌词颜色类 */
-.lyric-color-white {
-    color: white;
-}
-
-.lyric-color-yellow {
-    color: #ffeb3b;
-}
-
-.lyric-color-green {
-    color: #4caf50;
-}
-
-.lyric-color-blue {
-    color: #2196f3;
-}
-
-.lyric-color-pink {
-    color: #e91e63;
 }
 
 /* 播放列表面板 */
