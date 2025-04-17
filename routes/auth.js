@@ -1,3 +1,4 @@
+// routes/auth.js
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
@@ -7,7 +8,11 @@ router.get('/login', (req, res) => {
   if (req.session.user) {
     return res.redirect('/');
   }
-  res.render('login', { title: '登录' });
+  res.render('login', { 
+    title: '登录',
+    returnTo: req.query.returnTo || req.session.returnTo,
+    authMessage: req.session.authMessage
+  });
 });
 
 // 处理登录

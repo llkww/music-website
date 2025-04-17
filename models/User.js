@@ -1,64 +1,103 @@
-const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/userController');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+// models/User.js
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-// 确保上传目录存在
-const uploadDir = path.join(__dirname, '../public/uploads/avatars');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// 配置Multer存储
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
+const UserSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, uniqueSuffix + ext);
-  }
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB大小限制
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif/;
-    const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    
-    if (ext && mimetype) {
-      return cb(null, true);
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  avatar: {
+    type: String,
+    default: '/img/default-avatar.jpg'
+  },
+  bio: {
+    type: String,
+    default: '这个人很懒，什么都没有留下...'
+  },
+  isVIP: {
+    type: Boolean,
+    default: false
+  },
+  vipExpiry: {
+    type: Date
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other'],
+    default: 'other'
+  },
+  birthday: {
+    type: Date
+  },
+  likedSongs: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Song'
+  }],
+  likedPlaylists: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Playlist'
+  }],
+  following: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  followers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  followingArtists: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Artist'
+  }],
+  recentPlayed: [{
+    song: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Song'
+    },
+    playedAt: {
+      type: Date,
+      default: Date.now
     }
-    cb(new Error('只允许上传图片文件!'));
+  }],
+  searchHistory: [{
+    query: String,
+    time: Date
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 });
 
-// 身份验证中间件
-const isAuthenticated = (req, res, next) => {
-  if (!req.session.user) {
-    return res.redirect('/auth/login');
+// 密码加密
+UserSchema.pre('save', async function(next) {
+  if(!this.isModified('password')) {
+    return next();
   }
-  next();
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 验证密码
+UserSchema.methods.matchPassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// 个人资料页面
-router.get('/profile', isAuthenticated, userController.getProfile);
-
-// 更新个人资料
-router.post('/profile', isAuthenticated, userController.updateProfile);
-
-// 上传头像
-router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), userController.uploadAvatar);
-
-// 我喜欢的音乐页面
-router.get('/liked-songs', isAuthenticated, userController.getLikedSongs);
-
-// 播放历史页面
-router.get('/play-history', isAuthenticated, userController.getPlayHistory);
-
-module.exports = router;
+module.exports = mongoose.model('User', UserSchema);

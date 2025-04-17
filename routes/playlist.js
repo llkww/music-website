@@ -4,6 +4,7 @@ const playlistController = require('../controllers/playlistController');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const Playlist = require('../models/Playlist');
 
 // 确保上传目录存在
 const uploadDir = path.join(__dirname, '../public/uploads/playlists');
@@ -41,6 +42,9 @@ const upload = multer({
 // 身份验证中间件
 const isAuthenticated = (req, res, next) => {
   if (!req.session.user) {
+    // 保存当前URL，以便登录后重定向回来
+    req.session.returnTo = req.originalUrl;
+    req.session.authMessage = '请先登录后访问此页面';
     return res.redirect('/auth/login');
   }
   next();
@@ -53,6 +57,25 @@ router.get('/create', isAuthenticated, (req, res) => {
 
 // 创建歌单处理
 router.post('/create', isAuthenticated, playlistController.createPlaylist);
+
+// 我的歌单页面
+router.get('/user-playlists', isAuthenticated, async (req, res) => {
+  try {
+    const playlists = await Playlist.find({ creator: req.session.user.id })
+      .sort({ updatedAt: -1 });
+    
+    res.render('user-playlists', {
+      title: '我的歌单',
+      playlists
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', {
+      title: '服务器错误',
+      message: '获取歌单失败'
+    });
+  }
+});
 
 // 歌单详情页
 router.get('/:id', playlistController.getPlaylistDetails);
@@ -76,7 +99,7 @@ router.post('/:id/upload-cover', isAuthenticated, upload.single('cover'), async 
     const coverPath = `/uploads/playlists/${req.file.filename}`;
     
     // 检查是否是歌单创建者
-    const playlist = await require('../models/Playlist').findById(req.params.id);
+    const playlist = await Playlist.findById(req.params.id);
     if (!playlist) {
       return res.status(404).json({ message: '歌单不存在' });
     }
@@ -86,7 +109,7 @@ router.post('/:id/upload-cover', isAuthenticated, upload.single('cover'), async 
     }
     
     // 更新歌单封面
-    await require('../models/Playlist').findByIdAndUpdate(req.params.id, {
+    await Playlist.findByIdAndUpdate(req.params.id, {
       coverImage: coverPath
     });
     
@@ -94,25 +117,6 @@ router.post('/:id/upload-cover', isAuthenticated, upload.single('cover'), async 
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: '上传封面失败' });
-  }
-});
-
-// 我的歌单页面
-router.get('/user-playlists', isAuthenticated, async (req, res) => {
-  try {
-    const playlists = await Playlist.find({ creator: req.session.user.id })
-      .sort({ updatedAt: -1 });
-    
-    res.render('user-playlists', {
-      title: '我的歌单',
-      playlists
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).render('error', {
-      title: '服务器错误',
-      message: '获取歌单失败'
-    });
   }
 });
 

@@ -1,0 +1,96 @@
+<%- include('partials/header') %>
+
+    <div class="container my-4">
+        <div class="d-flex align-items-center mb-4">
+            <div class="me-3">
+                <i class="bi bi-clock-history display-4 text-primary"></i>
+            </div>
+            <div>
+                <h1 class="mb-1">播放历史</h1>
+                <p class="text-muted mb-0">您最近播放的歌曲</p>
+            </div>
+        </div>
+
+        <% if (history && history.length> 0) { %>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>歌曲</th>
+                            <th>歌手</th>
+                            <th>播放时间</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% history.forEach((item, index)=> { %>
+                            <tr>
+                                <td>
+                                    <%= index + 1 %>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="<%= item.song.coverImage %>" alt="<%= item.song.title %>"
+                                            class="song-cover me-3" style="width: 40px; height: 40px;">
+                                        <a href="/music/song/<%= item.song._id %>">
+                                            <%= item.song.title %>
+                                        </a>
+                                        <% if (item.song.isVIP) { %><span
+                                                class="badge bg-warning text-dark ms-2">VIP</span>
+                                            <% } %>
+                                    </div>
+                                </td>
+                                <td><a href="/music/artist/<%= item.song.artist._id %>">
+                                        <%= item.song.artist.name %>
+                                    </a></td>
+                                <td>
+                                    <%= new Date(item.playedAt).toLocaleString('zh-CN') %>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary rounded-circle btn-play"
+                                        data-id="<%= item.song._id %>" data-title="<%= item.song.title %>"
+                                        data-artist="<%= item.song.artist.name %>"
+                                        data-cover="<%= item.song.coverImage %>"
+                                        data-audio="<%= item.song.audioFile %>">
+                                        <i class="bi bi-play-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <% } else { %>
+                <div class="text-center my-5 py-5 bg-light rounded">
+                    <i class="bi bi-music-note display-1 text-muted"></i>
+                    <p class="lead mt-3">您还没有播放记录</p>
+                    <a href="/" class="btn btn-primary">开始探索音乐</a>
+                </div>
+                <% } %>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 播放按钮事件
+            document.querySelectorAll('.btn-play').forEach(button => {
+                button.addEventListener('click', function () {
+                    const songData = {
+                        id: this.dataset.id,
+                        title: this.dataset.title,
+                        artist: this.dataset.artist,
+                        cover: this.dataset.cover,
+                        audio: this.dataset.audio
+                    };
+
+                    if (window.musicPlayer) {
+                        window.musicPlayer.playSong(songData);
+                    } else {
+                        console.error('播放器未初始化');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <%- include('partials/footer') %>

@@ -142,7 +142,8 @@
                             <a class="nav-link" href="/user/liked-songs"><i class="bi bi-heart"></i> 我的收藏</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/playlist/user-playlists"><i class="bi bi-music-note-list"></i> 我的歌单</a>
+                            <a class="nav-link" href="/playlist/user-playlists"><i class="bi bi-music-note-list"></i>
+                                我的歌单</a>
                         </li>
                         <% } %>
                 </ul>
@@ -347,26 +348,31 @@
                     });
                 }
 
-                suggestionsContainer.innerHTML = html;
-                suggestionsContainer.style.display = 'block';
+                if (html) {
+                    suggestionsContainer.innerHTML = html;
+                    suggestionsContainer.style.display = 'block';
 
-                // 添加点击事件
-                suggestionsContainer.querySelectorAll('.suggestion-item').forEach(item => {
-                    item.addEventListener('click', function () {
-                        const query = this.dataset.query;
-                        const type = this.dataset.type === 'hot' ? 'all' : this.dataset.type;
+                    // 添加点击事件
+                    suggestionsContainer.querySelectorAll('.suggestion-item').forEach(item => {
+                        item.addEventListener('click', function () {
+                            const query = this.dataset.query;
+                            const type = this.dataset.type === 'hot' ? 'all' : this.dataset.type;
 
-                        searchInput.value = query;
+                            searchInput.value = query;
 
-                        // 设置搜索类型
-                        const typeRadio = document.querySelector(`input[name="type"][value="${type}"]`);
-                        if (typeRadio) {
-                            typeRadio.checked = true;
-                        }
+                            // 设置搜索类型
+                            const typeRadio = document.querySelector(`input[name="type"][value="${type}"]`);
+                            if (typeRadio) {
+                                typeRadio.checked = true;
+                            }
 
-                        // 提交表单
-                        searchInput.closest('form').submit();
+                            // 提交表单
+                            searchInput.closest('form').submit();
+                        });
                     });
-                });
+                } else {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'none';
+                }
             }
         </script>

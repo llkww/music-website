@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 添加页面状态事件
     initPageStateEvents();
+    initVisualizers();
   }
   
   // 设置所有播放按钮
@@ -749,15 +750,15 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 更新全屏歌词内容
   function updateFullscreenLyrics() {
-    if (!fullscreenLyrics || currentPlaylist.length === 0 || currentIndex < 0) return;
-    
-    const currentSong = currentPlaylist[currentIndex];
-    
-    // 更新歌曲信息
-    fsSongTitle.textContent = currentSong.title;
-    fsSongArtist.textContent = currentSong.artist;
-    fsSongCover.src = currentSong.cover;
-    
+  if (!fullscreenLyrics || currentPlaylist.length === 0 || currentIndex < 0) return;
+  
+  const currentSong = currentPlaylist[currentIndex];
+  
+  // 更新歌曲信息
+  fsSongTitle.textContent = currentSong.title;
+  fsSongArtist.textContent = currentSong.artist;
+  fsSongCover.src = currentSong.cover;
+  
     // 更新歌词
     if (currentLyrics.length > 0) {
       let html = '';
@@ -770,11 +771,21 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // 高亮当前歌词
       updateFullscreenActiveLyric(audioElement.currentTime);
+      
+      // 动画效果：使封面旋转
+      if (isPlaying) {
+        fsSongCover.classList.add('rotating');
+      } else {
+        fsSongCover.classList.remove('rotating');
+      }
+      
+      // 更新音频可视化效果
+      updateFSVisualizer();
     } else {
       fullscreenLyricsText.innerHTML = '<div class="text-center py-4">暂无歌词</div>';
     }
   }
-  
+
   // 更新全屏视图中的活动歌词
   function updateFullscreenActiveLyric(currentTime) {
     if (!fullscreenLyrics || !fullscreenLyrics.classList.contains('active') || currentLyrics.length === 0) return;
@@ -803,10 +814,35 @@ document.addEventListener('DOMContentLoaded', function() {
       if (currentLine) {
         currentLine.classList.add('active');
         
-        // 滚动到当前行
+        // 滚动到当前行，平滑滚动并居中
         currentLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
+  }
+
+  // 添加全屏歌词视图的音频可视化效果
+  function updateFSVisualizer() {
+    // 如果不在播放状态，不更新
+    if (!isPlaying) return;
+    
+    // 获取所有可视化条
+    const bars = document.querySelectorAll('.fs-visualizer-bar');
+    if (bars.length === 0) return;
+    
+    // 随机模拟音频频谱
+    bars.forEach(bar => {
+      const height = isPlaying ? Math.floor(Math.random() * 45) + 5 : 5;
+      bar.style.height = `${height}px`;
+    });
+  }
+
+  // 初始化可视化效果
+  function initVisualizers() {
+    // 每100ms更新一次可视化效果
+    setInterval(updateVisualizer, 100);
+    
+    // 全屏歌词视图的音频可视化效果
+    setInterval(updateFSVisualizer, 100);
   }
   
   // 保存播放状态到本地存储

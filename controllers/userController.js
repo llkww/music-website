@@ -123,9 +123,13 @@ exports.getPlayHistory = async (req, res) => {
         populate: { path: 'artist' }
       });
     
+    if (!user) {
+      return res.status(404).render('404', { title: '用户不存在' });
+    }
+    
     res.render('play-history', {
       title: '播放历史',
-      history: user.recentPlayed
+      history: user.recentPlayed || []
     });
   } catch (error) {
     console.error(error);
