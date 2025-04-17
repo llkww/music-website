@@ -21,6 +21,9 @@
                 rel="stylesheet">
             <!-- 引入jQuery以支持回到顶部功能 -->
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <!-- 引入AOS.js动画库 -->
+            <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+            <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
             <!-- 页面加载动画样式 -->
             <style>
@@ -57,6 +60,33 @@
                         transform: rotate(360deg);
                     }
                 }
+
+                /* 添加页面过渡效果 */
+                body {
+                    opacity: 0;
+                    animation: fadeInPage 0.5s ease-out forwards;
+                }
+
+                @keyframes fadeInPage {
+                    to {
+                        opacity: 1;
+                    }
+                }
+
+                /* 导航栏优化 */
+                .navbar {
+                    background: linear-gradient(90deg, #1db954, #191414) !important;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                }
+
+                .navbar-brand {
+                    font-weight: 700;
+                    background: linear-gradient(135deg, #ffffff, #e6e6e6);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
             </style>
 </head>
 
@@ -66,7 +96,7 @@
         <div class="loader-spinner"></div>
     </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class="bi bi-music-note-beamed"></i> 依森音乐
@@ -77,40 +107,50 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">首页</a>
+                        <a class="nav-link" href="/"><i class="bi bi-house-door"></i> 首页</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            发现音乐
+                            <i class="bi bi-compass"></i> 发现音乐
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/music/genre/流行">流行</a></li>
-                            <li><a class="dropdown-item" href="/music/genre/摇滚">摇滚</a></li>
-                            <li><a class="dropdown-item" href="/music/genre/电子">电子</a></li>
-                            <li><a class="dropdown-item" href="/music/genre/古典">古典</a></li>
-                            <li><a class="dropdown-item" href="/music/genre/爵士">爵士</a></li>
+                            <li><a class="dropdown-item" href="/music/genre/流行"><i class="bi bi-music-note"></i> 流行</a>
+                            </li>
+                            <li><a class="dropdown-item" href="/music/genre/摇滚"><i class="bi bi-music-note"></i> 摇滚</a>
+                            </li>
+                            <li><a class="dropdown-item" href="/music/genre/电子"><i class="bi bi-music-note"></i> 电子</a>
+                            </li>
+                            <li><a class="dropdown-item" href="/music/genre/古典"><i class="bi bi-music-note"></i> 古典</a>
+                            </li>
+                            <li><a class="dropdown-item" href="/music/genre/爵士"><i class="bi bi-music-note"></i> 爵士</a>
+                            </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="/music/language/华语">华语</a></li>
-                            <li><a class="dropdown-item" href="/music/language/欧美">欧美</a></li>
-                            <li><a class="dropdown-item" href="/music/language/日语">日语</a></li>
-                            <li><a class="dropdown-item" href="/music/language/韩语">韩语</a></li>
+                            <li><a class="dropdown-item" href="/music/language/华语"><i class="bi bi-translate"></i>
+                                    华语</a></li>
+                            <li><a class="dropdown-item" href="/music/language/欧美"><i class="bi bi-translate"></i>
+                                    欧美</a></li>
+                            <li><a class="dropdown-item" href="/music/language/日语"><i class="bi bi-translate"></i>
+                                    日语</a></li>
+                            <li><a class="dropdown-item" href="/music/language/韩语"><i class="bi bi-translate"></i>
+                                    韩语</a></li>
                         </ul>
                     </li>
                     <% if (locals.user) { %>
                         <li class="nav-item">
-                            <a class="nav-link" href="/user/liked-songs">我的收藏</a>
+                            <a class="nav-link" href="/user/liked-songs"><i class="bi bi-heart"></i> 我的收藏</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/playlist/create">创建歌单</a>
+                            <a class="nav-link" href="/playlist/create"><i class="bi bi-plus-square"></i> 创建歌单</a>
                         </li>
                         <% } %>
                 </ul>
 
-                <form class="d-flex me-2" action="/search" method="GET">
+                <form class="d-flex me-2 position-relative" action="/search" method="GET">
                     <div class="input-group">
-                        <input class="form-control" type="search" placeholder="搜索音乐、歌手、歌单" name="query">
+                        <input class="form-control" type="search" placeholder="搜索音乐、歌手、歌单" name="query"
+                            id="search-input">
                         <div class="input-group-append">
                             <button class="btn btn-outline-light dropdown-toggle" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -142,6 +182,8 @@
                             <i class="bi bi-search"></i>
                         </button>
                     </div>
+                    <!-- 搜索建议容器 -->
+                    <div id="search-suggestions" class="search-suggestions"></div>
                 </form>
 
                 <div class="navbar-nav">
@@ -158,7 +200,9 @@
                                 <li><a class="dropdown-item" href="/user/play-history">
                                         <i class="bi bi-clock-history"></i> 播放历史
                                     </a></li>
-                                <!-- 删除VIP相关菜单项 -->
+                                <li><a class="dropdown-item" href="/user/liked-songs">
+                                        <i class="bi bi-heart"></i> 我的收藏
+                                    </a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -168,8 +212,8 @@
                             </ul>
                         </div>
                         <% } else { %>
-                            <a class="nav-link" href="/auth/login">登录</a>
-                            <a class="nav-link" href="/auth/register">注册</a>
+                            <a class="nav-link" href="/auth/login"><i class="bi bi-box-arrow-in-right"></i> 登录</a>
+                            <a class="nav-link btn btn-sm btn-outline-light ms-2" href="/auth/register">注册</a>
                             <% } %>
                                 <button id="theme-toggle" class="btn btn-link nav-link">
                                     <i class="bi bi-moon"></i>
@@ -179,7 +223,7 @@
         </div>
     </nav>
 
-    <div class="content-wrapper container py-4 fade-in">
+    <div class="content-wrapper container py-4 page-transition">
 
         <script>
             // 页面加载完成后移除加载动画
@@ -189,5 +233,140 @@
                     loader.style.opacity = '0';
                     loader.style.visibility = 'hidden';
                 }, 300); // 延迟300ms确保页面完全加载
+
+                // 初始化AOS动画库
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-out-cubic',
+                    once: true
+                });
             });
+
+            // 处理搜索框的输入事件
+            const searchInput = document.getElementById('search-input');
+            const suggestionsContainer = document.getElementById('search-suggestions');
+
+            if (searchInput && suggestionsContainer) {
+                let searchTimeout;
+
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(searchTimeout);
+                    const query = this.value.trim();
+
+                    if (query.length >= 2) {
+                        searchTimeout = setTimeout(() => {
+                            fetch(`/api/search-suggestions?query=${encodeURIComponent(query)}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.suggestions) {
+                                        renderSearchSuggestions(data.suggestions);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('获取搜索建议失败:', error);
+                                });
+                        }, 300);
+                    } else {
+                        suggestionsContainer.style.display = 'none';
+                    }
+                });
+
+                // 点击外部关闭搜索建议
+                document.addEventListener('click', function (e) {
+                    if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                        suggestionsContainer.style.display = 'none';
+                    }
+                });
+            }
+
+            // 渲染搜索建议
+            function renderSearchSuggestions(suggestions) {
+                if (!suggestionsContainer) return;
+
+                const hasSuggestions = suggestions.songs.length > 0 ||
+                    suggestions.artists.length > 0 ||
+                    suggestions.albums.length > 0 ||
+                    suggestions.hot.length > 0;
+
+                if (!hasSuggestions) {
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+
+                let html = '';
+
+                // 热门搜索
+                if (suggestions.hot.length > 0) {
+                    html += '<div class="suggestion-category">热门搜索</div>';
+                    suggestions.hot.forEach(item => {
+                        html += `
+                            <div class="suggestion-item" data-type="hot" data-query="${item.text}">
+                                <i class="bi bi-fire text-danger"></i>
+                                <span>${item.text}</span>
+                            </div>
+                        `;
+                    });
+                }
+
+                // 歌曲建议
+                if (suggestions.songs.length > 0) {
+                    html += '<div class="suggestion-category">歌曲</div>';
+                    suggestions.songs.forEach(song => {
+                        html += `
+                            <div class="suggestion-item" data-type="song" data-query="${song.title}">
+                                <i class="bi bi-music-note"></i>
+                                <span>${song.title} - <small>${song.artist}</small></span>
+                            </div>
+                        `;
+                    });
+                }
+
+                // 歌手建议
+                if (suggestions.artists.length > 0) {
+                    html += '<div class="suggestion-category">歌手</div>';
+                    suggestions.artists.forEach(artist => {
+                        html += `
+                            <div class="suggestion-item" data-type="artist" data-query="${artist.name}">
+                                <i class="bi bi-person"></i>
+                                <span>${artist.name}</span>
+                            </div>
+                        `;
+                    });
+                }
+
+                // 专辑建议
+                if (suggestions.albums.length > 0) {
+                    html += '<div class="suggestion-category">专辑</div>';
+                    suggestions.albums.forEach(album => {
+                        html += `
+                            <div class="suggestion-item" data-type="album" data-query="${album.title}">
+                                <i class="bi bi-disc"></i>
+                                <span>${album.title} - <small>${album.artist}</small></span>
+                            </div>
+                        `;
+                    });
+                }
+
+                suggestionsContainer.innerHTML = html;
+                suggestionsContainer.style.display = 'block';
+
+                // 添加点击事件
+                suggestionsContainer.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', function () {
+                        const query = this.dataset.query;
+                        const type = this.dataset.type === 'hot' ? 'all' : this.dataset.type;
+
+                        searchInput.value = query;
+
+                        // 设置搜索类型
+                        const typeRadio = document.querySelector(`input[name="type"][value="${type}"]`);
+                        if (typeRadio) {
+                            typeRadio.checked = true;
+                        }
+
+                        // 提交表单
+                        searchInput.closest('form').submit();
+                    });
+                });
+            }
         </script>

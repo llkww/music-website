@@ -809,6 +809,114 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
+  // 保存播放状态到本地存储
+  function savePlayStateToStorage() {
+    localStorage.setItem('isPlaying', isPlaying);
+    if (!isNaN(audioElement.currentTime)) {
+      localStorage.setItem('currentTime', audioElement.currentTime);
+    }
+    // 保存当前播放的歌曲完整信息，用于跨页面恢复
+    if (currentPlaylist.length > 0 && currentIndex >= 0) {
+      localStorage.setItem('currentSongId', currentPlaylist[currentIndex].id);
+      localStorage.setItem('currentSongData', JSON.stringify(currentPlaylist[currentIndex]));
+      // 保存播放列表和当前索引
+      localStorage.setItem('currentPlaylist', JSON.stringify(currentPlaylist));
+      localStorage.setItem('currentIndex', currentIndex);
+    }
+  }
+
+  // 从本地存储加载播放状态
+  function loadPlayStateFromStorage() {
+    const savedIsPlaying = localStorage.getItem('isPlaying') === 'true';
+    const savedCurrentTime = parseFloat(localStorage.getItem('currentTime') || '0');
+    const savedSongData = localStorage.getItem('currentSongData');
+    
+    // 先检查是否有保存的完整歌曲数据
+    if (savedSongData) {
+      try {
+        const songData = JSON.parse(savedSongData);
+        
+        // 恢复整个播放列表
+        try {
+          const savedPlaylist = localStorage.getItem('currentPlaylist');
+          if (savedPlaylist) {
+            currentPlaylist = JSON.parse(savedPlaylist);
+            currentIndex = parseInt(localStorage.getItem('currentIndex') || '0');
+          } else {
+            // 如果没有保存完整播放列表，则只添加当前歌曲
+            currentPlaylist = [songData];
+            currentIndex = 0;
+          }
+        } catch (e) {
+          console.log('恢复播放列表失败，仅恢复当前歌曲', e);
+          currentPlaylist = [songData];
+          currentIndex = 0;
+        }
+        
+        // 更新播放器界面
+        updatePlayerDisplay();
+        
+        // 立即设置音频源并预加载
+        audioElement.src = songData.audio;
+        audioElement.load();
+        
+        // 设置播放时间
+        if (!isNaN(savedCurrentTime)) {
+          audioElement.currentTime = savedCurrentTime;
+        }
+        
+        // 如果上次正在播放，立即尝试恢复播放
+        if (savedIsPlaying) {
+          // 优化自动播放策略
+          setTimeout(() => {
+            const playPromise = audioElement.play();
+            
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+                // 播放成功
+                isPlaying = true;
+                playButton.innerHTML = '<i class="bi bi-pause-circle-fill"></i>';
+                
+                // 开始封面旋转
+                playingCover.classList.add('rotating');
+                if (fsSongCover && fullscreenLyrics && fullscreenLyrics.classList.contains('active')) {
+                  fsSongCover.classList.add('rotating');
+                }
+              }).catch(error => {
+                console.log('自动播放受限:', error);
+                // 设置一个标志，等待用户交互后自动恢复播放
+                window.pendingAutoplay = true;
+                // 添加可见提示
+                showAutoplayNotification();
+              });
+            }
+          }, 100); // 短暂延时确保页面加载完成
+        }
+      } catch (error) {
+        console.error('恢复播放状态失败:', error);
+      }
+    }
+  }
+
+  // 添加自动播放提示
+  function showAutoplayNotification() {
+    // 创建提示元素
+    const notification = document.createElement('div');
+    notification.className = 'autoplay-notification';
+    notification.innerHTML = '<i class="bi bi-music-note"></i> 点击任意处继续播放';
+    document.body.appendChild(notification);
+    
+    // 3秒后自动隐藏
+    setTimeout(() => {
+      notification.classList.add('fade-out');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 500);
+    }, 3000);
+  }
+  
   // 加载歌词设置
   function loadLyricsSettings() {
     const savedSettings = localStorage.getItem('lyricsSettings');
@@ -883,118 +991,9 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('lyricsSettings', JSON.stringify(lyricsSettings));
   }
   
-  // 保存播放状态到本地存储
-  function savePlayStateToStorage() {
-    localStorage.setItem('isPlaying', isPlaying);
-    if (!isNaN(audioElement.currentTime)) {
-      localStorage.setItem('currentTime', audioElement.currentTime);
-    }
-    // 保存当前播放的歌曲完整信息，用于跨页面恢复
-    if (currentPlaylist.length > 0 && currentIndex >= 0) {
-      localStorage.setItem('currentSongId', currentPlaylist[currentIndex].id);
-      localStorage.setItem('currentSongData', JSON.stringify(currentPlaylist[currentIndex]));
-    }
-  }
-  
-  // 从本地存储加载播放状态
-  function loadPlayStateFromStorage() {
-    const savedIsPlaying = localStorage.getItem('isPlaying') === 'true';
-    const savedCurrentTime = parseFloat(localStorage.getItem('currentTime') || '0');
-    const savedSongId = localStorage.getItem('currentSongId');
-    const savedSongData = localStorage.getItem('currentSongData');
-    
-    // 先检查是否有保存的完整歌曲数据
-    if (savedSongData) {
-      try {
-        const songData = JSON.parse(savedSongData);
-        
-        // 检查播放列表中是否已有此歌曲
-        let songIndex = -1;
-        if (currentPlaylist.length > 0) {
-          songIndex = currentPlaylist.findIndex(song => song.id === songData.id);
-        }
-        
-        // 如果播放列表中没有此歌曲，或播放列表为空，则添加
-        if (songIndex === -1) {
-          currentPlaylist.push(songData);
-          currentIndex = currentPlaylist.length - 1;
-        } else {
-          currentIndex = songIndex;
-        }
-        
-        // 更新播放器界面
-        updatePlayerDisplay();
-        
-        // 设置音频源但不立即加载（减少资源占用）
-        if (!audioElement.src || !audioElement.src.includes(songData.audio)) {
-          audioElement.src = songData.audio;
-          
-          // 预加载音频，提高恢复播放的速度
-          audioElement.load();
-          
-          // 设置播放时间
-          if (!isNaN(savedCurrentTime)) {
-            audioElement.currentTime = savedCurrentTime;
-          }
-        }
-        
-        // 如果上次正在播放，立即尝试恢复播放，减少延迟
-        if (savedIsPlaying) {
-          // 使用Promise处理自动播放限制问题
-          const playPromise = audioElement.play();
-          
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              // 播放成功
-              isPlaying = true;
-              playButton.innerHTML = '<i class="bi bi-pause-circle-fill"></i>';
-              
-              // 开始封面旋转
-              playingCover.classList.add('rotating');
-              if (fsSongCover && fullscreenLyrics && fullscreenLyrics.classList.contains('active')) {
-                fsSongCover.classList.add('rotating');
-              }
-            }).catch(error => {
-              console.log('自动播放受限:', error);
-              // 设置一个标志，等待用户交互后自动恢复播放
-              window.pendingAutoplay = true;
-            });
-          }
-        }
-      } catch (error) {
-        console.error('恢复播放状态失败:', error);
-      }
-    } else if (currentPlaylist.length > 0 && currentIndex >= 0) {
-      // 旧的逻辑作为后备
-      if (savedSongId) {
-        const savedSongIndex = currentPlaylist.findIndex(song => song.id === savedSongId);
-        if (savedSongIndex !== -1) {
-          currentIndex = savedSongIndex;
-        }
-      }
-      
-      audioElement.src = currentPlaylist[currentIndex].audio;
-      audioElement.load();
-      
-      if (!isNaN(savedCurrentTime)) {
-        audioElement.currentTime = savedCurrentTime;
-      }
-      
-      updatePlayerDisplay();
-      
-      if (savedIsPlaying) {
-        setTimeout(() => {
-          if (!isPlaying) {
-            togglePlay();
-          }
-        }, 300); // 缩短延迟时间
-      }
-    }
-  }
-  
-  // 页面状态管理
+  // 页面状态管理 - 增强版
   function initPageStateEvents() {
-    // 处理自动播放限制
+    // 处理自动播放限制 - 增强为全局事件
     document.addEventListener('click', function() {
       if (window.pendingAutoplay) {
         audioElement.play().then(() => {
@@ -1002,23 +1001,36 @@ document.addEventListener('DOMContentLoaded', function() {
           playButton.innerHTML = '<i class="bi bi-pause-circle-fill"></i>';
           playingCover.classList.add('rotating');
           window.pendingAutoplay = false;
+          
+          // 隐藏提示(如果存在)
+          const notification = document.querySelector('.autoplay-notification');
+          if (notification) {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+              if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+              }
+            }, 500);
+          }
         }).catch(e => console.log('播放失败:', e));
       }
-    }, {once: true});
+    });
     
     // 页面可见性变化事件监听
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'hidden') {
         // 页面隐藏时保存状态
         savePlayStateToStorage();
-      } else if (document.visibilityState === 'visible' && window.pendingAutoplay) {
+      } else if (document.visibilityState === 'visible') {
         // 页面重新可见时，尝试恢复播放
-        audioElement.play().then(() => {
-          isPlaying = true;
-          playButton.innerHTML = '<i class="bi bi-pause-circle-fill"></i>';
-          playingCover.classList.add('rotating');
-          window.pendingAutoplay = false;
-        }).catch(e => console.log('可见性恢复时播放失败:', e));
+        if (window.pendingAutoplay) {
+          audioElement.play().then(() => {
+            isPlaying = true;
+            playButton.innerHTML = '<i class="bi bi-pause-circle-fill"></i>';
+            playingCover.classList.add('rotating');
+            window.pendingAutoplay = false;
+          }).catch(e => console.log('可见性恢复时播放失败:', e));
+        }
       }
     });
     
@@ -1027,19 +1039,27 @@ document.addEventListener('DOMContentLoaded', function() {
       savePlayStateToStorage();
     });
     
-    // 在用户点击链接时保存状态
+    // 在用户点击链接时保存状态 - 增强版本
     document.addEventListener('click', function(e) {
       // 检查是否点击了链接
       let target = e.target;
       while (target && target !== document) {
         if (target.tagName === 'A' && target.href && !target.getAttribute('download')) {
-          // 保存播放状态
+          // 立即保存播放状态
           savePlayStateToStorage();
           break;
         }
         target = target.parentNode;
       }
     });
+    
+    // 监听表单提交事件也保存状态
+    document.addEventListener('submit', function() {
+      savePlayStateToStorage();
+    });
+    
+    // 每30秒自动保存一次状态(作为备份)
+    setInterval(savePlayStateToStorage, 30000);
   }
   
   // 更新播放器显示

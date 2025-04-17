@@ -38,9 +38,12 @@ const upload = multer({
   }
 });
 
-// 身份验证中间件
+// 身份验证中间件 - 优化版本，支持返回URL
 const isAuthenticated = (req, res, next) => {
   if (!req.session.user) {
+    // 保存当前URL，以便登录后重定向回来
+    req.session.returnTo = req.originalUrl;
+    req.session.authMessage = '请先登录后访问此页面';
     return res.redirect('/auth/login');
   }
   next();
@@ -55,10 +58,11 @@ router.post('/profile', isAuthenticated, userController.updateProfile);
 // 上传头像
 router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), userController.uploadAvatar);
 
-// 我喜欢的音乐页面
+// 我喜欢的音乐页面 - 确保使用isAuthenticated中间件正确控制访问
 router.get('/liked-songs', isAuthenticated, userController.getLikedSongs);
 
 // 播放历史页面
 router.get('/play-history', isAuthenticated, userController.getPlayHistory);
 
+// 导出路由
 module.exports = router;
