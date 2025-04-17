@@ -684,16 +684,20 @@ body {
     background: url('/img/wave-pattern.svg');
     background-size: cover;
     opacity: 0.2;
-    animation: moveBackground 20s linear infinite;
+    /* 替换现有的动画为新的浮动效果 */
+    animation: waveFlow 12s ease-in-out infinite;
 }
 
-@keyframes moveBackground {
-    0% {
-        background-position: 0 0;
+/* 新增波浪动画 */
+@keyframes waveFlow {
+
+    0%,
+    100% {
+        transform: translateY(0);
     }
 
-    100% {
-        background-position: 100% 100%;
+    50% {
+        transform: translateY(-20px);
     }
 }
 
