@@ -15,8 +15,7 @@ router.get('/song/:id', musicController.getSongDetails);
 // 喜欢/取消喜欢歌曲
 router.post('/song/:id/like', musicController.toggleLikeSong);
 
-// 歌手详情页
-router.get('/artist/:id', musicController.getArtistDetails);
+// 歌手详情页移至artist.js
 
 // 专辑详情页
 router.get('/album/:id', musicController.getAlbumDetails);

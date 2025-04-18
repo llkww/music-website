@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="comment-content">${comment.text}</div>
           <div class="comment-actions">
             <button class="btn btn-sm btn-link like-button" data-id="${comment._id}" data-type="comment">
-              <i class="bi bi-heart"></i> <span class="like-count">${comment.likes || 0}</span>
+              <i class="bi bi-heart${comment.liked ? '-fill text-danger' : ''}"></i> <span class="like-count">${comment.likes || 0}</span>
             </button>
             <button class="btn btn-sm btn-link reply-button" data-id="${comment._id}">
               <i class="bi bi-reply"></i> 回复
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
               <div class="reply-content">${reply.text}</div>
               <div class="reply-actions">
                 <button class="btn btn-sm btn-link like-button" data-id="${reply._id}" data-type="reply">
-                  <i class="bi bi-heart"></i> <span class="like-count">${reply.likes || 0}</span>
+                  <i class="bi bi-heart${reply.liked ? '-fill text-danger' : ''}"></i> <span class="like-count">${reply.likes || 0}</span>
                 </button>
               </div>
             </div>
@@ -143,6 +143,12 @@ document.addEventListener('DOMContentLoaded', function() {
       commentsList.innerHTML = html;
     }
     
+    // 绑定事件处理函数
+    bindCommentEvents();
+  }
+  
+  // 绑定评论相关事件处理
+  function bindCommentEvents() {
     // 绑定点赞事件
     commentsList.querySelectorAll('.like-button').forEach(button => {
       button.addEventListener('click', function() {
@@ -201,7 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ type })
     })
     .then(response => response.json())
     .then(data => {
@@ -219,11 +226,13 @@ document.addEventListener('DOMContentLoaded', function() {
           if (icon) {
             icon.classList.remove('bi-heart');
             icon.classList.add('bi-heart-fill');
+            icon.classList.add('text-danger');
           }
         } else {
           button.classList.remove('liked');
           if (icon) {
             icon.classList.remove('bi-heart-fill');
+            icon.classList.remove('text-danger');
             icon.classList.add('bi-heart');
           }
         }

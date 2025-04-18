@@ -98,6 +98,9 @@ const SongSchema = new mongoose.Schema({
       type: Number,
       default: 0
     },
+    likedBy: [{
+      type: String
+    }],
     isHot: {
       type: Boolean,
       default: false
@@ -117,7 +120,10 @@ const SongSchema = new mongoose.Schema({
       likes: {
         type: Number,
         default: 0
-      }
+      },
+      likedBy: [{
+        type: String
+      }]
     }]
   }]
 });

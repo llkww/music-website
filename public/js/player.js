@@ -6,8 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const playButton = document.getElementById('btn-play');
   const prevButton = document.getElementById('btn-prev');
   const nextButton = document.getElementById('btn-next');
-  const shuffleButton = document.getElementById('btn-shuffle');
-  const repeatButton = document.getElementById('btn-repeat');
+  const playModeButton = document.getElementById('btn-play-mode');
   const volumeButton = document.getElementById('btn-volume');
   const progressBar = document.getElementById('progress-bar');
   const volumeBar = document.getElementById('volume-bar');
@@ -41,8 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 播放器状态
   let isPlaying = false;
-  let isShuffle = false;
-  let repeatMode = 'none'; // none, one, all
+  let playMode = 'sequence'; // 三种模式: sequence (顺序播放), single (单曲循环), shuffle (随机播放)
   let currentVolume = 1;
   let currentPlaylist = [];
   let currentIndex = 0;
@@ -80,11 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
     prevButton.addEventListener('click', playPrevious);
     nextButton.addEventListener('click', playNext);
     
-    // 随机播放按钮
-    shuffleButton.addEventListener('click', toggleShuffle);
-    
-    // 循环模式按钮
-    repeatButton.addEventListener('click', toggleRepeat);
+    // 播放模式按钮
+    playModeButton.addEventListener('click', togglePlayMode);
     
     // 音量按钮
     volumeButton.addEventListener('click', toggleMute);
@@ -125,6 +120,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 添加页面状态事件
     initPageStateEvents();
     initVisualizers();
+    
+    // 根据播放模式设置按钮状态
+    updatePlayModeButton();
   }
   
   // 设置所有播放按钮
@@ -172,6 +170,42 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) {
       console.error('Web Audio API 初始化失败:', e);
     }
+  }
+  
+  // 新增：更新播放模式按钮状态
+  function updatePlayModeButton() {
+    if (!playModeButton) return;
+    
+    if (playMode === 'shuffle') {
+      playModeButton.innerHTML = '<i class="bi bi-shuffle text-primary"></i>';
+      playModeButton.title = '随机播放';
+    } else if (playMode === 'single') {
+      playModeButton.innerHTML = '<i class="bi bi-1-circle text-primary"></i>';
+      playModeButton.title = '单曲循环';
+    } else { // sequence
+      playModeButton.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+      playModeButton.title = '顺序播放';
+    }
+  }
+  
+  // 替换原有的toggleShuffle和toggleRepeat函数，使用新的togglePlayMode函数
+  function togglePlayMode() {
+    if (playMode === 'sequence') {
+      // 从顺序播放切换到单曲循环
+      playMode = 'single';
+    } else if (playMode === 'single') {
+      // 从单曲循环切换到随机播放
+      playMode = 'shuffle';
+    } else {
+      // 从随机播放切换到顺序播放
+      playMode = 'sequence';
+    }
+    
+    // 更新按钮状态
+    updatePlayModeButton();
+    
+    // 保存设置
+    saveSettingsToStorage({ playMode });
   }
   
   // 播放/暂停切换
@@ -303,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function playNext() {
     if (currentPlaylist.length === 0) return;
     
-    if (isShuffle) {
+    if (playMode === 'shuffle') {
       // 随机播放
       let randomIndex;
       do {
@@ -324,12 +358,12 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 歌曲结束处理
   function handleSongEnd() {
-    if (repeatMode === 'one') {
+    if (playMode === 'single') {
       // 单曲循环
       audioElement.currentTime = 0;
       audioElement.play();
-    } else if (repeatMode === 'all' || currentIndex < currentPlaylist.length - 1 || isShuffle) {
-      // 全部循环或播放下一首
+    } else if (playMode === 'sequence' || playMode === 'shuffle') {
+      // 顺序播放或随机播放
       playNext();
     } else {
       // 播放结束，重置
@@ -343,32 +377,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // 保存状态
       savePlayStateToStorage();
     }
-  }
-  
-  // 切换随机播放
-  function toggleShuffle() {
-    isShuffle = !isShuffle;
-    shuffleButton.classList.toggle('text-primary');
-    
-    // 保存设置
-    saveSettingsToStorage({ shuffle: isShuffle });
-  }
-  
-  // 切换循环模式
-  function toggleRepeat() {
-    if (repeatMode === 'none') {
-      repeatMode = 'all';
-      repeatButton.innerHTML = '<i class="bi bi-arrow-repeat text-primary"></i>';
-    } else if (repeatMode === 'all') {
-      repeatMode = 'one';
-      repeatButton.innerHTML = '<i class="bi bi-1-circle text-primary"></i>';
-    } else {
-      repeatMode = 'none';
-      repeatButton.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
-    }
-    
-    // 保存设置
-    saveSettingsToStorage({ repeat: repeatMode });
   }
   
   // 切换静音
@@ -1440,23 +1448,26 @@ document.addEventListener('DOMContentLoaded', function() {
         updateVolumeIcon();
       }
       
-      // 应用随机播放设置
-      if (settings.shuffle !== undefined) {
-        isShuffle = settings.shuffle;
-        shuffleButton.classList.toggle('text-primary', isShuffle);
-      }
-      
-      // 应用循环模式设置
-      if (settings.repeat !== undefined) {
-        repeatMode = settings.repeat;
-        if (repeatMode === 'all') {
-          repeatButton.innerHTML = '<i class="bi bi-arrow-repeat text-primary"></i>';
-        } else if (repeatMode === 'one') {
-          repeatButton.innerHTML = '<i class="bi bi-1-circle text-primary"></i>';
-        } else {
-          repeatButton.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+      // 应用播放模式设置
+      if (settings.playMode !== undefined) {
+        playMode = settings.playMode;
+      } else if (settings.shuffle !== undefined) {
+        // 兼容旧版本设置
+        playMode = settings.shuffle ? 'shuffle' : 'sequence';
+        if (settings.repeat === 'one') {
+          playMode = 'single';
+        }
+      } else if (settings.repeat !== undefined) {
+        // 兼容旧版本设置
+        if (settings.repeat === 'one') {
+          playMode = 'single';
+        } else if (settings.repeat === 'all') {
+          playMode = 'sequence';
         }
       }
+      
+      // 更新播放模式按钮
+      updatePlayModeButton();
     }
   }
   
@@ -1494,6 +1505,7 @@ document.addEventListener('DOMContentLoaded', function() {
     togglePlay,
     playNext,
     playPrevious,
-    updatePlaylistDisplay
+    updatePlaylistDisplay,
+    addToPlaylist
   };
 });

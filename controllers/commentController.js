@@ -22,6 +22,7 @@ exports.addSongComment = async (req, res) => {
       createdAt: new Date(),
       likes: 0,
       isHot: false,
+      likedBy: [],
       replies: []
     };
     
@@ -61,7 +62,8 @@ exports.replySongComment = async (req, res) => {
       user: req.session.user.id,
       text,
       createdAt: new Date(),
-      likes: 0
+      likes: 0,
+      likedBy: []
     };
     
     song.comments[commentIndex].replies.unshift(newReply);
@@ -85,27 +87,97 @@ exports.likeSongComment = async (req, res) => {
     }
     
     const { songId, commentId } = req.body;
+    const { type = 'comment' } = req.body; // 新增：评论类型 comment 或 reply
     
     const song = await Song.findById(songId);
     if (!song) {
       return res.status(404).json({ message: '歌曲不存在' });
     }
     
-    const commentIndex = song.comments.findIndex(comment => comment._id.toString() === commentId);
-    if (commentIndex === -1) {
-      return res.status(404).json({ message: '评论不存在' });
+    if (type === 'reply') {
+      // 处理回复点赞
+      let commentFound = false;
+      let replyLiked = false;
+      let replyLikes = 0;
+      
+      for (let i = 0; i < song.comments.length; i++) {
+        const replies = song.comments[i].replies;
+        
+        if (replies) {
+          for (let j = 0; j < replies.length; j++) {
+            if (replies[j]._id.toString() === commentId) {
+              // 查找用户是否已点赞
+              const replyLikesArray = replies[j].likedBy || [];
+              const userIndex = replyLikesArray.indexOf(req.session.user.id);
+              
+              if (userIndex === -1) {
+                // 添加点赞
+                replies[j].likes = (replies[j].likes || 0) + 1;
+                replies[j].likedBy = [...replyLikesArray, req.session.user.id];
+                replyLiked = true;
+              } else {
+                // 取消点赞
+                replies[j].likes = Math.max(0, (replies[j].likes || 0) - 1);
+                replies[j].likedBy = replyLikesArray.filter(id => id !== req.session.user.id);
+                replyLiked = false;
+              }
+              
+              replyLikes = replies[j].likes;
+              commentFound = true;
+              break;
+            }
+          }
+        }
+        
+        if (commentFound) break;
+      }
+      
+      if (!commentFound) {
+        return res.status(404).json({ message: '回复不存在' });
+      }
+      
+      await song.save();
+      res.json({ success: true, liked: replyLiked, likes: replyLikes });
+      
+    } else {
+      // 处理评论点赞
+      const commentIndex = song.comments.findIndex(comment => comment._id.toString() === commentId);
+      if (commentIndex === -1) {
+        return res.status(404).json({ message: '评论不存在' });
+      }
+      
+      // 检查用户是否已经点赞
+      const comment = song.comments[commentIndex];
+      const commentLikes = comment.likedBy || [];
+      const userIndex = commentLikes.indexOf(req.session.user.id);
+      
+      let isLiked = false;
+      
+      if (userIndex === -1) {
+        // 添加点赞
+        song.comments[commentIndex].likes += 1;
+        song.comments[commentIndex].likedBy = [...commentLikes, req.session.user.id];
+        isLiked = true;
+        
+        // 当点赞数超过100时，标记为热门评论
+        if (song.comments[commentIndex].likes >= 100) {
+          song.comments[commentIndex].isHot = true;
+        }
+      } else {
+        // 取消点赞
+        song.comments[commentIndex].likes = Math.max(0, song.comments[commentIndex].likes - 1);
+        song.comments[commentIndex].likedBy = commentLikes.filter(id => id !== req.session.user.id);
+        isLiked = false;
+      }
+      
+      await song.save();
+      
+      res.json({ 
+        success: true, 
+        liked: isLiked, 
+        likes: song.comments[commentIndex].likes 
+      });
     }
-    
-    song.comments[commentIndex].likes += 1;
-    
-    // 当点赞数超过100时，标记为热门评论
-    if (song.comments[commentIndex].likes >= 100) {
-      song.comments[commentIndex].isHot = true;
-    }
-    
-    await song.save();
-    
-    res.json({ success: true, likes: song.comments[commentIndex].likes });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: '点赞失败' });
@@ -130,7 +202,8 @@ exports.addPlaylistComment = async (req, res) => {
       user: req.session.user.id,
       text,
       createdAt: new Date(),
-      likes: 0
+      likes: 0,
+      likedBy: []
     };
     
     playlist.comments.unshift(newComment);
@@ -159,8 +232,25 @@ exports.getSongComments = async (req, res) => {
       return res.status(404).json({ success: false, message: '歌曲不存在' });
     }
     
+    // 处理评论的已点赞状态
+    const comments = JSON.parse(JSON.stringify(song.comments));
+    
+    if (req.session.user) {
+      const userId = req.session.user.id;
+      
+      comments.forEach(comment => {
+        comment.liked = comment.likedBy && comment.likedBy.includes(userId);
+        
+        if (comment.replies) {
+          comment.replies.forEach(reply => {
+            reply.liked = reply.likedBy && reply.likedBy.includes(userId);
+          });
+        }
+      });
+    }
+    
     // 排序评论（热门评论在前，然后按时间倒序）
-    const sortedComments = song.comments.sort((a, b) => {
+    const sortedComments = comments.sort((a, b) => {
       if (a.isHot && !b.isHot) return -1;
       if (!a.isHot && b.isHot) return 1;
       return new Date(b.createdAt) - new Date(a.createdAt);
@@ -185,8 +275,19 @@ exports.getPlaylistComments = async (req, res) => {
       return res.status(404).json({ success: false, message: '歌单不存在' });
     }
     
+    // 处理评论的已点赞状态
+    const comments = JSON.parse(JSON.stringify(playlist.comments));
+    
+    if (req.session.user) {
+      const userId = req.session.user.id;
+      
+      comments.forEach(comment => {
+        comment.liked = comment.likedBy && comment.likedBy.includes(userId);
+      });
+    }
+    
     // 按时间倒序排序评论
-    const sortedComments = playlist.comments.sort((a, b) => {
+    const sortedComments = comments.sort((a, b) => {
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
     
