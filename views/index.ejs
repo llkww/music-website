@@ -36,10 +36,16 @@
                                     <img src="<%= song.coverImage %>" alt="<%= song.title %>" class="song-cover me-3">
                                     <div class="song-info">
                                         <h5 class="card-title mb-1">
-                                            <%= song.title %>
+                                            <!-- 添加链接到歌曲详情页 -->
+                                            <a href="/music/song/<%= song._id %>">
+                                                <%= song.title %>
+                                            </a>
                                         </h5>
                                         <p class="card-text text-muted">
-                                            <%= song.artist.name %>
+                                            <!-- 添加链接到歌手详情页 -->
+                                            <a href="/artist/<%= song.artist._id %>">
+                                                <%= song.artist.name %>
+                                            </a>
                                         </p>
                                     </div>
                                     <div class="ms-auto">
@@ -73,12 +79,18 @@
                             <img src="<%= album.coverImage %>" class="card-img-top" alt="<%= album.title %>">
                             <div class="card-body">
                                 <h5 class="card-title text-truncate">
-                                    <%= album.title %>
+                                    <!-- 添加链接到专辑详情页 -->
+                                    <a href="/album/<%= album._id %>">
+                                        <%= album.title %>
+                                    </a>
                                 </h5>
                                 <p class="card-text text-muted text-truncate">
-                                    <%= album.artist.name %>
+                                    <!-- 添加链接到歌手详情页 -->
+                                    <a href="/artist/<%= album.artist._id %>">
+                                        <%= album.artist.name %>
+                                    </a>
                                 </p>
-                                <!-- 添加链接 -->
+                                <!-- 保留stretched-link，确保整个卡片区域可点击 -->
                                 <a href="/album/<%= album._id %>" class="stretched-link"></a>
                             </div>
                         </div>
@@ -103,12 +115,15 @@
                                 alt="<%= artist.name %>" style="width: 120px; height: 120px; object-fit: cover;">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <%= artist.name %>
+                                    <!-- 添加链接到歌手详情页 -->
+                                    <a href="/artist/<%= artist._id %>">
+                                        <%= artist.name %>
+                                    </a>
                                 </h5>
                                 <p class="card-text text-muted">
                                     <%= artist.followers.toLocaleString() %> 粉丝
                                 </p>
-                                <!-- 添加链接 -->
+                                <!-- 保留stretched-link，确保整个卡片区域可点击 -->
                                 <a href="/artist/<%= artist._id %>" class="stretched-link"></a>
                             </div>
                         </div>
@@ -132,11 +147,14 @@
                             <img src="<%= playlist.coverImage %>" class="card-img-top" alt="<%= playlist.name %>">
                             <div class="card-body">
                                 <h5 class="card-title text-truncate">
-                                    <%= playlist.name %>
+                                    <!-- 添加链接到歌单详情页 -->
+                                    <a href="/playlist/<%= playlist._id %>">
+                                        <%= playlist.name %>
+                                    </a>
                                 </h5>
                                 <p class="card-text text-muted text-truncate">by <%= playlist.creator.username %>
                                 </p>
-                                <!-- 添加链接 -->
+                                <!-- 保留stretched-link，确保整个卡片区域可点击 -->
                                 <a href="/playlist/<%= playlist._id %>" class="stretched-link"></a>
                             </div>
                         </div>

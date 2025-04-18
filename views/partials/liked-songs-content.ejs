@@ -40,26 +40,26 @@
                                     <img src="<%= song.coverImage %>" alt="<%= song.title %>" class="song-cover me-3"
                                         style="width: 40px; height: 40px;">
                                     <div>
-                                        <!-- 移除链接，只用文本 -->
-                                        <span>
+                                        <!-- 添加链接到歌曲详情页 -->
+                                        <a href="/music/song/<%= song._id %>">
                                             <%= song.title %>
-                                        </span>
+                                        </a>
                                         <% if (song.isVIP) { %>
                                             <span class="badge bg-warning text-dark ms-1">VIP</span>
                                             <% } %>
                                     </div>
                                 </div>
                             </td>
-                            <!-- 移除链接，只用文本 -->
-                            <td><span>
+                            <!-- 添加链接到歌手详情页 -->
+                            <td><a href="/artist/<%= song.artist._id %>">
                                     <%= song.artist.name %>
-                                </span></td>
+                                </a></td>
                             <td>
                                 <% if (song.album) { %>
-                                    <!-- 移除链接，只用文本 -->
-                                    <span>
+                                    <!-- 添加链接到专辑详情页 -->
+                                    <a href="/album/<%= song.album._id %>">
                                         <%= song.album.title %>
-                                    </span>
+                                    </a>
                                     <% } else { %>
                                         -
                                         <% } %>

@@ -78,26 +78,28 @@
                                                 <div class="d-flex align-items-center">
                                                     <img src="<%= song.coverImage %>" alt="<%= song.title %>"
                                                         class="song-cover me-3" style="width: 40px; height: 40px;">
-                                                    <!-- 移除链接，只显示文本 -->
+                                                    <!-- 添加链接到歌曲详情页 -->
                                                     <div>
-                                                        <span>
+                                                        <a href="/music/song/<%= song._id %>">
                                                             <%= song.title %>
-                                                        </span>
+                                                        </a>
                                                         <% if (song.isVIP) { %>
                                                             <span class="badge bg-warning text-dark ms-2">VIP</span>
                                                             <% } %>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <!-- 移除链接，只显示文本 -->
-                                            <td><span>
+                                            <!-- 添加链接到歌手详情页 -->
+                                            <td>
+                                                <a href="/artist/<%= song.artist._id %>">
                                                     <%= song.artist.name %>
-                                                </span></td>
+                                                </a>
+                                            </td>
                                             <td>
                                                 <% if (song.album) { %>
-                                                    <span>
+                                                    <a href="/album/<%= song.album._id %>">
                                                         <%= song.album.title %>
-                                                    </span>
+                                                    </a>
                                                     <% } else { %>-<% } %>
                                             </td>
                                             <td>
@@ -139,7 +141,8 @@
 
                                     <!-- 歌手结果部分 -->
                                     <% if (type==='all' || type==='artist' ) { %>
-                                        <h2 class="mb-3">歌手 <% if (results.artists.length> 0) { %><small class="text-muted">(<%= results.artists.length %>
+                                        <h2 class="mb-3">歌手 <% if (results.artists.length> 0) { %><small
+                                                    class="text-muted">(<%= results.artists.length %>
                                                         )</small>
                                                 <% } %>
                                         </h2>
@@ -148,8 +151,10 @@
                                                 <% results.artists.forEach(artist=> { %>
                                                     <div class="col">
                                                         <div class="card h-100 artist-card">
-                                                            <img src="<%= artist.image %>" class="card-img-top rounded-circle mx-auto mt-3"
-                                                                style="width: 120px; height: 120px; object-fit: cover;" alt="<%= artist.name %>">
+                                                            <img src="<%= artist.image %>"
+                                                                class="card-img-top rounded-circle mx-auto mt-3"
+                                                                style="width: 120px; height: 120px; object-fit: cover;"
+                                                                alt="<%= artist.name %>">
                                                             <div class="card-body text-center">
                                                                 <h5 class="card-title">
                                                                     <%= artist.name %>
@@ -159,11 +164,14 @@
                                                                     </small></p>
                                                                 <!-- 添加专辑信息显示 -->
                                                                 <% if (artist.albums && artist.albums.length> 0) { %>
-                                                                    <p class="card-text"><small>专辑: <%= artist.albums.length %></small></p>
+                                                                    <p class="card-text"><small>专辑: <%=
+                                                                                artist.albums.length %></small></p>
                                                                     <% } else { %>
                                                                         <p class="card-text"><small>暂无专辑信息</small></p>
                                                                         <% } %>
-                                                                            <!-- 移除链接 -->
+                                                                            <!-- 添加链接到歌手详情页 -->
+                                                                            <a href="/artist/<%= artist._id %>"
+                                                                                class="stretched-link"></a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -172,7 +180,7 @@
                                             <% } else { %>
                                                 <p class="text-muted">没有找到匹配的歌手</p>
                                                 <% } %>
-                                    
+
                                                     <hr class="my-4">
                                                     <% } %>
 
@@ -204,7 +212,9 @@
                                                                                                 Date(album.releaseDate).getFullYear()
                                                                                                 %>
                                                                                         </small></p>
-                                                                                    <!-- 移除链接 -->
+                                                                                    <!-- 添加链接到专辑详情页 -->
+                                                                                    <a href="/album/<%= album._id %>"
+                                                                                        class="stretched-link"></a>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -267,7 +277,9 @@
                                                                                                                     %>
                                                                                                             </small>
                                                                                                         </p>
-                                                                                                        <!-- 移除链接 -->
+                                                                                                        <!-- 添加链接到歌单详情页 -->
+                                                                                                        <a href="/playlist/<%= playlist._id %>"
+                                                                                                            class="stretched-link"></a>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
