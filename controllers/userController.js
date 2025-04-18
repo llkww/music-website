@@ -114,28 +114,67 @@ exports.getLikedSongs = async (req, res) => {
   }
 };
 
-// 获取播放历史
-exports.getPlayHistory = async (req, res) => {
+// 修改密码
+exports.updatePassword = async (req, res) => {
   try {
-    const user = await User.findById(req.session.user.id)
-      .populate({
-        path: 'recentPlayed.song',
-        populate: { path: 'artist' }
-      });
+    const { currentPassword, newPassword, confirmPassword } = req.body;
     
-    if (!user) {
-      return res.status(404).render('404', { title: '用户不存在' });
+    // 验证表单
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      const user = await User.findById(req.session.user.id);
+      const playlists = await Playlist.find({ creator: user._id });
+      return res.status(400).render('profile', { 
+        title: '个人资料',
+        user,
+        playlists,
+        error: '所有密码字段都为必填项'
+      });
     }
     
-    res.render('play-history', {
-      title: '播放历史',
-      history: user.recentPlayed || []
+    // 确认两次输入的新密码一致
+    if (newPassword !== confirmPassword) {
+      const user = await User.findById(req.session.user.id);
+      const playlists = await Playlist.find({ creator: user._id });
+      return res.status(400).render('profile', { 
+        title: '个人资料',
+        user,
+        playlists,
+        error: '两次输入的新密码不一致'
+      });
+    }
+    
+    // 获取用户
+    const user = await User.findById(req.session.user.id);
+    
+    // 验证当前密码
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      const playlists = await Playlist.find({ creator: user._id });
+      return res.status(400).render('profile', { 
+        title: '个人资料',
+        user,
+        playlists,
+        error: '当前密码不正确'
+      });
+    }
+    
+    // 更新密码
+    user.password = newPassword;
+    await user.save();
+    
+    // 重定向回个人资料页面并显示成功消息
+    const playlists = await Playlist.find({ creator: user._id });
+    return res.render('profile', { 
+      title: '个人资料',
+      user,
+      playlists,
+      success: '密码已成功更新'
     });
   } catch (error) {
     console.error(error);
     res.status(500).render('error', {
       title: '服务器错误',
-      message: '获取播放历史失败'
+      message: '更新密码失败'
     });
   }
 };

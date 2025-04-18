@@ -71,7 +71,7 @@ router.get('/search-suggestions', searchController.getSearchSuggestions);
 // 搜索筛选选项API
 router.get('/search-filters', searchController.getSearchFilters);
 
-// 播放历史记录API - 增强错误处理和非登录用户支持
+// 播放计数API - 只更新播放计数，不再记录播放历史
 router.post('/play-history', asyncHandler(async (req, res) => {
   const { songId } = req.body;
   
@@ -79,29 +79,13 @@ router.post('/play-history', asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: '参数错误' });
   }
   
-  // 即使用户未登录，也更新歌曲播放计数
+  // 更新歌曲播放计数
   await Song.findByIdAndUpdate(songId, { $inc: { playCount: 1 } });
   
-  // 如果用户已登录，则保存到播放历史
-  if (req.session.user) {
-    await User.findByIdAndUpdate(req.session.user.id, {
-      $push: {
-        recentPlayed: {
-          $each: [{ song: songId, playedAt: new Date() }],
-          $position: 0,
-          $slice: 100 // 只保留最近100条记录
-        }
-      }
-    });
-    
-    res.json({ success: true, historyUpdated: true });
-  } else {
-    res.json({ 
-      success: true, 
-      historyUpdated: false,
-      message: '未登录用户，仅更新播放计数' 
-    });
-  }
+  res.json({ 
+    success: true, 
+    message: '播放计数已更新' 
+  });
 }));
 
 // 检查歌曲是否被收藏 - 增强错误处理

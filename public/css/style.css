@@ -19,6 +19,35 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
     overflow-x: hidden;
     /* 防止横向溢出 */
+    /* 改进文字渲染 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: 0.02em;
+    line-height: 1.7;
+}
+
+/* 优化标题文字 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* 优化段落文字 */
+p {
+    margin-bottom: 1.2rem;
+    word-spacing: 0.1em;
+}
+
+.card-text {
+    letter-spacing: 0.02em;
+    line-height: 1.6;
 }
 
 .dark-mode {
@@ -360,7 +389,8 @@ body {
     padding: 10px;
     line-height: 1.4;
     font-family: '宋体', SimSun, serif;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    word-spacing: 4px;
 }
 
 /* 逐字高亮相关样式 */
@@ -580,7 +610,7 @@ body {
     color: #aaa;
 }
 
-/* 全屏歌词视图 - 改为左侧封面布局 */
+/* 全屏歌词视图 - 改为左侧封面布局，去除右侧滚动条 */
 .fullscreen-lyrics {
     position: fixed;
     top: 100%;
@@ -591,7 +621,8 @@ body {
     z-index: 2000;
     color: white;
     transition: top 0.5s ease;
-    overflow-y: auto;
+    overflow: hidden;
+    /* 更改为hidden防止整体滚动 */
     display: flex;
     flex-direction: column;
 }
@@ -628,7 +659,10 @@ body {
     justify-content: center;
     position: sticky;
     top: 100px;
-    height: fit-content;
+    height: calc(100vh - 300px);
+    /* 降低最大高度，确保封面不会被顶部阴影遮挡 */
+    margin-top: 50px;
+    /* 增加顶部间距 */
 }
 
 .fullscreen-cover {
@@ -642,11 +676,22 @@ body {
 
 .fullscreen-lyrics-text {
     flex: 0 0 65%;
+    height: 100%;
     overflow-y: auto;
+    /* 允许内部滚动 */
     padding-right: 20px;
     padding-bottom: 100px;
     padding-left: 30px;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE 和 Edge */
+}
+
+/* 隐藏 WebKit 滚动条但保留滚动功能 */
+.fullscreen-lyrics-text::-webkit-scrollbar {
+    display: none;
 }
 
 /* 全屏歌词中的音频可视化 */
@@ -721,25 +766,36 @@ body {
 
 /* 优化歌词行显示 */
 .fullscreen-lyrics-line {
-    margin-bottom: 30px;
+    margin-bottom: 38px;
+    /* 增加行间距 */
     opacity: 0.5;
     transition: all 0.5s ease;
     text-align: left;
-    font-size: 20px;
+    font-size: 22px;
+    /* 增大字体 */
     transform: scale(0.95);
     font-family: '宋体', SimSun, serif;
     padding-left: 10px;
+    letter-spacing: 0.05em;
+    /* 增加字间距 */
+    word-spacing: 0.2em;
+    /* 增加词间距 */
+    line-height: 1.6;
+    /* 增加行高 */
 }
 
 .fullscreen-lyrics-line.active {
     opacity: 1;
-    font-size: 26px;
+    font-size: 28px;
+    /* 增大字体 */
     font-weight: bold;
     color: #1db954;
     transform: scale(1.05);
     text-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
     border-left: 3px solid #1db954;
     padding-left: 15px;
+    letter-spacing: 0.1em;
+    /* 增加高亮词字间距 */
 }
 
 /* 英雄区域 */
@@ -1138,9 +1194,12 @@ body {
 }
 
 .lyrics-text p {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
     transition: opacity 0.5s ease, transform 0.3s ease;
     padding: 5px 0;
+    letter-spacing: 0.05em;
+    word-spacing: 0.2em;
+    line-height: 1.8;
 }
 
 .lyrics-text p:hover {
@@ -1214,6 +1273,8 @@ body {
 .comment-content {
     margin-bottom: 10px;
     word-break: break-word;
+    letter-spacing: 0.03em;
+    line-height: 1.6;
 }
 
 .comment-actions {
@@ -1272,6 +1333,8 @@ body {
     margin-bottom: 5px;
     font-size: 0.95rem;
     word-break: break-word;
+    letter-spacing: 0.03em;
+    line-height: 1.5;
 }
 
 .reply-form-container {

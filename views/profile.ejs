@@ -32,9 +32,6 @@
                     <a href="#liked-songs" class="list-group-item list-group-item-action" data-bs-toggle="list">
                         <i class="bi bi-heart"></i> 我喜欢的音乐
                     </a>
-                    <a href="#play-history" class="list-group-item list-group-item-action" data-bs-toggle="list">
-                        <i class="bi bi-clock-history"></i> 播放历史
-                    </a>
                     <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="list">
                         <i class="bi bi-shield-lock"></i> 安全设置
                     </a>
@@ -42,176 +39,181 @@
             </div>
 
             <div class="col-md-9">
-                <div class="tab-content">
-                    <!-- 基本资料 -->
-                    <div class="tab-pane fade show active" id="profile-info">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">基本资料</h5>
+                <% if (locals.error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <%= error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <% } %>
+
+                        <% if (locals.success) { %>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <%= success %>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
                             </div>
-                            <div class="card-body">
-                                <form action="/user/profile" method="POST">
-                                    <div class="mb-3">
-                                        <label for="username" class="form-label">用户名</label>
-                                        <input type="text" class="form-control" id="username" name="username"
-                                            value="<%= user.username %>" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">电子邮箱</label>
-                                        <input type="email" class="form-control" id="email" value="<%= user.email %>"
-                                            readonly>
-                                        <div class="form-text">邮箱不可修改</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="bio" class="form-label">个性签名</label>
-                                        <textarea class="form-control" id="bio" name="bio"
-                                            rows="3"><%= user.bio %></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">性别</label>
-                                        <div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="gender"
-                                                    id="gender-male" value="male" <%=user.gender==='male' ? 'checked'
-                                                    : '' %>>
-                                                <label class="form-check-label" for="gender-male">男</label>
+                            <% } %>
+
+                                <div class="tab-content">
+                                    <!-- 基本资料 -->
+                                    <div class="tab-pane fade show active" id="profile-info">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">基本资料</h5>
                                             </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="gender"
-                                                    id="gender-female" value="female" <%=user.gender==='female'
-                                                    ? 'checked' : '' %>>
-                                                <label class="form-check-label" for="gender-female">女</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="gender"
-                                                    id="gender-other" value="other" <%=user.gender==='other' ? 'checked'
-                                                    : '' %>>
-                                                <label class="form-check-label" for="gender-other">其他</label>
+                                            <div class="card-body">
+                                                <form action="/user/profile" method="POST">
+                                                    <div class="mb-3">
+                                                        <label for="username" class="form-label">用户名</label>
+                                                        <input type="text" class="form-control" id="username"
+                                                            name="username" value="<%= user.username %>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="email" class="form-label">电子邮箱</label>
+                                                        <input type="email" class="form-control" id="email"
+                                                            value="<%= user.email %>" readonly>
+                                                        <div class="form-text">邮箱不可修改</div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="bio" class="form-label">个性签名</label>
+                                                        <textarea class="form-control" id="bio" name="bio"
+                                                            rows="3"><%= user.bio %></textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">性别</label>
+                                                        <div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                    name="gender" id="gender-male" value="male"
+                                                                    <%=user.gender==='male' ? 'checked' : '' %>>
+                                                                <label class="form-check-label"
+                                                                    for="gender-male">男</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                    name="gender" id="gender-female" value="female"
+                                                                    <%=user.gender==='female' ? 'checked' : '' %>>
+                                                                <label class="form-check-label"
+                                                                    for="gender-female">女</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                    name="gender" id="gender-other" value="other"
+                                                                    <%=user.gender==='other' ? 'checked' : '' %>>
+                                                                <label class="form-check-label"
+                                                                    for="gender-other">其他</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="birthday" class="form-label">生日</label>
+                                                        <input type="date" class="form-control" id="birthday"
+                                                            name="birthday"
+                                                            value="<%= user.birthday ? user.birthday.toISOString().split('T')[0] : '' %>">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">保存修改</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="birthday" class="form-label">生日</label>
-                                        <input type="date" class="form-control" id="birthday" name="birthday"
-                                            value="<%= user.birthday ? user.birthday.toISOString().split('T')[0] : '' %>">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">保存修改</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- 我的歌单 -->
-                    <div class="tab-pane fade" id="my-playlists">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">我的歌单</h5>
-                                <a href="/playlist/create" class="btn btn-sm btn-primary">
-                                    <i class="bi bi-plus-lg"></i> 创建歌单
-                                </a>
-                            </div>
-                            <div class="card-body">
-                                <% if (playlists && playlists.length> 0) { %>
-                                    <div class="row">
-                                        <% playlists.forEach(playlist=> { %>
-                                            <div class="col-md-4 mb-4">
-                                                <div class="card h-100">
-                                                    <img src="<%= playlist.coverImage %>" class="card-img-top"
-                                                        alt="<%= playlist.name %>">
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">
-                                                            <%= playlist.name %>
-                                                        </h5>
-                                                        <p class="card-text text-muted">
-                                                            <%= playlist.songs.length %> 首歌曲
-                                                        </p>
-                                                        <p class="card-text small">
-                                                            <%= playlist.description %>
-                                                        </p>
-                                                        <a href="/playlist/<%= playlist._id %>"
-                                                            class="btn btn-outline-primary btn-sm">
-                                                            <i class="bi bi-music-note-list"></i> 查看详情
-                                                        </a>
+                                    <!-- 我的歌单 -->
+                                    <div class="tab-pane fade" id="my-playlists">
+                                        <div class="card">
+                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-0">我的歌单</h5>
+                                                <a href="/playlist/create" class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-plus-lg"></i> 创建歌单
+                                                </a>
+                                            </div>
+                                            <div class="card-body">
+                                                <% if (playlists && playlists.length> 0) { %>
+                                                    <div class="row">
+                                                        <% playlists.forEach(playlist=> { %>
+                                                            <div class="col-md-4 mb-4">
+                                                                <div class="card h-100">
+                                                                    <img src="<%= playlist.coverImage %>"
+                                                                        class="card-img-top" alt="<%= playlist.name %>">
+                                                                    <div class="card-body">
+                                                                        <h5 class="card-title">
+                                                                            <%= playlist.name %>
+                                                                        </h5>
+                                                                        <p class="card-text text-muted">
+                                                                            <%= playlist.songs.length %> 首歌曲
+                                                                        </p>
+                                                                        <p class="card-text small">
+                                                                            <%= playlist.description %>
+                                                                        </p>
+                                                                        <a href="/playlist/<%= playlist._id %>"
+                                                                            class="btn btn-outline-primary btn-sm">
+                                                                            <i class="bi bi-music-note-list"></i> 查看详情
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% }) %>
                                                     </div>
+                                                    <% } else { %>
+                                                        <div class="text-center py-5">
+                                                            <i class="bi bi-music-note-list display-1 text-muted"></i>
+                                                            <p class="mt-3">您还没有创建歌单</p>
+                                                            <a href="/playlist/create" class="btn btn-primary">
+                                                                <i class="bi bi-plus-lg"></i> 创建歌单
+                                                            </a>
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 喜欢的音乐 -->
+                                    <div class="tab-pane fade" id="liked-songs">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">我喜欢的音乐</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <!-- 此处内容通过AJAX加载 -->
+                                                <div class="text-center py-5" id="liked-songs-loader">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">加载中...</span>
+                                                    </div>
+                                                    <p class="mt-3">加载中...</p>
                                                 </div>
                                             </div>
-                                            <% }) %>
-                                    </div>
-                                    <% } else { %>
-                                        <div class="text-center py-5">
-                                            <i class="bi bi-music-note-list display-1 text-muted"></i>
-                                            <p class="mt-3">您还没有创建歌单</p>
-                                            <a href="/playlist/create" class="btn btn-primary">
-                                                <i class="bi bi-plus-lg"></i> 创建歌单
-                                            </a>
                                         </div>
-                                        <% } %>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 喜欢的音乐 -->
-                    <div class="tab-pane fade" id="liked-songs">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">我喜欢的音乐</h5>
-                            </div>
-                            <div class="card-body">
-                                <!-- 此处内容通过AJAX加载 -->
-                                <div class="text-center py-5" id="liked-songs-loader">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">加载中...</span>
                                     </div>
-                                    <p class="mt-3">加载中...</p>
+
+                                    <!-- 安全设置 -->
+                                    <div class="tab-pane fade" id="security">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">修改密码</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <form action="/user/update-password" method="POST">
+                                                    <div class="mb-3">
+                                                        <label for="current-password" class="form-label">当前密码</label>
+                                                        <input type="password" class="form-control"
+                                                            id="current-password" name="currentPassword" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="new-password" class="form-label">新密码</label>
+                                                        <input type="password" class="form-control" id="new-password"
+                                                            name="newPassword" required>
+                                                        <div class="form-text">密码长度至少6位</div>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="confirm-password" class="form-label">确认新密码</label>
+                                                        <input type="password" class="form-control"
+                                                            id="confirm-password" name="confirmPassword" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">修改密码</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 播放历史 -->
-                    <div class="tab-pane fade" id="play-history">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">播放历史</h5>
-                            </div>
-                            <div class="card-body">
-                                <!-- 此处内容通过AJAX加载 -->
-                                <div class="text-center py-5" id="history-loader">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">加载中...</span>
-                                    </div>
-                                    <p class="mt-3">加载中...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 安全设置 -->
-                    <div class="tab-pane fade" id="security">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">修改密码</h5>
-                            </div>
-                            <div class="card-body">
-                                <form>
-                                    <div class="mb-3">
-                                        <label for="current-password" class="form-label">当前密码</label>
-                                        <input type="password" class="form-control" id="current-password" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="new-password" class="form-label">新密码</label>
-                                        <input type="password" class="form-control" id="new-password" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="confirm-new-password" class="form-label">确认新密码</label>
-                                        <input type="password" class="form-control" id="confirm-new-password" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">修改密码</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -258,7 +260,7 @@
                 .then(response => response.text())
                 .then(html => {
                     loader.style.display = 'none';
-                    container.innerHTML = html;
+                    document.querySelector('#liked-songs .card-body').innerHTML = html;
                 })
                 .catch(error => {
                     console.error('加载失败:', error);
@@ -266,21 +268,20 @@
                 });
         });
 
-        // 加载播放历史
-        document.querySelector('a[href="#play-history"]').addEventListener('click', function () {
-            const container = document.getElementById('play-history');
-            const loader = document.getElementById('history-loader');
+        // 密码验证
+        document.querySelector('form[action="/user/update-password"]').addEventListener('submit', function (e) {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
 
-            fetch('/user/play-history')
-                .then(response => response.text())
-                .then(html => {
-                    loader.style.display = 'none';
-                    container.innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('加载失败:', error);
-                    loader.innerHTML = '<p class="text-danger">加载失败，请稍后再试</p>';
-                });
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('两次输入的密码不一致');
+            }
+
+            if (newPassword.length < 6) {
+                e.preventDefault();
+                alert('密码长度至少6位');
+            }
         });
     </script>
 

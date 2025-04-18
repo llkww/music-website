@@ -60,16 +60,6 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Artist'
   }],
-  recentPlayed: [{
-    song: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Song'
-    },
-    playedAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
   searchHistory: [{
     query: String,
     time: Date

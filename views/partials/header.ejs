@@ -87,6 +87,119 @@
                     -webkit-text-fill-color: transparent;
                     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
+
+                /* 优化搜索栏样式 */
+                .search-wrapper {
+                    position: relative;
+                    max-width: 450px;
+                    width: 100%;
+                }
+
+                .search-container {
+                    display: flex;
+                    align-items: center;
+                    background-color: rgba(255, 255, 255, 0.9);
+                    border-radius: 30px;
+                    overflow: hidden;
+                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+                    transition: all 0.3s ease;
+                }
+
+                .search-container:focus-within {
+                    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+                    transform: translateY(-2px);
+                }
+
+                .search-input {
+                    flex: 1;
+                    border: none;
+                    background: transparent;
+                    padding: 12px 20px;
+                    font-size: 16px;
+                    outline: none;
+                }
+
+                .search-controls {
+                    display: flex;
+                    align-items: center;
+                }
+
+                .search-type-btn {
+                    background: transparent;
+                    border: none;
+                    border-left: 1px solid #eee;
+                    padding: 12px 15px;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }
+
+                .search-submit-btn {
+                    background: transparent;
+                    border: none;
+                    padding: 12px 20px;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }
+
+                .search-type-btn:hover,
+                .search-submit-btn:hover {
+                    background-color: rgba(29, 185, 84, 0.1);
+                }
+
+                .search-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    z-index: 1050;
+                    min-width: 180px;
+                    background-color: white;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                    padding: 10px;
+                    margin-top: 5px;
+                    display: none;
+                }
+
+                .search-dropdown.show {
+                    display: block;
+                    animation: fadeIn 0.2s ease;
+                }
+
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .search-form-check {
+                    padding: 8px 15px;
+                    transition: background-color 0.2s;
+                    border-radius: 5px;
+                }
+
+                .search-form-check:hover {
+                    background-color: rgba(29, 185, 84, 0.05);
+                }
+
+                .search-suggestions {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    z-index: 1050;
+                    background-color: white;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                    margin-top: 5px;
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
             </style>
 </head>
 
@@ -148,44 +261,44 @@
                         <% } %>
                 </ul>
 
-                <form class="d-flex me-2 position-relative" action="/search" method="GET">
-                    <div class="input-group">
-                        <input class="form-control" type="search" placeholder="搜索音乐、歌手、歌单" name="query"
-                            id="search-input">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-light dropdown-toggle" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-filter"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <div class="px-3 py-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="type" id="type-song"
-                                                value="song" checked>
-                                            <label class="form-check-label" for="type-song">歌曲</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="type" id="type-artist"
-                                                value="artist">
-                                            <label class="form-check-label" for="type-artist">歌手</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="type" id="type-playlist"
-                                                value="playlist">
-                                            <label class="form-check-label" for="type-playlist">歌单</label>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
+                <!-- 优化后的搜索栏 -->
+                <div class="search-wrapper me-2">
+                    <form action="/search" method="GET" class="search-form">
+                        <div class="search-container">
+                            <input type="search" class="search-input" placeholder="搜索音乐、歌手、歌单" name="query"
+                                id="search-input">
+                            <div class="search-controls">
+                                <button type="button" class="search-type-btn" id="search-type-toggle">
+                                    <i class="bi bi-filter"></i>
+                                </button>
+                                <button type="submit" class="search-submit-btn">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
                         </div>
-                        <button class="btn btn-light" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                    <!-- 搜索建议容器 -->
-                    <div id="search-suggestions" class="search-suggestions"></div>
-                </form>
+
+                        <div class="search-dropdown" id="search-dropdown">
+                            <div class="search-form-check">
+                                <input class="form-check-input" type="radio" name="type" id="type-song" value="song"
+                                    checked>
+                                <label class="form-check-label" for="type-song">歌曲</label>
+                            </div>
+                            <div class="search-form-check">
+                                <input class="form-check-input" type="radio" name="type" id="type-artist"
+                                    value="artist">
+                                <label class="form-check-label" for="type-artist">歌手</label>
+                            </div>
+                            <div class="search-form-check">
+                                <input class="form-check-input" type="radio" name="type" id="type-playlist"
+                                    value="playlist">
+                                <label class="form-check-label" for="type-playlist">歌单</label>
+                            </div>
+                        </div>
+
+                        <!-- 搜索建议容器 -->
+                        <div id="search-suggestions" class="search-suggestions"></div>
+                    </form>
+                </div>
 
                 <div class="navbar-nav">
                     <% if (locals.user) { %>
@@ -197,9 +310,6 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="/user/profile">
                                         <i class="bi bi-person"></i> 个人资料
-                                    </a></li>
-                                <li><a class="dropdown-item" href="/user/play-history">
-                                        <i class="bi bi-clock-history"></i> 播放历史
                                     </a></li>
                                 <li><a class="dropdown-item" href="/user/liked-songs">
                                         <i class="bi bi-heart"></i> 我的收藏
@@ -240,6 +350,20 @@
                     duration: 800,
                     easing: 'ease-out-cubic',
                     once: true
+                });
+            });
+
+            // 搜索类型切换
+            document.getElementById('search-type-toggle').addEventListener('click', function () {
+                const dropdown = document.getElementById('search-dropdown');
+                dropdown.classList.toggle('show');
+
+                // 点击外部关闭下拉菜单
+                document.addEventListener('click', function closeDropdown(e) {
+                    if (!e.target.closest('#search-type-toggle') && !e.target.closest('#search-dropdown')) {
+                        dropdown.classList.remove('show');
+                        document.removeEventListener('click', closeDropdown);
+                    }
                 });
             });
 

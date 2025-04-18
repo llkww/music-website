@@ -48,17 +48,7 @@ exports.getSongDetails = async (req, res) => {
     song.playCount += 1;
     await song.save();
     
-    // 如果用户已登录，记录播放历史
-    if (req.session.user) {
-      await User.findByIdAndUpdate(req.session.user.id, {
-        $push: {
-          recentPlayed: {
-            song: song._id,
-            playedAt: new Date()
-          }
-        }
-      });
-    }
+    // 移除播放历史记录相关代码
     
     res.render('song-details', {
       title: song.title,

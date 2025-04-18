@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const { mongoURI } = require('../config/db');
 const fs = require('fs');
 const path = require('path');
+const iconv = require('iconv-lite');
 
 // 连接数据库
 mongoose.connect(mongoURI, {
@@ -1169,10 +1170,13 @@ const createSampleData = async () => {
       const lyricsFilePath = path.join(__dirname, '..', 'public', songData.lyricsFile.replace(/^\//, ''));
       try {
         if(fs.existsSync(lyricsFilePath)) {
-          lyrics = fs.readFileSync(lyricsFilePath, 'utf8');
+          // 不使用utf8直接读取，改用二进制读取然后转换
+          const buffer = fs.readFileSync(lyricsFilePath);
+          // 尝试用GBK解码
+          lyrics = iconv.decode(buffer, 'gbk');
         }
       } catch(err) {
-        console.warn(`歌词文件不存在: ${lyricsFilePath}`);
+        console.warn(`歌词文件不存在或无法读取: ${lyricsFilePath}, 错误: ${err.message}`);
       }
     }
     
@@ -1242,7 +1246,7 @@ const createSampleData = async () => {
   const playlistsData = [
     {
       name: '华语经典情歌',
-      creatorUsername: 'user1',
+      creatorUsername: '张伟',
       description: '收录周杰伦、孙燕姿、王力宏等歌手的经典情歌，带你重温华语乐坛黄金时代。',
       songTitles: ['十年', '晴天', '唯一', '特别的人', '遇见'],
       isPublic: true,
@@ -1256,7 +1260,7 @@ const createSampleData = async () => {
     },
     {
       name: '通勤必备轻松音乐',
-      creatorUsername: 'user2',
+      creatorUsername: '王芳',
       description: '精选舒缓轻松音乐，助你在通勤路上放松身心。',
       songTitles: ['你的背包', '夜曲', '江南', '几分之几', '稳稳的幸福'],
       isPublic: true,
@@ -1270,7 +1274,7 @@ const createSampleData = async () => {
     },
     {
       name: '派对热歌精选',
-      creatorUsername: 'user3',
+      creatorUsername: '李娜',
       description: '收录周杰伦、林俊杰、陶喆等歌手的动感热歌，点燃派对气氛。',
       songTitles: ['双截棍', '浮夸', 'K歌之王', '黑色柳丁', '小镇姑娘'],
       isPublic: true,
