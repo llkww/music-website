@@ -15,33 +15,33 @@ router.get('/new-songs', musicController.getNewSongs);
 // // 歌曲详情页
 // router.get('/song/:id', musicController.getSongDetails);
 
-// 添加一个通用的路由处理器
-router.get('/:id', async (req, res) => {
-  try {
-    const song = await Song.findById(req.params.id)
-      .populate('artist')
-      .populate('album');
+// // 添加一个通用的路由处理器
+// router.get('/:id', async (req, res) => {
+//   try {
+//     const song = await Song.findById(req.params.id)
+//       .populate('artist')
+//       .populate('album');
     
-    if (!song) {
-      return res.status(404).render('404', { title: '歌曲不存在' });
-    }
+//     if (!song) {
+//       return res.status(404).render('404', { title: '歌曲不存在' });
+//     }
     
-    // 更新播放次数
-    song.playCount += 1;
-    await song.save();
+//     // 更新播放次数
+//     song.playCount += 1;
+//     await song.save();
     
-    res.render('song-details', {
-      title: song.title,
-      song,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).render('error', {
-      title: '服务器错误',
-      message: '获取歌曲详情失败'
-    });
-  }
-});
+//     res.render('song-details', {
+//       title: song.title,
+//       song,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).render('error', {
+//       title: '服务器错误',
+//       message: '获取歌曲详情失败'
+//     });
+//   }
+// });
 
 // 喜欢/取消喜欢歌曲
 router.post('/song/:id/like', musicController.toggleLikeSong);
