@@ -229,25 +229,23 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/music/genre/流行"><i class="bi bi-music-note"></i> 流行</a>
                             </li>
+                            <li><a class="dropdown-item" href="/music/genre/R&B"><i class="bi bi-music-note"></i>
+                                    R&B</a></li>
                             <li><a class="dropdown-item" href="/music/genre/摇滚"><i class="bi bi-music-note"></i> 摇滚</a>
                             </li>
-                            <li><a class="dropdown-item" href="/music/genre/电子"><i class="bi bi-music-note"></i> 电子</a>
+                            <li><a class="dropdown-item" href="/music/genre/情歌"><i class="bi bi-music-note"></i> 情歌</a>
                             </li>
-                            <li><a class="dropdown-item" href="/music/genre/古典"><i class="bi bi-music-note"></i> 古典</a>
+                            <li><a class="dropdown-item" href="/music/genre/怀旧"><i class="bi bi-music-note"></i> 怀旧</a>
                             </li>
-                            <li><a class="dropdown-item" href="/music/genre/爵士"><i class="bi bi-music-note"></i> 爵士</a>
-                            </li>
+                            <li><a class="dropdown-item" href="/music/genre/中国风"><i class="bi bi-music-note"></i>
+                                    中国风</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="/music/language/华语"><i class="bi bi-translate"></i>
                                     华语</a></li>
-                            <li><a class="dropdown-item" href="/music/language/欧美"><i class="bi bi-translate"></i>
-                                    欧美</a></li>
-                            <li><a class="dropdown-item" href="/music/language/日语"><i class="bi bi-translate"></i>
-                                    日语</a></li>
-                            <li><a class="dropdown-item" href="/music/language/韩语"><i class="bi bi-translate"></i>
-                                    韩语</a></li>
+                            <li><a class="dropdown-item" href="/music/language/粤语"><i class="bi bi-translate"></i>
+                                    粤语</a></li>
                         </ul>
                     </li>
                     <% if (locals.user) { %>
@@ -261,75 +259,79 @@
                         <% } %>
                 </ul>
 
-                <!-- 优化后的搜索栏 -->
-                <div class="search-wrapper me-2">
-                    <form action="/search" method="GET" class="search-form">
-                        <div class="search-container">
-                            <input type="search" class="search-input" placeholder="搜索音乐、歌手、歌单" name="query"
-                                id="search-input">
-                            <div class="search-controls">
-                                <button type="button" class="search-type-btn" id="search-type-toggle">
-                                    <i class="bi bi-filter"></i>
-                                </button>
-                                <button type="submit" class="search-submit-btn">
-                                    <i class="bi bi-search"></i>
-                                </button>
+                <!-- 只在首页显示搜索框 -->
+                <% if (locals.isHomePage) { %>
+                    <div class="search-wrapper me-2">
+                        <form action="/search" method="GET" class="search-form">
+                            <div class="search-container">
+                                <input type="search" class="search-input" placeholder="搜索音乐、歌手、歌单" name="query"
+                                    id="search-input">
+                                <div class="search-controls">
+                                    <button type="button" class="search-type-btn" id="search-type-toggle">
+                                        <i class="bi bi-filter"></i>
+                                    </button>
+                                    <button type="submit" class="search-submit-btn">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="search-dropdown" id="search-dropdown">
-                            <div class="search-form-check">
-                                <input class="form-check-input" type="radio" name="type" id="type-song" value="song"
-                                    checked>
-                                <label class="form-check-label" for="type-song">歌曲</label>
+                            <div class="search-dropdown" id="search-dropdown">
+                                <div class="search-form-check">
+                                    <input class="form-check-input" type="radio" name="type" id="type-song" value="song"
+                                        checked>
+                                    <label class="form-check-label" for="type-song">歌曲</label>
+                                </div>
+                                <div class="search-form-check">
+                                    <input class="form-check-input" type="radio" name="type" id="type-artist"
+                                        value="artist">
+                                    <label class="form-check-label" for="type-artist">歌手</label>
+                                </div>
+                                <div class="search-form-check">
+                                    <input class="form-check-input" type="radio" name="type" id="type-playlist"
+                                        value="playlist">
+                                    <label class="form-check-label" for="type-playlist">歌单</label>
+                                </div>
                             </div>
-                            <div class="search-form-check">
-                                <input class="form-check-input" type="radio" name="type" id="type-artist"
-                                    value="artist">
-                                <label class="form-check-label" for="type-artist">歌手</label>
-                            </div>
-                            <div class="search-form-check">
-                                <input class="form-check-input" type="radio" name="type" id="type-playlist"
-                                    value="playlist">
-                                <label class="form-check-label" for="type-playlist">歌单</label>
-                            </div>
-                        </div>
 
-                        <!-- 搜索建议容器 -->
-                        <div id="search-suggestions" class="search-suggestions"></div>
-                    </form>
-                </div>
+                            <!-- 搜索建议容器 -->
+                            <div id="search-suggestions" class="search-suggestions"></div>
+                        </form>
+                    </div>
+                    <% } %>
 
-                <div class="navbar-nav">
-                    <% if (locals.user) { %>
-                        <div class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <img src="<%= user.avatar %>" alt="头像" class="avatar-sm rounded-circle me-1">
-                                <%= user.username %>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="/user/profile">
-                                        <i class="bi bi-person"></i> 个人资料
-                                    </a></li>
-                                <li><a class="dropdown-item" href="/user/liked-songs">
-                                        <i class="bi bi-heart"></i> 我的收藏
-                                    </a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="/auth/logout">
-                                        <i class="bi bi-box-arrow-right"></i> 退出登录
-                                    </a></li>
-                            </ul>
+                        <div class="navbar-nav">
+                            <% if (locals.user) { %>
+                                <div class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button"
+                                        data-bs-toggle="dropdown">
+                                        <img src="<%= user.avatar %>" alt="头像" class="avatar-sm rounded-circle me-1">
+                                        <%= user.username %>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="/user/profile">
+                                                <i class="bi bi-person"></i> 个人资料
+                                            </a></li>
+                                        <li><a class="dropdown-item" href="/user/liked-songs">
+                                                <i class="bi bi-heart"></i> 我的收藏
+                                            </a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item" href="/auth/logout">
+                                                <i class="bi bi-box-arrow-right"></i> 退出登录
+                                            </a></li>
+                                    </ul>
+                                </div>
+                                <% } else { %>
+                                    <a class="nav-link" href="/auth/login"><i class="bi bi-box-arrow-in-right"></i>
+                                        登录</a>
+                                    <a class="nav-link btn btn-sm btn-outline-light ms-2" href="/auth/register">注册</a>
+                                    <% } %>
+                                        <button id="theme-toggle" class="btn btn-link nav-link">
+                                            <i class="bi bi-moon"></i>
+                                        </button>
                         </div>
-                        <% } else { %>
-                            <a class="nav-link" href="/auth/login"><i class="bi bi-box-arrow-in-right"></i> 登录</a>
-                            <a class="nav-link btn btn-sm btn-outline-light ms-2" href="/auth/register">注册</a>
-                            <% } %>
-                                <button id="theme-toggle" class="btn btn-link nav-link">
-                                    <i class="bi bi-moon"></i>
-                                </button>
-                </div>
             </div>
         </div>
     </nav>
@@ -354,7 +356,7 @@
             });
 
             // 搜索类型切换
-            document.getElementById('search-type-toggle').addEventListener('click', function () {
+            document.getElementById('search-type-toggle')?.addEventListener('click', function () {
                 const dropdown = document.getElementById('search-dropdown');
                 dropdown.classList.toggle('show');
 
@@ -408,10 +410,10 @@
             function renderSearchSuggestions(suggestions) {
                 if (!suggestionsContainer) return;
 
-                const hasSuggestions = suggestions.songs.length > 0 ||
-                    suggestions.artists.length > 0 ||
-                    suggestions.albums.length > 0 ||
-                    suggestions.hot.length > 0;
+                const hasSuggestions = suggestions.songs?.length > 0 ||
+                    suggestions.artists?.length > 0 ||
+                    suggestions.albums?.length > 0 ||
+                    suggestions.hot?.length > 0;
 
                 if (!hasSuggestions) {
                     suggestionsContainer.style.display = 'none';
@@ -421,7 +423,7 @@
                 let html = '';
 
                 // 热门搜索
-                if (suggestions.hot.length > 0) {
+                if (suggestions.hot?.length > 0) {
                     html += '<div class="suggestion-category">热门搜索</div>';
                     suggestions.hot.forEach(item => {
                         html += `
@@ -434,7 +436,7 @@
                 }
 
                 // 歌曲建议
-                if (suggestions.songs.length > 0) {
+                if (suggestions.songs?.length > 0) {
                     html += '<div class="suggestion-category">歌曲</div>';
                     suggestions.songs.forEach(song => {
                         html += `
@@ -447,7 +449,7 @@
                 }
 
                 // 歌手建议
-                if (suggestions.artists.length > 0) {
+                if (suggestions.artists?.length > 0) {
                     html += '<div class="suggestion-category">歌手</div>';
                     suggestions.artists.forEach(artist => {
                         html += `
@@ -460,7 +462,7 @@
                 }
 
                 // 专辑建议
-                if (suggestions.albums.length > 0) {
+                if (suggestions.albums?.length > 0) {
                     html += '<div class="suggestion-category">专辑</div>';
                     suggestions.albums.forEach(album => {
                         html += `

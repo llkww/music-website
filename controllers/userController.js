@@ -13,10 +13,15 @@ exports.getProfile = async (req, res) => {
     
     const playlists = await Playlist.find({ creator: user._id });
     
+    // 获取并清除闪存消息
+    const successMessage = req.session.successMessage;
+    delete req.session.successMessage;
+    
     res.render('profile', {
       title: '个人资料',
       user,
-      playlists
+      playlists,
+      success: successMessage  // 添加成功消息
     });
   } catch (error) {
     console.error(error);
@@ -162,14 +167,9 @@ exports.updatePassword = async (req, res) => {
     user.password = newPassword;
     await user.save();
     
-    // 重定向回个人资料页面并显示成功消息
-    const playlists = await Playlist.find({ creator: user._id });
-    return res.render('profile', { 
-      title: '个人资料',
-      user,
-      playlists,
-      success: '密码已成功更新'
-    });
+    // 使用session闪存消息，然后重定向
+    req.session.successMessage = '密码已成功更新';
+    return res.redirect('/user/profile');
   } catch (error) {
     console.error(error);
     res.status(500).render('error', {

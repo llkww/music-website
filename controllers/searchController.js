@@ -78,6 +78,11 @@ exports.search = async (req, res) => {
           } : {}
         ]
       }).populate('artist').populate('album').limit(20);
+      
+      // 如果只有一个结果且类型是歌曲，直接跳转到详情页
+      if (type === 'song' && songs.length === 1) {
+        return res.redirect(`/music/song/${songs[0]._id}`);
+      }
     }
     
     if (type === 'all' || type === 'artist') {
@@ -92,7 +97,12 @@ exports.search = async (req, res) => {
           } : {},
           genre ? { genres: searchOptions.genre } : {}
         ]
-      }).populate('albums').limit(10); // 添加populate以获取专辑信息
+      }).populate('albums').limit(10);
+      
+      // 如果只有一个结果且类型是歌手，直接跳转到详情页
+      if (type === 'artist' && artists.length === 1) {
+        return res.redirect(`/artist/${artists[0]._id}`);
+      }
     }
     
     if (type === 'all' || type === 'album') {
@@ -108,6 +118,11 @@ exports.search = async (req, res) => {
           year ? { releaseDate: { $gte: new Date(searchOptions.year, 0, 1), $lte: new Date(searchOptions.year, 11, 31) } } : {}
         ]
       }).populate('artist').limit(10);
+      
+      // 如果只有一个结果且类型是专辑，直接跳转到详情页
+      if (type === 'album' && albums.length === 1) {
+        return res.redirect(`/album/${albums[0]._id}`);
+      }
     }
     
     if (type === 'all' || type === 'playlist') {
@@ -123,6 +138,11 @@ exports.search = async (req, res) => {
           { isPublic: true }
         ]
       }).populate('creator').limit(10);
+      
+      // 如果只有一个结果且类型是歌单，直接跳转到详情页
+      if (type === 'playlist' && playlists.length === 1) {
+        return res.redirect(`/playlist/${playlists[0]._id}`);
+      }
     }
     
     // 保存搜索历史

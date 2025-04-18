@@ -149,14 +149,14 @@ exports.addPlaylistComment = async (req, res) => {
 // 获取歌曲评论
 exports.getSongComments = async (req, res) => {
   try {
-    const { songId } = req.params;
+    const { id: songId } = req.params; // 使用id参数而不是songId
     
     const song = await Song.findById(songId)
       .populate('comments.user', 'username avatar')
       .populate('comments.replies.user', 'username avatar');
     
     if (!song) {
-      return res.status(404).json({ message: '歌曲不存在' });
+      return res.status(404).json({ success: false, message: '歌曲不存在' });
     }
     
     // 排序评论（热门评论在前，然后按时间倒序）
@@ -169,20 +169,20 @@ exports.getSongComments = async (req, res) => {
     res.json({ success: true, comments: sortedComments });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: '获取评论失败' });
+    res.status(500).json({ success: false, message: '获取评论失败' });
   }
 };
 
 // 获取歌单评论
 exports.getPlaylistComments = async (req, res) => {
   try {
-    const { playlistId } = req.params;
+    const { id: playlistId } = req.params; // 使用id参数而不是playlistId
     
     const playlist = await Playlist.findById(playlistId)
       .populate('comments.user', 'username avatar');
     
     if (!playlist) {
-      return res.status(404).json({ message: '歌单不存在' });
+      return res.status(404).json({ success: false, message: '歌单不存在' });
     }
     
     // 按时间倒序排序评论
@@ -193,6 +193,6 @@ exports.getPlaylistComments = async (req, res) => {
     res.json({ success: true, comments: sortedComments });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: '获取评论失败' });
+    res.status(500).json({ success: false, message: '获取评论失败' });
   }
 };

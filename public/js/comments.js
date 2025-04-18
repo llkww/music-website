@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function loadComments(page = 1, append = false) {
     if (!contentId || !contentType) return;
     
-    const url = `/api/${contentType === 'song' ? 'song' : 'playlist'}/${contentId}/comments?page=${page}&limit=${pageSize}`;
+    const url = `/api/${contentType}/${contentId}/comments`;
     
     fetch(url)
       .then(response => response.json())
@@ -244,14 +244,14 @@ document.addEventListener('DOMContentLoaded', function() {
   function submitComment(text) {
     if (!contentId || !contentType || !text) return;
     
-    const url = `/api/${contentType === 'song' ? 'song' : 'playlist'}/${contentId}/comment`;
+    const url = `/api/${contentType}/${contentId}/comment`;
     
     fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, [`${contentType}Id`]: contentId })
     })
     .then(response => response.json())
     .then(data => {
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function submitReply(commentId, text, form) {
     if (!contentId || !contentType || !commentId || !text) return;
     
-    const url = `/api/${contentType === 'song' ? 'song' : 'playlist'}/${contentId}/comment/${commentId}/reply`;
+    const url = `/api/${contentType}/${contentId}/comment/${commentId}/reply`;
     
     fetch(url, {
       method: 'POST',

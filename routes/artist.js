@@ -33,7 +33,8 @@ router.get('/:id', async (req, res) => {
     }
     
     // 获取歌手的所有歌曲
-    const songs = await Song.find({ artist: artist._id });
+    const songs = await Song.find({ artist: artist._id })
+      .populate('album');
     
     // 获取歌手的所有专辑
     const albums = await Album.find({ artist: artist._id });

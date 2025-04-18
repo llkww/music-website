@@ -376,7 +376,7 @@ const createSampleData = async () => {
       albumTitle: '米·闪',
       duration: 223,
       releaseYear: 2013,
-      genre: '流行',
+      genre: '情歌',
       subGenre: '',
       language: '华语',
       mood: '温暖',
@@ -388,7 +388,6 @@ const createSampleData = async () => {
       playCount: 123456789,
       likes: 987654321,
       bpm: 76,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['励志', '温暖', '治愈']
@@ -409,9 +408,8 @@ const createSampleData = async () => {
       lyricsFile: '/lyrics/葡萄成熟时.lrc',
       mvFile: '/video/陈奕迅/葡萄成熟时.mp4',
       playCount: 987654321,
-      likes: 123456789,
+      likes: 9999999999,
       bpm: 80,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['励志', '成长', '粤语']
@@ -434,9 +432,8 @@ const createSampleData = async () => {
       playCount: 88888888,
       likes: 77777777,
       bpm: 75,
-      isVIP: false,
       isHot: true,
-      isNew: false,
+      isNew: true,
       tags: ['悲伤', '失恋', '华语']
     },
     {
@@ -457,7 +454,6 @@ const createSampleData = async () => {
       playCount: 66666666,
       likes: 55555555,
       bpm: 70,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['悲伤', '失恋', '粤语']
@@ -480,9 +476,8 @@ const createSampleData = async () => {
       playCount: 44444444,
       likes: 33333333,
       bpm: 85,
-      isVIP: false,
       isHot: true,
-      isNew: false,
+      isNew: true,
       tags: ['悲伤', '失恋', 'R&B']
     }
   ];
@@ -495,7 +490,7 @@ const createSampleData = async () => {
       albumTitle: '黑白灰',
       duration: 280,
       releaseYear: 2003,
-      genre: '流行',
+      genre: '怀旧',
       subGenre: '',
       language: '华语',
       mood: '悲伤',
@@ -506,7 +501,6 @@ const createSampleData = async () => {
       playCount: 100000000,
       likes: 50000000,
       bpm: 75,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['悲伤', '怀旧', '华语']
@@ -522,13 +516,12 @@ const createSampleData = async () => {
       language: '粤语',
       mood: '励志',
       scene: '动感',
-      coverImage: '/img/albums/u87.jpg',
+      coverImage: '/img/albums/U87.jpg',
       audioFile: '/audio/陈奕迅/浮夸.mp3',
       lyricsFile: '/lyrics/浮夸.lrc',
       playCount: 80000000,
       likes: 40000000,
       bpm: 90,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['励志', '摇滚', '粤语']
@@ -550,7 +543,6 @@ const createSampleData = async () => {
       playCount: 70000000,
       likes: 35000000,
       bpm: 95,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['励志', 'KTV', '粤语']
@@ -572,7 +564,6 @@ const createSampleData = async () => {
       playCount: 90000000,
       likes: 45000000,
       bpm: 72,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['悲伤', '失恋', '华语']
@@ -583,7 +574,7 @@ const createSampleData = async () => {
       albumTitle: '认了吧',
       duration: 252,
       releaseYear: 2007,
-      genre: '流行',
+      genre: '情歌',
       subGenre: '',
       language: '华语',
       mood: '悲伤',
@@ -594,7 +585,6 @@ const createSampleData = async () => {
       playCount: 120000000,
       likes: 60000000,
       bpm: 78,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['悲伤', '成长', '华语']
@@ -605,7 +595,7 @@ const createSampleData = async () => {
       albumTitle: '认了吧',
       duration: 245,
       releaseYear: 2007,
-      genre: '流行',
+      genre: '情歌',
       subGenre: '',
       language: '华语',
       mood: '浪漫',
@@ -616,9 +606,8 @@ const createSampleData = async () => {
       playCount: 110000000,
       likes: 55000000,
       bpm: 85,
-      isVIP: false,
       isHot: true,
-      isNew: false,
+      isNew: true,
       tags: ['浪漫', '都市', '华语']
     },
     {
@@ -627,7 +616,7 @@ const createSampleData = async () => {
       albumTitle: '认了吧',
       duration: 230,
       releaseYear: 2007,
-      genre: '流行',
+      genre: '怀旧',
       subGenre: '',
       language: '华语',
       mood: '怀旧',
@@ -638,7 +627,6 @@ const createSampleData = async () => {
       playCount: 95000000,
       likes: 47500000,
       bpm: 76,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['怀旧', '重逢', '华语']
@@ -660,9 +648,8 @@ const createSampleData = async () => {
       playCount: 85000000,
       likes: 42500000,
       bpm: 70,
-      isVIP: false,
       isHot: true,
-      isNew: false,
+      isNew: true,
       tags: ['悲伤', '遗憾', '粤语']
     },
     {
@@ -671,7 +658,7 @@ const createSampleData = async () => {
       albumTitle: 'Life Continues',
       duration: 237,
       releaseYear: 2006,
-      genre: '流行',
+      genre: '怀旧',
       subGenre: '',
       language: '粤语',
       mood: '友情',
@@ -682,9 +669,8 @@ const createSampleData = async () => {
       playCount: 88000000,
       likes: 44000000,
       bpm: 90,
-      isVIP: false,
       isHot: true,
-      isNew: false,
+      isNew: true,
       tags: ['友情', '成长', '粤语']
     },
     {
@@ -704,7 +690,6 @@ const createSampleData = async () => {
       playCount: 75000000,
       likes: 37500000,
       bpm: 74,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['治愈', '温暖', '华语']
@@ -726,7 +711,6 @@ const createSampleData = async () => {
       playCount: 72000000,
       likes: 36000000,
       bpm: 75,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['怀旧', '成长', '华语']
@@ -737,7 +721,7 @@ const createSampleData = async () => {
       albumTitle: 'Shall We Dance? Shall We Talk!',
       duration: 228,
       releaseYear: 2001,
-      genre: '流行',
+      genre: '怀旧',
       subGenre: '',
       language: '粤语',
       mood: '亲情',
@@ -748,7 +732,6 @@ const createSampleData = async () => {
       playCount: 70000000,
       likes: 35000000,
       bpm: 75,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['亲情', '成长', '粤语']
@@ -770,7 +753,6 @@ const createSampleData = async () => {
       playCount: 150000000,
       likes: 75000000,
       bpm: 76,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['浪漫', '夏日', '华语']
@@ -781,7 +763,7 @@ const createSampleData = async () => {
       albumTitle: '范特西',
       duration: 215,
       releaseYear: 2001,
-      genre: '嘻哈',
+      genre: '摇滚',
       subGenre: '',
       language: '华语',
       mood: '励志',
@@ -792,7 +774,6 @@ const createSampleData = async () => {
       playCount: 140000000,
       likes: 70000000,
       bpm: 100,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['励志', '动感', '华语']
@@ -814,7 +795,6 @@ const createSampleData = async () => {
       playCount: 160000000,
       likes: 80000000,
       bpm: 72,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['中国风', '古典', '浪漫']
@@ -836,7 +816,6 @@ const createSampleData = async () => {
       playCount: 170000000,
       likes: 85000000,
       bpm: 76,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['青春', '怀旧', '华语']
@@ -847,7 +826,7 @@ const createSampleData = async () => {
       albumTitle: '叶惠美',
       duration: 290,
       releaseYear: 2003,
-      genre: '嘻哈',
+      genre: '摇滚',
       subGenre: '',
       language: '华语',
       mood: '叙事',
@@ -858,7 +837,6 @@ const createSampleData = async () => {
       playCount: 130000000,
       likes: 65000000,
       bpm: 85,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['叙事', '嘻哈', '华语']
@@ -880,7 +858,6 @@ const createSampleData = async () => {
       playCount: 120000000,
       likes: 60000000,
       bpm: 70,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['悲伤', '浪漫', '华语']
@@ -902,7 +879,6 @@ const createSampleData = async () => {
       playCount: 60000000,
       likes: 30000000,
       bpm: 75,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['悲伤', 'R&B', '华语']
@@ -924,7 +900,6 @@ const createSampleData = async () => {
       playCount: 55000000,
       likes: 27500000,
       bpm: 95,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['摇滚', '社会', '华语']
@@ -946,7 +921,6 @@ const createSampleData = async () => {
       playCount: 50000000,
       likes: 25000000,
       bpm: 80,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['叙事', 'R&B', '华语']
@@ -968,9 +942,8 @@ const createSampleData = async () => {
       playCount: 58000000,
       likes: 29000000,
       bpm: 82,
-      isVIP: false,
       isHot: true,
-      isNew: false,
+      isNew: true,
       tags: ['情感', 'R&B', '华语']
     },
     {
@@ -979,7 +952,7 @@ const createSampleData = async () => {
       albumTitle: '太平盛世',
       duration: 245,
       releaseYear: 2005,
-      genre: '流行',
+      genre: '情歌',
       subGenre: '',
       language: '华语',
       mood: '浪漫',
@@ -990,7 +963,6 @@ const createSampleData = async () => {
       playCount: 65000000,
       likes: 32500000,
       bpm: 85,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['浪漫', '告白', '华语']
@@ -1001,7 +973,7 @@ const createSampleData = async () => {
       albumTitle: "I'm OK",
       duration: 250,
       releaseYear: 1999,
-      genre: '摇滚',
+      genre: '情歌',
       subGenre: '',
       language: '华语',
       mood: '叙事',
@@ -1012,7 +984,6 @@ const createSampleData = async () => {
       playCount: 48000000,
       likes: 24000000,
       bpm: 90,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['叙事', '摇滚', '华语']
@@ -1034,7 +1005,6 @@ const createSampleData = async () => {
       playCount: 45000000,
       likes: 22500000,
       bpm: 78,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['情感', 'R&B', '华语']
@@ -1045,7 +1015,7 @@ const createSampleData = async () => {
       albumTitle: '唯一',
       duration: 255,
       releaseYear: 2001,
-      genre: 'R&B',
+      genre: '情歌',
       subGenre: '',
       language: '华语',
       mood: '浪漫',
@@ -1056,7 +1026,6 @@ const createSampleData = async () => {
       playCount: 40000000,
       likes: 20000000,
       bpm: 80,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['浪漫', 'R&B', '华语']
@@ -1078,7 +1047,6 @@ const createSampleData = async () => {
       playCount: 50000000,
       likes: 25000000,
       bpm: 75,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['中国风', '浪漫', '华语']
@@ -1089,7 +1057,7 @@ const createSampleData = async () => {
       albumTitle: 'The Moment',
       duration: 230,
       releaseYear: 2003,
-      genre: '流行',
+      genre: '怀旧',
       subGenre: '',
       language: '华语',
       mood: '清新',
@@ -1100,7 +1068,6 @@ const createSampleData = async () => {
       playCount: 42000000,
       likes: 21000000,
       bpm: 76,
-      isVIP: false,
       isHot: true,
       isNew: false,
       tags: ['清新', '治愈', '华语']
@@ -1122,9 +1089,8 @@ const createSampleData = async () => {
       playCount: 38000000,
       likes: 19000000,
       bpm: 80,
-      isVIP: false,
       isHot: true,
-      isNew: false,
+      isNew: true,
       tags: ['浪漫', 'R&B', '华语']
     },
     {
@@ -1133,7 +1099,7 @@ const createSampleData = async () => {
       albumTitle: '几分之几',
       duration: 228,
       releaseYear: 2018,
-      genre: '民谣',
+      genre: 'R&B',
       subGenre: '流行',
       language: '华语',
       mood: '情感',
@@ -1144,9 +1110,8 @@ const createSampleData = async () => {
       playCount: 35000000,
       likes: 17500000,
       bpm: 74,
-      isVIP: false,
       isHot: true,
-      isNew: false,
+      isNew: true,
       tags: ['情感', '成长', '民谣']
     }
   ];

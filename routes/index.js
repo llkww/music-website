@@ -33,6 +33,7 @@ router.get('/', async (req, res) => {
     
     res.render('index', {
       title: '首页',
+      isHomePage: true, // 添加标志，用于显示搜索框
       hotSongs,
       newAlbums,
       popularArtists,

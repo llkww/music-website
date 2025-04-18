@@ -68,7 +68,7 @@
                                         </td>
                                         <td>
                                             <% if (song.album) { %>
-                                                <a href="/album/<%= song.album %>">
+                                                <a href="/album/<%= song.album._id %>">
                                                     <%= song.album.title %>
                                                 </a>
                                                 <% } else { %>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const musicController = require('../controllers/musicController');
+const Song = require('../models/Song'); // 添加直接引入模型
 
 // 获取热门歌曲
 router.get('/hot-songs', musicController.getHotSongs);
@@ -24,8 +25,9 @@ router.get('/album/:id', musicController.getAlbumDetails);
 router.get('/genre/:genre', async (req, res) => {
   try {
     const { genre } = req.params;
-    const songs = await require('../models/Song').find({ genre })
+    const songs = await Song.find({ genre })
       .populate('artist')
+      .populate('album')
       .sort({ playCount: -1 });
     
     res.render('genre', {
@@ -35,7 +37,10 @@ router.get('/genre/:genre', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).render('error', { message: '加载失败' });
+    res.status(500).render('error', { 
+      title: '服务器错误',
+      message: '加载失败' 
+    });
   }
 });
 
@@ -43,8 +48,9 @@ router.get('/genre/:genre', async (req, res) => {
 router.get('/language/:language', async (req, res) => {
   try {
     const { language } = req.params;
-    const songs = await require('../models/Song').find({ language })
+    const songs = await Song.find({ language })
       .populate('artist')
+      .populate('album')
       .sort({ playCount: -1 });
     
     res.render('language', {
@@ -54,7 +60,10 @@ router.get('/language/:language', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).render('error', { message: '加载失败' });
+    res.status(500).render('error', { 
+      title: '服务器错误',
+      message: '加载失败' 
+    });
   }
 });
 
