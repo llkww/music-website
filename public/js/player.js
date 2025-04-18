@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 歌词相关状态
   let currentLyrics = [];
-  let currentLyricFontSize = 64; // 默认字体大小 - 修改为64px
+  let currentLyricFontSize = 48; 
   let currentLyricColor = 'white'; // 默认颜色
   
   // 检查DOM元素是否存在
@@ -1037,9 +1037,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (savedSettings && floatingLyricsContainer && currentLyricElement) {
       const settings = JSON.parse(savedSettings);
       
-      // 统一设置为64px的字体大小
-      currentLyricFontSize = 64;
-      currentLyricElement.style.fontSize = '64px';
+      currentLyricFontSize = 48;
+      currentLyricElement.style.fontSize = '48px';
       
       // 应用颜色
       if (settings.color) {
@@ -1080,8 +1079,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (floatingLyricsContainer && currentLyricElement) {
         lyricsVisible = true;
         floatingLyricsContainer.style.display = 'block';
-        currentLyricFontSize = 64; // 更大的默认字体
-        currentLyricElement.style.fontSize = '64px';
+        currentLyricFontSize = 48; 
+        currentLyricElement.style.fontSize = '48px';
         currentLyricColor = 'white';
         currentLyricElement.classList.add('lyric-color-white');
         
@@ -1175,6 +1174,77 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(savePlayStateToStorage, 30000);
   }
   
+  // 添加歌曲到播放列表（不立即播放）
+  function addToPlaylist(song) {
+    if (!song || !song.id) {
+      console.error('添加到播放列表失败：无效的歌曲数据');
+      return;
+    }
+    
+    // 检查是否已在播放列表中
+    const existingIndex = currentPlaylist.findIndex(item => item.id === song.id);
+    
+    if (existingIndex === -1) {
+      // 添加到播放列表
+      currentPlaylist.push(song);
+      console.log(`歌曲 "${song.title}" 已添加到播放列表`);
+      
+      // 更新播放列表显示
+      updatePlaylistDisplay();
+      
+      // 保存播放列表到本地存储
+      savePlaylistToStorage();
+      
+      // 如果是第一首歌，更新播放器信息但不自动播放
+      if (currentPlaylist.length === 1) {
+        currentIndex = 0;
+        
+        // 更新播放器显示
+        playingTitle.textContent = song.title;
+        playingArtist.textContent = song.artist;
+        playingCover.src = song.cover;
+        
+        // 设置音频源（但不自动播放）
+        audioElement.src = song.audio;
+        audioElement.load();
+        
+        // 更新收藏按钮状态
+        updateFavoriteButton(song.id);
+        
+        // 加载歌词
+        loadLyrics(song.id);
+      }
+      
+      // 显示添加成功的提示
+      showAddToPlaylistNotification(song.title);
+    } else {
+      console.log(`歌曲 "${song.title}" 已在播放列表中`);
+      // 可选：将已存在的歌曲移到播放列表末尾
+      // const existingSong = currentPlaylist.splice(existingIndex, 1)[0];
+      // currentPlaylist.push(existingSong);
+      // updatePlaylistDisplay();
+    }
+  }
+
+  // 显示添加到播放列表的通知
+  function showAddToPlaylistNotification(songTitle) {
+    // 创建提示元素
+    const notification = document.createElement('div');
+    notification.className = 'autoplay-notification';
+    notification.innerHTML = `<i class="bi bi-music-note-list"></i> 已添加 "${songTitle}" 到播放列表`;
+    document.body.appendChild(notification);
+    
+    // 3秒后自动隐藏
+    setTimeout(() => {
+      notification.classList.add('fade-out');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 500);
+    }, 3000);
+  }
+
   // 更新播放器显示
   function updatePlayerDisplay() {
     if (currentPlaylist.length > 0 && currentIndex >= 0) {

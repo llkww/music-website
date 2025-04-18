@@ -20,7 +20,7 @@
                     <div class="btn-group">
                         <% if (locals.user) { %>
                             <button id="like-button" class="btn btn-outline-danger btn-lg" data-id="<%= song._id %>">
-                                <i class="bi <%= isLiked ? 'bi-heart-fill' : 'bi-heart' %>"></i>
+                                <i class="bi <%= locals.isLiked ? 'bi-heart-fill' : 'bi-heart' %>"></i>
                                 <span class="like-count">
                                     <%= song.likes %>
                                 </span>
@@ -54,13 +54,13 @@
                     <h1 class="mb-2">
                         <%= song.title %>
                     </h1>
-                    <p class="mb-1"><strong>歌手:</strong> <span>
+                    <p class="mb-1"><strong>歌手:</strong> <a href="/artist/<%= song.artist._id %>">
                             <%= song.artist.name %>
-                        </span></p>
+                        </a></p>
                     <% if (song.album) { %>
-                        <p class="mb-1"><strong>专辑:</strong> <span>
+                        <p class="mb-1"><strong>专辑:</strong> <a href="/album/<%= song.album._id %>">
                                 <%= song.album.title %>
-                            </span></p>
+                            </a></p>
                         <% } %>
                             <p class="mb-1"><strong>发行年份:</strong>
                                 <%= song.releaseYear %>
@@ -82,9 +82,19 @@
                                         <% } %>
                                 </div>
                             </div>
-                            <p class="mb-1"><strong>播放次数:</strong>
-                                <%= song.playCount.toLocaleString() %>
-                            </p>
+                            <% if (song.mood) { %>
+                                <p class="mb-1"><strong>情感:</strong>
+                                    <%= song.mood %>
+                                </p>
+                                <% } %>
+                                    <% if (song.scene) { %>
+                                        <p class="mb-1"><strong>场景:</strong>
+                                            <%= song.scene %>
+                                        </p>
+                                        <% } %>
+                                            <p class="mb-1"><strong>播放次数:</strong>
+                                                <%= song.playCount.toLocaleString() %>
+                                            </p>
                 </div>
             </div>
 
@@ -107,7 +117,7 @@
                                     <%- displayLyrics %>
                             </div>
                             <% } else { %>
-                                <p class="text-center py-4">暂无歌词</p>
+                                <p class="text-center py-4">请欣赏音乐</p>
                                 <% } %>
                     </div>
                 </div>
@@ -155,32 +165,13 @@
         <div class="row mt-4">
             <div class="col-12">
                 <h3 class="mb-3">相似歌曲推荐</h3>
-                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4">
-                    <% similarSongs.forEach(similarSong=> { %>
-                        <div class="col">
-                            <div class="card h-100">
-                                <img src="<%= similarSong.coverImage %>" class="card-img-top"
-                                    alt="<%= similarSong.title %>">
-                                <div class="card-body">
-                                    <h5 class="card-title text-truncate">
-                                        <%= similarSong.title %>
-                                    </h5>
-                                    <p class="card-text text-truncate">
-                                        <%= similarSong.artist.name %>
-                                    </p>
-                                    <div class="d-flex justify-content-between">
-                                        <button class="btn btn-primary btn-sm rounded-circle btn-play"
-                                            data-id="<%= similarSong._id %>" data-title="<%= similarSong.title %>"
-                                            data-artist="<%= similarSong.artist.name %>"
-                                            data-cover="<%= similarSong.coverImage %>"
-                                            data-audio="<%= similarSong.audioFile %>">
-                                            <i class="bi bi-play-fill"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4" id="similar-songs-container">
+                    <!-- 相似歌曲会通过JS动态加载 -->
+                    <div class="col-12 text-center py-3 loading-spinner-container">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
                         </div>
-                        <% }) %>
+                    </div>
                 </div>
             </div>
         </div>
@@ -270,6 +261,72 @@
                             alert('操作失败，请稍后再试');
                         });
                 });
+            }
+
+            // 加载相似歌曲
+            const similarSongsContainer = document.getElementById('similar-songs-container');
+            if (similarSongsContainer) {
+                fetch(`/api/song/<%= song._id %>/similar`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.similarSongs && data.similarSongs.length > 0) {
+                            // 清除加载动画
+                            similarSongsContainer.innerHTML = '';
+
+                            // 添加相似歌曲卡片
+                            data.similarSongs.forEach(song => {
+                                const songCard = `
+                            <div class="col">
+                                <div class="card h-100">
+                                    <img src="${song.coverImage}" class="card-img-top" alt="${song.title}">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-truncate">
+                                            <a href="/music/song/${song._id}">${song.title}</a>
+                                        </h5>
+                                        <p class="card-text text-truncate">
+                                            <a href="/artist/${song.artist._id}">${song.artist.name}</a>
+                                        </p>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-primary btn-sm rounded-circle btn-play"
+                                                data-id="${song._id}" data-title="${song.title}"
+                                                data-artist="${song.artist.name}" data-cover="${song.coverImage}"
+                                                data-audio="${song.audioFile}">
+                                                <i class="bi bi-play-fill"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                                similarSongsContainer.innerHTML += songCard;
+                            });
+
+                            // 重新添加播放按钮事件
+                            document.querySelectorAll('.btn-play').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const songData = {
+                                        id: this.dataset.id,
+                                        title: this.dataset.title,
+                                        artist: this.dataset.artist,
+                                        cover: this.dataset.cover,
+                                        audio: this.dataset.audio
+                                    };
+
+                                    if (window.musicPlayer) {
+                                        window.musicPlayer.playSong(songData);
+                                    } else {
+                                        console.error('播放器未初始化');
+                                    }
+                                });
+                            });
+                        } else {
+                            similarSongsContainer.innerHTML = '<div class="col-12 text-center"><p class="text-muted">暂无相似歌曲推荐</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('加载相似歌曲失败:', error);
+                        similarSongsContainer.innerHTML = '<div class="col-12 text-center"><p class="text-danger">加载相似歌曲失败</p></div>';
+                    });
             }
         });
     </script>

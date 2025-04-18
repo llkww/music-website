@@ -1,0 +1,508 @@
+<%- include('partials/header') %>
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="mb-4">
+                    <img src="<%= playlist.coverImage %>" alt="<%= playlist.name %>" class="img-fluid rounded shadow">
+                </div>
+
+                <div class="playlist-actions mb-4">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-lg play-all" id="play-all-btn">
+                            <i class="bi bi-play-fill"></i> 播放全部
+                        </button>
+
+                        <% if (locals.user) { %>
+                            <button id="like-playlist" class="btn btn-outline-danger btn-lg"
+                                data-playlist-id="<%= playlist._id %>">
+                                <i class="bi <%= locals.isLiked ? 'bi-heart-fill' : 'bi-heart' %>"></i>
+                                <span id="likes-count">
+                                    <%= playlist.likes %>
+                                </span>
+                            </button>
+                            <% } else { %>
+                                <button class="btn btn-outline-danger btn-lg" onclick="alert('请先登录')">
+                                    <i class="bi bi-heart"></i>
+                                    <span>
+                                        <%= playlist.likes %>
+                                    </span>
+                                </button>
+                                <% } %>
+                    </div>
+                </div>
+
+                <div class="playlist-info mb-4">
+                    <h1 class="mb-2">
+                        <%= playlist.name %>
+                    </h1>
+                    <p class="mb-1">
+                        <strong>创建者:</strong>
+                        <a href="/social/profile/<%= playlist.creator._id %>">
+                            <%= playlist.creator.username %>
+                        </a>
+                    </p>
+                    <p class="mb-1"><strong>歌曲数:</strong>
+                        <%= playlist.songs.length %>
+                    </p>
+                    <p class="mb-1"><strong>播放次数:</strong>
+                        <%= playlist.playCount.toLocaleString() %>
+                    </p>
+                    <p class="mb-1"><strong>收藏数:</strong>
+                        <%= playlist.likes.toLocaleString() %>
+                    </p>
+                    <p class="mb-1"><strong>创建时间:</strong>
+                        <%= new Date(playlist.createdAt).toLocaleDateString('zh-CN') %>
+                    </p>
+
+                    <% if (playlist.tags && playlist.tags.length> 0) { %>
+                        <div class="d-flex mb-1">
+                            <strong class="me-2">标签:</strong>
+                            <div>
+                                <% playlist.tags.forEach(tag=> { %>
+                                    <span class="badge bg-primary me-1">
+                                        <%= tag %>
+                                    </span>
+                                    <% }) %>
+                            </div>
+                        </div>
+                        <% } %>
+
+                            <div class="mt-3">
+                                <h5>歌单简介</h5>
+                                <p>
+                                    <%= playlist.description %>
+                                </p>
+                            </div>
+
+                            <% if (locals.user && locals.user.id===playlist.creator._id.toString()) { %>
+                                <div class="mt-3">
+                                    <button class="btn btn-outline-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editPlaylistModal">
+                                        <i class="bi bi-pencil"></i> 编辑歌单
+                                    </button>
+                                </div>
+                                <% } %>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">歌曲列表</h4>
+                    </div>
+                    <div class="card-body">
+                        <% if (playlist.songs && playlist.songs.length> 0) { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;">#</th>
+                                            <th>歌曲</th>
+                                            <th>歌手</th>
+                                            <th>专辑</th>
+                                            <th>时长</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% playlist.songs.forEach((song, index)=> { %>
+                                            <tr>
+                                                <td>
+                                                    <%= index + 1 %>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="<%= song.coverImage %>" alt="<%= song.title %>"
+                                                            class="song-cover me-3" style="width: 40px; height: 40px;">
+                                                        <div>
+                                                            <a href="/music/song/<%= song._id %>">
+                                                                <%= song.title %>
+                                                            </a>
+                                                            <% if (song.isVIP) { %>
+                                                                <span class="badge bg-warning text-dark ms-2">VIP</span>
+                                                                <% } %>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><a href="/artist/<%= song.artist._id %>">
+                                                        <%= song.artist.name %>
+                                                    </a></td>
+                                                <td>
+                                                    <% if (song.album) { %>
+                                                        <a href="/album/<%= song.album._id %>">
+                                                            <%= song.album.title %>
+                                                        </a>
+                                                        <% } else { %>-<% } %>
+                                                </td>
+                                                <td>
+                                                    <%= Math.floor(song.duration / 60) %>:<%= (song.duration %
+                                                            60).toString().padStart(2, '0' ) %>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex">
+                                                        <button class="btn btn-primary rounded-circle btn-play me-2"
+                                                            data-id="<%= song._id %>" data-title="<%= song.title %>"
+                                                            data-artist="<%= song.artist.name %>"
+                                                            data-cover="<%= song.coverImage %>"
+                                                            data-audio="<%= song.audioFile %>">
+                                                            <i class="bi bi-play-fill"></i>
+                                                        </button>
+
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-outline-secondary dropdown-toggle"
+                                                                type="button" data-bs-toggle="dropdown">
+                                                                <i class="bi bi-three-dots"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <button class="dropdown-item btn-add-to-playlist"
+                                                                        data-song-id="<%= song._id %>">
+                                                                        <i class="bi bi-plus-circle"></i> 添加到其他歌单
+                                                                    </button>
+                                                                </li>
+                                                                <% if (locals.user &&
+                                                                    locals.user.id===playlist.creator._id.toString()) {
+                                                                    %>
+                                                                    <li>
+                                                                        <button
+                                                                            class="dropdown-item btn-remove-from-playlist text-danger"
+                                                                            data-playlist-id="<%= playlist._id %>"
+                                                                            data-song-id="<%= song._id %>">
+                                                                            <i class="bi bi-trash"></i> 从歌单中移除
+                                                                        </button>
+                                                                    </li>
+                                                                    <% } %>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <i class="bi bi-music-note-list display-1 text-muted"></i>
+                                    <p class="mt-3">这个歌单还没有歌曲</p>
+                                    <% if (locals.user && locals.user.id===playlist.creator._id.toString()) { %>
+                                        <a href="/search?type=song" class="btn btn-primary">
+                                            <i class="bi bi-plus-lg"></i> 添加歌曲
+                                        </a>
+                                        <% } %>
+                                </div>
+                                <% } %>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">评论</h4>
+                        <span class="badge bg-primary rounded-pill">
+                            <%= playlist.comments ? playlist.comments.length : 0 %>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <% if (locals.user) { %>
+                            <form id="comment-form" class="mb-4" data-id="<%= playlist._id %>" data-type="playlist">
+                                <div class="input-group">
+                                    <textarea id="comment-input" class="form-control" placeholder="发表评论..." rows="2"
+                                        required></textarea>
+                                    <button type="submit" class="btn btn-primary">发布</button>
+                                </div>
+                            </form>
+                            <% } else { %>
+                                <div class="alert alert-info text-center">
+                                    <a href="/auth/login" class="alert-link">登录</a> 后发表评论
+                                </div>
+                                <% } %>
+
+                                    <div id="comments-list">
+                                        <!-- 评论将通过JS动态加载 -->
+                                        <div class="text-center my-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">加载中...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <button id="load-more-comments" class="btn btn-outline-primary"
+                                            style="display: none;">加载更多评论</button>
+                                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加到歌单模态框 -->
+    <div class="modal fade" id="add-to-playlist-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加到歌单</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-to-playlist-form">
+                        <input type="hidden" id="song-id" name="songId">
+                        <div class="mb-3">
+                            <label for="playlist-select" class="form-label">选择歌单</label>
+                            <select class="form-select" id="playlist-select" required>
+                                <option value="">选择歌单</option>
+                            </select>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">添加</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑歌单模态框 -->
+    <% if (locals.user && locals.user.id===playlist.creator._id.toString()) { %>
+        <div class="modal fade" id="editPlaylistModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">编辑歌单</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-playlist-form">
+                            <div class="mb-3">
+                                <label for="playlist-name" class="form-label">歌单名称</label>
+                                <input type="text" class="form-control" id="playlist-name" name="name"
+                                    value="<%= playlist.name %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="playlist-description" class="form-label">歌单描述</label>
+                                <textarea class="form-control" id="playlist-description" name="description"
+                                    rows="3"><%= playlist.description %></textarea>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="playlist-public" name="isPublic"
+                                    value="true" <%=playlist.isPublic ? 'checked' : '' %>>
+                                <label class="form-check-label" for="playlist-public">公开歌单</label>
+                                <div class="form-text">勾选后其他用户可以查看此歌单</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="playlist-tags" class="form-label">标签</label>
+                                <input type="text" class="form-control" id="playlist-tags" name="tags"
+                                    value="<%= playlist.tags ? playlist.tags.join(',') : '' %>" placeholder="用逗号分隔">
+                                <div class="form-text">如：流行,摇滚,轻音乐</div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="save-playlist-changes">保存修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+            <script src="/js/comments.js"></script>
+            <script src="/js/playlist.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // 播放按钮事件
+                    document.querySelectorAll('.btn-play').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const songData = {
+                                id: this.dataset.id,
+                                title: this.dataset.title,
+                                artist: this.dataset.artist,
+                                cover: this.dataset.cover,
+                                audio: this.dataset.audio
+                            };
+
+                            if (window.musicPlayer) {
+                                window.musicPlayer.playSong(songData);
+                            } else {
+                                console.error('播放器未初始化');
+                            }
+                        });
+                    });
+
+                    // 播放全部按钮
+                    const playAllBtn = document.getElementById('play-all-btn');
+                    if (playAllBtn) {
+                        playAllBtn.addEventListener('click', function () {
+                            const songs = [];
+
+                            // 收集所有歌曲信息
+                            document.querySelectorAll('.btn-play').forEach(button => {
+                                songs.push({
+                                    id: button.dataset.id,
+                                    title: button.dataset.title,
+                                    artist: button.dataset.artist,
+                                    cover: button.dataset.cover,
+                                    audio: button.dataset.audio
+                                });
+                            });
+
+                            if (songs.length > 0 && window.musicPlayer) {
+                                // 添加所有歌曲到播放列表并播放第一首
+                                for (let i = 0; i < songs.length; i++) {
+                                    if (i === 0) {
+                                        window.musicPlayer.playSong(songs[i]);
+                                    } else {
+      
+                                        if (window.musicPlayer.addToPlaylist) {
+                                            window.musicPlayer.addToPlaylist(songs[i]);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // 喜欢歌单事件
+                    const likePlaylistButton = document.getElementById('like-playlist');
+                    if (likePlaylistButton) {
+                        likePlaylistButton.addEventListener('click', function () {
+                            const playlistId = this.dataset.playlistId;
+
+                            fetch(`/playlist/${playlistId}/like`, {
+                                method: 'POST'
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        // 更新按钮状态
+                                        if (data.liked) {
+                                            this.innerHTML = '<i class="bi bi-heart-fill text-danger"></i> 已喜欢';
+                                            this.classList.add('liked');
+                                        } else {
+                                            this.innerHTML = '<i class="bi bi-heart"></i> 喜欢';
+                                            this.classList.remove('liked');
+                                        }
+
+                                        // 更新点赞数
+                                        const likesCount = document.getElementById('likes-count');
+                                        if (likesCount) {
+                                            const count = parseInt(likesCount.textContent);
+                                            likesCount.textContent = data.liked ? count + 1 : count - 1;
+                                        }
+                                    } else {
+                                        alert(data.message || '操作失败');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('操作失败:', error);
+                                    alert('操作失败，请稍后再试');
+                                });
+                        });
+                    }
+
+                    // 从歌单中移除歌曲
+                    const removeFromPlaylistButtons = document.querySelectorAll('.btn-remove-from-playlist');
+                    if (removeFromPlaylistButtons.length > 0) {
+                        removeFromPlaylistButtons.forEach(button => {
+                            button.addEventListener('click', function () {
+                                if (confirm('确定从歌单中移除此歌曲?')) {
+                                    const playlistId = this.dataset.playlistId;
+                                    const songId = this.dataset.songId;
+
+                                    fetch(`/playlist/${playlistId}/song/${songId}`, {
+                                        method: 'DELETE'
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                // 移除歌曲行
+                                                this.closest('tr').remove();
+
+                                                // 如果没有歌曲了，显示空状态
+                                                const tableBody = document.querySelector('tbody');
+                                                if (tableBody && tableBody.children.length === 0) {
+                                                    const tableContainer = tableBody.closest('.table-responsive');
+                                                    if (tableContainer) {
+                                                        tableContainer.innerHTML = `
+                                            <div class="text-center py-5">
+                                                <i class="bi bi-music-note-list display-1 text-muted"></i>
+                                                <p class="mt-3">这个歌单还没有歌曲</p>
+                                                <a href="/search?type=song" class="btn btn-primary">
+                                                    <i class="bi bi-plus-lg"></i> 添加歌曲
+                                                </a>
+                                            </div>
+                                        `;
+                                                    }
+                                                }
+
+                                                // 更新歌曲数量显示
+                                                const songCountEl = document.querySelector('.playlist-info p:nth-child(2)');
+                                                if (songCountEl) {
+                                                    const currentCount = parseInt(songCountEl.textContent.match(/\d+/)[0]) - 1;
+                                                    songCountEl.innerHTML = `<strong>歌曲数:</strong> ${currentCount}`;
+                                                }
+                                            } else {
+                                                alert(data.message || '移除失败');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('移除失败:', error);
+                                            alert('移除失败，请稍后再试');
+                                        });
+                                }
+                            });
+                        });
+                    }
+
+                    // 保存歌单修改
+                    const savePlaylistChangesBtn = document.getElementById('save-playlist-changes');
+                    if (savePlaylistChangesBtn) {
+                        savePlaylistChangesBtn.addEventListener('click', function () {
+                            const form = document.getElementById('edit-playlist-form');
+                            const formData = new FormData(form);
+                            const playlistId = '<%= playlist._id %>';
+
+                            fetch(`/playlist/${playlistId}/edit`, {
+                                method: 'POST',
+                                body: formData
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        // 关闭模态框
+                                        const modal = bootstrap.Modal.getInstance(document.getElementById('editPlaylistModal'));
+                                        modal.hide();
+
+                                        // 重新加载页面以显示更新
+                                        window.location.reload();
+                                    } else {
+                                        alert(data.message || '更新失败');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('更新失败:', error);
+                                    alert('更新失败，请稍后再试');
+                                });
+                        });
+                    }
+
+                   
+                    if (window.musicPlayer && !window.musicPlayer.addToPlaylist) {
+                  
+                        window.musicPlayer.addToPlaylist = function (song) {
+                            // 将歌曲添加到播放列表
+                     
+                            console.log('添加歌曲到播放列表:', song.title);
+
+                            // 尝试使用现有方法添加到播放列表
+                            if (window.musicPlayer.currentPlaylist && Array.isArray(window.musicPlayer.currentPlaylist)) {
+                                window.musicPlayer.currentPlaylist.push(song);
+                            }
+                        };
+                    }
+                });
+            </script>
+
+            <%- include('partials/footer') %>

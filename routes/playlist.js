@@ -120,4 +120,50 @@ router.post('/:id/upload-cover', isAuthenticated, upload.single('cover'), async 
   }
 });
 
+// 编辑歌单
+router.post('/:id/edit', isAuthenticated, upload.single('cover'), async (req, res) => {
+  try {
+    const { name, description, isPublic, tags } = req.body;
+    const playlistId = req.params.id;
+    
+    // 获取歌单
+    const playlist = await Playlist.findById(playlistId);
+    if (!playlist) {
+      return res.status(404).json({ success: false, message: '歌单不存在' });
+    }
+    
+    // 检查权限
+    if (playlist.creator.toString() !== req.session.user.id) {
+      return res.status(403).json({ success: false, message: '您没有权限编辑此歌单' });
+    }
+    
+    // 处理标签
+    let tagArray = [];
+    if (tags) {
+      tagArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+    }
+    
+    // 更新歌单
+    const updateData = {
+      name,
+      description,
+      isPublic: isPublic === 'true',
+      tags: tagArray,
+      updatedAt: new Date()
+    };
+    
+    // 如果上传了封面
+    if (req.file) {
+      updateData.coverImage = `/uploads/playlists/${req.file.filename}`;
+    }
+    
+    await Playlist.findByIdAndUpdate(playlistId, updateData);
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: '更新歌单失败' });
+  }
+});
+
 module.exports = router;

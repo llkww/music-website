@@ -445,4 +445,38 @@ router.get('/song/:id/similar', asyncHandler(async (req, res) => {
   });
 }));
 
+
+// 获取相似歌曲推荐 - 新增API
+router.get('/song/:id/similar', asyncHandler(async (req, res) => {
+  const songId = req.params.id;
+  
+  // 获取歌曲详情
+  const song = await Song.findById(songId);
+  if (!song) {
+    return res.status(404).json({ success: false, message: '歌曲不存在' });
+  }
+  
+  // 基于相同歌手、风格或标签推荐类似歌曲
+  const similarSongs = await Song.find({
+    _id: { $ne: songId },
+    $or: [
+      { artist: song.artist },
+      { genre: song.genre },
+      { tags: { $in: song.tags || [] } }
+    ]
+  })
+  .sort({ playCount: -1 })
+  .limit(6)
+  .populate('artist');
+  
+  res.json({
+    success: true,
+    originalSong: {
+      id: song._id,
+      title: song.title
+    },
+    similarSongs
+  });
+}));
+
 module.exports = router;
