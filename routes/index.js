@@ -31,13 +31,37 @@ router.get('/', async (req, res) => {
       .limit(6)
       .populate('creator');
     
+    // 新增: 获取热歌TOP10
+    const hotSongsTop10 = await Song.find()
+      .sort({ playCount: -1 })
+      .limit(10)
+      .populate('artist')
+      .populate('album');
+    
+    // 新增: 获取最喜爱TOP10
+    const mostLikedSongs = await Song.find()
+      .sort({ likes: -1 })
+      .limit(10)
+      .populate('artist')
+      .populate('album');
+    
+    // 新增: 获取新歌TOP10
+    const newSongsTop10 = await Song.find()
+      .sort({ releaseYear: -1 })
+      .limit(10)
+      .populate('artist')
+      .populate('album');
+    
     res.render('index', {
       title: '首页',
       isHomePage: true, // 添加标志，用于显示搜索框
       hotSongs,
       newAlbums,
       popularArtists,
-      recommendedPlaylists
+      recommendedPlaylists,
+      hotSongsTop10, // 新增
+      mostLikedSongs, // 新增
+      newSongsTop10   // 新增
     });
   } catch (error) {
     console.error(error);

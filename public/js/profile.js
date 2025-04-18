@@ -1,3 +1,4 @@
+// profile.js (修改后)
 document.addEventListener('DOMContentLoaded', function() {
   // 头像上传预览
   const avatarInput = document.getElementById('avatar-upload');
@@ -38,8 +39,15 @@ document.addEventListener('DOMContentLoaded', function() {
             img.src = data.avatarPath;
           });
           
+          // 更新导航栏头像
+          document.querySelector('.navbar .avatar-sm').src = data.avatarPath;
+          
           // 显示成功消息
           alert('头像上传成功');
+          
+          // 关闭模态框
+          const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
+          if (modal) modal.hide();
         } else {
           alert(data.message || '上传失败');
         }
@@ -47,48 +55,6 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(error => {
         console.error('上传失败:', error);
         alert('上传失败');
-      });
-    });
-  }
-  
-  // VIP开通表单
-  const vipForm = document.getElementById('vip-form');
-  
-  if (vipForm) {
-    vipForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      fetch('/user/vip', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          plan: document.querySelector('input[name="vip-plan"]:checked').value
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('恭喜您，VIP开通成功！');
-          
-          // 显示VIP到期时间
-          const expiryDate = new Date(data.expiry);
-          document.getElementById('vip-expiry').textContent = expiryDate.toLocaleDateString();
-          
-          // 显示VIP标识
-          document.getElementById('vip-badge').style.display = 'inline-block';
-          
-          // 隐藏开通表单，显示续费表单
-          document.getElementById('vip-purchase').style.display = 'none';
-          document.getElementById('vip-renew').style.display = 'block';
-        } else {
-          alert(data.message || '开通失败');
-        }
-      })
-      .catch(error => {
-        console.error('开通失败:', error);
-        alert('开通失败');
       });
     });
   }

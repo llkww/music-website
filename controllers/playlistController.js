@@ -34,7 +34,10 @@ exports.getPlaylistDetails = async (req, res) => {
       .populate('creator')
       .populate({
         path: 'songs',
-        populate: { path: 'artist' }
+        populate: [
+          { path: 'artist' },
+          { path: 'album' } // 确保也填充专辑信息
+        ]
       });
     
     if (!playlist) {
@@ -49,9 +52,16 @@ exports.getPlaylistDetails = async (req, res) => {
       });
     }
     
+    // 检查用户是否喜欢了这个歌单
+    let isLiked = false;
+    if (req.session.user) {
+      isLiked = playlist.likedBy.includes(req.session.user.id);
+    }
+    
     res.render('playlist-details', {
       title: playlist.name,
-      playlist
+      playlist,
+      isLiked
     });
   } catch (error) {
     console.error(error);

@@ -61,4 +61,7 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), userCont
 // 我喜欢的音乐页面
 router.get('/liked-songs', isAuthenticated, userController.getLikedSongs);
 
+// 修改密码
+router.post('/update-password', isAuthenticated, userController.updatePassword);
+
 module.exports = router;
