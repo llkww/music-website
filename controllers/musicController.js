@@ -48,17 +48,16 @@ exports.getSongDetails = async (req, res) => {
     song.playCount += 1;
     await song.save();
     
-    // 检查用户是否已收藏该歌曲
-    let isLiked = false;
-    if (req.session.user) {
-      const user = await User.findById(req.session.user.id);
-      isLiked = user.likedSongs.includes(song._id);
-    }
+    // // 检查用户是否已收藏该歌曲
+    // let isLiked = false;
+    // if (req.session.user) {
+    //   const user = await User.findById(req.session.user.id);
+    //   isLiked = user.likedSongs.includes(song._id);
+    // }
     
     res.render('song-details', {
       title: song.title,
       song,
-      isLiked
     });
   } catch (error) {
     console.error(error);
