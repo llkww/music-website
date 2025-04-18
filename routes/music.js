@@ -36,7 +36,7 @@ router.get('/new-songs', async (req, res) => {
 });
 
 // 重要：修复歌曲详情路由 - 直接定义在这里，不使用控制器
-router.get('/song/:id', async (req, res) => {
+router.get('/songs/:id', async (req, res) => {
   try {
     console.log('进入歌曲详情路由，ID:', req.params.id);
     
