@@ -20,7 +20,7 @@
                     <div class="btn-group">
                         <% if (locals.user) { %>
                             <button id="like-button" class="btn btn-outline-danger btn-lg" data-id="<%= song._id %>">
-                                <i class="bi <%= locals.isLiked ? 'bi-heart-fill' : 'bi-heart' %>"></i>
+                                <i class="bi bi-heart"></i>
                                 <span class="like-count">
                                     <%= song.likes %>
                                 </span>
