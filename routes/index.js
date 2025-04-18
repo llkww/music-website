@@ -8,10 +8,10 @@ const Playlist = require('../models/Playlist');
 // 首页
 router.get('/', async (req, res) => {
   try {
-    // 获取热门歌曲
+    // 获取热门歌曲 - 修改为12首
     const hotSongs = await Song.find()
       .sort({ playCount: -1 })
-      .limit(10)
+      .limit(12)
       .populate('artist');
     
     // 获取最新专辑

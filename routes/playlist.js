@@ -80,7 +80,7 @@ router.get('/user-playlists', isAuthenticated, async (req, res) => {
 // 歌单详情页
 router.get('/:id', playlistController.getPlaylistDetails);
 
-// 添加歌曲到歌单
+// 添加歌曲到歌单 - 修改为跳转到首页
 router.post('/add-song', isAuthenticated, playlistController.addSongToPlaylist);
 
 // 从歌单移除歌曲

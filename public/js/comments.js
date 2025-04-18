@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // 绑定评论相关事件处理
   function bindCommentEvents() {
     // 绑定点赞事件
-    commentsList.querySelectorAll('.like-button').forEach(button => {
+    document.querySelectorAll('.like-button').forEach(button => {
       button.addEventListener('click', function() {
         const commentId = this.dataset.id;
         const type = this.dataset.type;
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 绑定回复按钮事件
-    commentsList.querySelectorAll('.reply-button').forEach(button => {
+    document.querySelectorAll('.reply-button').forEach(button => {
       button.addEventListener('click', function() {
         const commentId = this.dataset.id;
         const replyFormContainer = document.getElementById(`reply-form-${commentId}`);
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // 绑定回复表单提交事件
-    commentsList.querySelectorAll('.reply-form').forEach(form => {
+    document.querySelectorAll('.reply-form').forEach(form => {
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         

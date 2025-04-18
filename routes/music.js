@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const musicController = require('../controllers/musicController');
-const Song = require('../models/Song'); // 添加直接引入模型
+const Song = require('../models/Song');
+const Artist = require('../models/Artist');
+const Album = require('../models/Album');
+const User = require('../models/User');
 
 // 获取热门歌曲
 router.get('/hot-songs', musicController.getHotSongs);
@@ -9,8 +12,44 @@ router.get('/hot-songs', musicController.getHotSongs);
 // 获取新歌榜
 router.get('/new-songs', musicController.getNewSongs);
 
-// 歌曲详情页 - 修改路由路径，直接使用song/:id
-router.get('/music/song/:id', musicController.getSongDetails);
+// 歌曲详情页
+router.get('/song/:id', musicController.getSongDetails);
+
+// 添加一个通用的路由处理器，类似artist.js中的做法
+router.get('/:id', async (req, res) => {
+  try {
+    const song = await Song.findById(req.params.id)
+      .populate('artist')
+      .populate('album');
+    
+    if (!song) {
+      return res.status(404).render('404', { title: '歌曲不存在' });
+    }
+    
+    // 更新播放次数
+    song.playCount += 1;
+    await song.save();
+    
+    // 检查用户是否已收藏该歌曲
+    let isLiked = false;
+    if (req.session.user) {
+      const user = await User.findById(req.session.user.id);
+      isLiked = user.likedSongs.includes(song._id);
+    }
+    
+    res.render('song-details', {
+      title: song.title,
+      song,
+      isLiked
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', {
+      title: '服务器错误',
+      message: '获取歌曲详情失败'
+    });
+  }
+});
 
 // 喜欢/取消喜欢歌曲
 router.post('/song/:id/like', musicController.toggleLikeSong);

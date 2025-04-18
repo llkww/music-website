@@ -9,9 +9,7 @@
                     <% if (!locals.user) { %>
                         <a href="/auth/register" class="btn btn-primary btn-lg me-2">免费注册</a>
                         <a href="/auth/login" class="btn btn-outline-light btn-lg">登录</a>
-                        <% } else { %>
-                            <a href="/search?type=song" class="btn btn-primary btn-lg">开始探索</a>
-                            <% } %>
+                        <% } %>
                 </div>
                 <div class="col-md-6" data-aos="fade-left" data-aos-delay="400">
                     <img src="/img/hero-image.jpg" alt="音乐体验" class="img-fluid rounded shadow">
@@ -192,7 +190,7 @@
                                                     <%= song.title %>
                                                 </a></div>
                                             <small class="text-muted text-truncate">
-                                                href="/artist/<%= song.artist._id %>">
+                                                <a href="/artist/<%= song.artist._id %>">
                                                     <%= song.artist.name %>
                                                         </a></small>
                                         </div>
@@ -230,7 +228,7 @@
                                                     <%= song.title %>
                                                 </a></div>
                                             <small class="text-muted text-truncate">
-                                                href="/artist/<%= song.artist._id %>">
+                                                <a href="/artist/<%= song.artist._id %>">
                                                     <%= song.artist.name %>
                                                         </a></small>
                                         </div>
@@ -268,7 +266,7 @@
                                                     <%= song.title %>
                                                 </a></div>
                                             <small class="text-muted text-truncate">
-                                                href="/artist/<%= song.artist._id %>">
+                                                <a href="/artist/<%= song.artist._id %>">
                                                     <%= song.artist.name %>
                                                         </a></small>
                                         </div>
