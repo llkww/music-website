@@ -46,7 +46,12 @@ exports.replySongComment = async (req, res) => {
       return res.status(401).json({ message: '请先登录' });
     }
     
-    const { songId, commentId, text } = req.body;
+    // 修改：从 URL 参数获取 ID，而不是请求体
+    const songId = req.params.id;
+    const commentId = req.params.commentId;
+    const { text } = req.body;
+    
+    console.log('回复评论:', { songId, commentId, userId: req.session.user.id }); // 添加日志
     
     const song = await Song.findById(songId);
     if (!song) {
@@ -74,8 +79,8 @@ exports.replySongComment = async (req, res) => {
     
     res.json({ success: true, reply: addedReply });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: '添加回复失败' });
+    console.error('回复评论出错:', error);
+    res.status(500).json({ message: '添加回复失败', error: error.message });
   }
 };
 
@@ -86,8 +91,12 @@ exports.likeSongComment = async (req, res) => {
       return res.status(401).json({ message: '请先登录' });
     }
     
-    const { songId, commentId } = req.body;
-    const { type = 'comment' } = req.body; // 新增：评论类型 comment 或 reply
+    // 修改：从 URL 参数获取 ID，而不是请求体
+    const songId = req.params.id;
+    const commentId = req.params.commentId;
+    const { type = 'comment' } = req.body; // 评论类型 comment 或 reply
+    
+    console.log('点赞评论:', { songId, commentId, type, userId: req.session.user.id }); // 添加日志
     
     const song = await Song.findById(songId);
     if (!song) {
@@ -179,8 +188,8 @@ exports.likeSongComment = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: '点赞失败' });
+    console.error('点赞评论出错:', error);
+    res.status(500).json({ message: '点赞失败', error: error.message });
   }
 };
 

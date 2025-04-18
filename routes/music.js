@@ -15,7 +15,7 @@ router.get('/new-songs', musicController.getNewSongs);
 // 歌曲详情页
 router.get('/song/:id', musicController.getSongDetails);
 
-// 添加一个通用的路由处理器，类似artist.js中的做法
+// 添加一个通用的路由处理器
 router.get('/:id', async (req, res) => {
   try {
     const song = await Song.findById(req.params.id)

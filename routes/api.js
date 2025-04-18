@@ -38,8 +38,10 @@ router.post('/song/:id/comment/:commentId/reply', commentController.replySongCom
 router.post('/song/:id/comment/:commentId/like', commentController.likeSongComment);
 router.get('/song/:id/comments', commentController.getSongComments);
 
-// 歌单评论相关接口
+// 歌单评论相关接口也需要保持一致
 router.post('/playlist/:id/comment', commentController.addPlaylistComment);
+router.post('/playlist/:id/comment/:commentId/reply', commentController.replySongComment); 
+router.post('/playlist/:id/comment/:commentId/like', commentController.likeSongComment); 
 router.get('/playlist/:id/comments', commentController.getPlaylistComments);
 
 // 歌词API - 增强错误处理和缓存控制

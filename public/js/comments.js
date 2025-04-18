@@ -13,16 +13,21 @@ document.addEventListener('DOMContentLoaded', function() {
   let currentPage = 1;
   const pageSize = 10;
   
+  // 调试信息
+  console.log('评论组件初始化:', { contentId, contentType });
+  
   // 加载评论
   function loadComments(page = 1, append = false) {
     if (!contentId || !contentType) return;
     
     const url = `/api/${contentType}/${contentId}/comments`;
+    console.log('加载评论URL:', url);
     
     fetch(url)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          console.log('评论加载成功:', data.comments.length);
           renderComments(data.comments, append);
           
           // 更新加载更多按钮状态
@@ -145,56 +150,87 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 绑定事件处理函数
     bindCommentEvents();
+    console.log('评论渲染完成，已绑定事件');
   }
   
   // 绑定评论相关事件处理
   function bindCommentEvents() {
     // 绑定点赞事件
-    document.querySelectorAll('.like-button').forEach(button => {
-      button.addEventListener('click', function() {
-        const commentId = this.dataset.id;
-        const type = this.dataset.type;
-        likeComment(commentId, type, this);
-      });
+    const likeButtons = commentsList.querySelectorAll('.like-button');
+    console.log(`找到 ${likeButtons.length} 个点赞按钮`);
+    
+    likeButtons.forEach(button => {
+      button.removeEventListener('click', likeButtonHandler); // 避免重复绑定
+      button.addEventListener('click', likeButtonHandler);
     });
     
     // 绑定回复按钮事件
-    document.querySelectorAll('.reply-button').forEach(button => {
-      button.addEventListener('click', function() {
-        const commentId = this.dataset.id;
-        const replyFormContainer = document.getElementById(`reply-form-${commentId}`);
-        
-        // 隐藏所有其他回复表单
-        document.querySelectorAll('.reply-form-container').forEach(container => {
-          if (container.id !== `reply-form-${commentId}`) {
-            container.style.display = 'none';
-          }
-        });
-        
-        // 切换当前回复表单显示状态
-        replyFormContainer.style.display = replyFormContainer.style.display === 'none' ? 'block' : 'none';
-        
-        // 聚焦到输入框
-        if (replyFormContainer.style.display === 'block') {
-          replyFormContainer.querySelector('.reply-input').focus();
-        }
-      });
+    const replyButtons = commentsList.querySelectorAll('.reply-button');
+    console.log(`找到 ${replyButtons.length} 个回复按钮`);
+    
+    replyButtons.forEach(button => {
+      button.removeEventListener('click', replyButtonHandler); // 避免重复绑定
+      button.addEventListener('click', replyButtonHandler);
     });
     
     // 绑定回复表单提交事件
-    document.querySelectorAll('.reply-form').forEach(form => {
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const commentId = this.dataset.commentId;
-        const replyInput = this.querySelector('.reply-input');
-        const replyText = replyInput.value.trim();
-        
-        if (replyText) {
-          submitReply(commentId, replyText, this);
-        }
-      });
+    const replyForms = commentsList.querySelectorAll('.reply-form');
+    console.log(`找到 ${replyForms.length} 个回复表单`);
+    
+    replyForms.forEach(form => {
+      form.removeEventListener('submit', replyFormHandler); // 避免重复绑定
+      form.addEventListener('submit', replyFormHandler);
     });
+  }
+  
+  // 点赞按钮事件处理
+  function likeButtonHandler() {
+    const commentId = this.dataset.id;
+    const type = this.dataset.type;
+    console.log('点赞按钮点击:', { commentId, type });
+    likeComment(commentId, type, this);
+  }
+  
+  // 回复按钮事件处理
+  function replyButtonHandler() {
+    const commentId = this.dataset.id;
+    console.log('回复按钮点击:', { commentId });
+    
+    const replyFormContainer = document.getElementById(`reply-form-${commentId}`);
+    if (!replyFormContainer) {
+      console.error('未找到回复表单容器:', `reply-form-${commentId}`);
+      return;
+    }
+    
+    // 隐藏所有其他回复表单
+    document.querySelectorAll('.reply-form-container').forEach(container => {
+      if (container.id !== `reply-form-${commentId}`) {
+        container.style.display = 'none';
+      }
+    });
+    
+    // 切换当前回复表单显示状态
+    replyFormContainer.style.display = replyFormContainer.style.display === 'none' ? 'block' : 'none';
+    
+    // 聚焦到输入框
+    if (replyFormContainer.style.display === 'block') {
+      replyFormContainer.querySelector('.reply-input').focus();
+    }
+  }
+  
+  // 回复表单提交事件处理
+  function replyFormHandler(e) {
+    e.preventDefault();
+    
+    const commentId = this.dataset.commentId;
+    const replyInput = this.querySelector('.reply-input');
+    const replyText = replyInput.value.trim();
+    
+    console.log('提交回复:', { commentId, text: replyText });
+    
+    if (replyText) {
+      submitReply(commentId, replyText, this);
+    }
   }
   
   // 点赞评论
@@ -202,6 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!commentId) return;
     
     const url = `/api/${contentType}/${contentId}/comment/${commentId}/like`;
+    console.log('点赞请求URL:', url);
     
     fetch(url, {
       method: 'POST',
@@ -212,6 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(response => response.json())
     .then(data => {
+      console.log('点赞响应:', data);
+      
       if (data.success) {
         // 更新点赞数
         const likeCountEl = button.querySelector('.like-count');
@@ -254,16 +293,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!contentId || !contentType || !text) return;
     
     const url = `/api/${contentType}/${contentId}/comment`;
+    console.log('提交评论URL:', url);
     
     fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ text, [`${contentType}Id`]: contentId })
+      body: JSON.stringify({ text })
     })
     .then(response => response.json())
     .then(data => {
+      console.log('评论响应:', data);
+      
       if (data.success) {
         // 清空输入框
         if (commentInput) {
@@ -295,6 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!contentId || !contentType || !commentId || !text) return;
     
     const url = `/api/${contentType}/${contentId}/comment/${commentId}/reply`;
+    console.log('提交回复URL:', url);
     
     fetch(url, {
       method: 'POST',
@@ -305,6 +348,8 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(response => response.json())
     .then(data => {
+      console.log('回复响应:', data);
+      
       if (data.success) {
         // 清空输入框
         form.querySelector('.reply-input').value = '';
@@ -331,8 +376,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // 添加新回复到DOM
   function addReplyToDOM(commentId, reply) {
     const commentEl = document.getElementById(`comment-${commentId}`);
+    console.log('添加回复到DOM:', { commentId, reply });
     
-    if (!commentEl) return;
+    if (!commentEl) {
+      console.error('未找到评论元素:', `comment-${commentId}`);
+      return;
+    }
     
     // 查找或创建回复容器
     let repliesContainer = commentEl.querySelector('.comment-replies');
@@ -417,6 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 初始加载评论
   if (contentId && contentType && commentsList) {
+    console.log('初始加载评论');
     loadComments();
   }
 });
