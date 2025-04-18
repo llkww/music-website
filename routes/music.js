@@ -54,6 +54,12 @@ router.get('/:id', async (req, res) => {
 // 喜欢/取消喜欢歌曲
 router.post('/song/:id/like', musicController.toggleLikeSong);
 
+// 歌手详情页
+router.get('/artist/:id', musicController.getArtistDetails);
+
+// 专辑详情页
+router.get('/album/:id', musicController.getAlbumDetails);
+
 // 分类浏览页面 - 按流派
 router.get('/genre/:genre', async (req, res) => {
   try {
