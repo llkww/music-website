@@ -1,38 +1,48 @@
 const express = require('express');
 const router = express.Router();
-const musicController = require('../controllers/musicController');
 const Song = require('../models/Song');
 const Artist = require('../models/Artist');
 const Album = require('../models/Album');
 const User = require('../models/User');
 
 // 获取热门歌曲
-router.get('/hot-songs', musicController.getHotSongs);
+router.get('/hot-songs', async (req, res) => {
+  try {
+    const songs = await Song.find()
+      .sort({ playCount: -1 })
+      .limit(13) 
+      .populate('artist');
+    
+    res.json(songs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: '获取热门歌曲失败' });
+  }
+});
 
 // 获取新歌榜
-router.get('/new-songs', musicController.getNewSongs);
+router.get('/new-songs', async (req, res) => {
+  try {
+    const songs = await Song.find()
+      .sort({ _id: -1 })
+      .limit(10)
+      .populate('artist');
+    
+    res.json(songs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: '获取新歌榜失败' });
+  }
+});
 
-// 歌曲详情页
-router.get('/song/:id', musicController.getSongDetails);
-
+// 重要：修复歌曲详情路由 - 直接定义在这里，不使用控制器
 router.get('/song/:id', async (req, res) => {
   try {
     console.log('进入歌曲详情路由，ID:', req.params.id);
     
-    // 确保ID格式正确
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      console.log('无效的歌曲ID格式:', req.params.id);
-      return res.status(400).render('error', { 
-        title: '请求错误', 
-        message: '无效的歌曲ID格式' 
-      });
-    }
-    
-    // 使用lean()获取纯JavaScript对象，避免mongoose文档对象可能的问题
     const song = await Song.findById(req.params.id)
       .populate('artist')
-      .populate('album')
-      .lean();
+      .populate('album');
     
     if (!song) {
       console.log('歌曲未找到:', req.params.id);
@@ -41,20 +51,13 @@ router.get('/song/:id', async (req, res) => {
     
     console.log('找到歌曲:', song.title);
     
-    // 确保所有必要字段都有默认值
-    song.playCount = (song.playCount || 0) + 1;
-    song.likes = song.likes || 0;
-    song.comments = song.comments || [];
-    song.lyrics = song.lyrics || '';
-    song.tags = song.tags || [];
+    // 更新播放次数
+    song.playCount += 1;
+    await song.save();
     
-    // 更新播放次数 - 使用单独的操作，不影响渲染
-    Song.findByIdAndUpdate(req.params.id, { $inc: { playCount: 1 } })
-      .catch(err => console.error('更新播放次数失败:', err));
-    
-    // 渲染模板，传递处理后的安全数据
+    // 不检查isLiked状态
     res.render('song-details', {
-      title: song.title || '歌曲详情',
+      title: song.title,
       song
     });
   } catch (error) {
@@ -67,13 +70,86 @@ router.get('/song/:id', async (req, res) => {
 });
 
 // 喜欢/取消喜欢歌曲
-router.post('/song/:id/like', musicController.toggleLikeSong);
+router.post('/song/:id/like', async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({ message: '请先登录' });
+    }
+    
+    const user = await User.findById(req.session.user.id);
+    const songId = req.params.id;
+    
+    // 检查歌曲是否已被喜欢
+    const isLiked = user.likedSongs.includes(songId);
+    
+    if (isLiked) {
+      // 取消喜欢
+      await User.findByIdAndUpdate(req.session.user.id, {
+        $pull: { likedSongs: songId }
+      });
+      await Song.findByIdAndUpdate(songId, { $inc: { likes: -1 } });
+    } else {
+      // 添加喜欢
+      await User.findByIdAndUpdate(req.session.user.id, {
+        $push: { likedSongs: songId }
+      });
+      await Song.findByIdAndUpdate(songId, { $inc: { likes: 1 } });
+    }
+    
+    res.json({ success: true, liked: !isLiked });
+  } catch (error) {
+    console.error('喜欢/取消喜欢操作失败:', error);
+    res.status(500).json({ message: '操作失败' });
+  }
+});
 
 // 歌手详情页
-router.get('/artist/:id', musicController.getArtistDetails);
+router.get('/artist/:id', async (req, res) => {
+  try {
+    const artist = await Artist.findById(req.params.id)
+      .populate('popularSongs')
+      .populate('albums');
+    
+    if (!artist) {
+      return res.status(404).render('404', { title: '歌手不存在' });
+    }
+    
+    res.render('artist-details', {
+      title: artist.name,
+      artist
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', {
+      title: '服务器错误',
+      message: '获取歌手详情失败'
+    });
+  }
+});
 
 // 专辑详情页
-router.get('/album/:id', musicController.getAlbumDetails);
+router.get('/album/:id', async (req, res) => {
+  try {
+    const album = await Album.findById(req.params.id)
+      .populate('artist')
+      .populate('songs');
+    
+    if (!album) {
+      return res.status(404).render('404', { title: '专辑不存在' });
+    }
+    
+    res.render('album-details', {
+      title: album.title,
+      album
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', {
+      title: '服务器错误',
+      message: '获取专辑详情失败'
+    });
+  }
+});
 
 // 分类浏览页面 - 按流派
 router.get('/genre/:genre', async (req, res) => {
@@ -120,5 +196,8 @@ router.get('/language/:language', async (req, res) => {
     });
   }
 });
+
+// 删除通用路由，避免冲突
+// router.get('/:id', async (req, res) => {...});
 
 module.exports = router;
