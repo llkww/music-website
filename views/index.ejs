@@ -84,8 +84,13 @@
                                         <%= album.title %>
                                     </a>
                                 </h5>
-                                <p class="card-text text-muted text-truncate">
-                                    <!-- 添加链接到歌手详情页 -->
+
+                                <!-- <p class="mb-1"><strong>歌手:</strong> <a href="/artist/<%= album.artist._id %>">
+                                        <%= album.artist.name %>
+                                    </a></p> -->
+
+                                <p class="mb-1">
+                                    <!-- 添加链接到歌手详情页 --> 
                                     <a href="/artist/<%= album.artist._id %>">
                                         <%= album.artist.name %>
                                     </a>
