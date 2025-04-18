@@ -12,8 +12,8 @@ router.get('/hot-songs', musicController.getHotSongs);
 // 获取新歌榜
 router.get('/new-songs', musicController.getNewSongs);
 
-// 歌曲详情页
-router.get('/song/:id', musicController.getSongDetails);
+// // 歌曲详情页
+// router.get('/song/:id', musicController.getSongDetails);
 
 // 添加一个通用的路由处理器
 router.get('/:id', async (req, res) => {
