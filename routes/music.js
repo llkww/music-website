@@ -10,7 +10,7 @@ router.get('/hot-songs', musicController.getHotSongs);
 router.get('/new-songs', musicController.getNewSongs);
 
 // 歌曲详情页 - 修改路由路径，直接使用song/:id
-router.get('/song/:id', musicController.getSongDetails);
+router.get('/music/song/:id', musicController.getSongDetails);
 
 // 喜欢/取消喜欢歌曲
 router.post('/song/:id/like', musicController.toggleLikeSong);
