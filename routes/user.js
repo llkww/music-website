@@ -61,7 +61,4 @@ router.post('/upload-avatar', isAuthenticated, upload.single('avatar'), userCont
 // 我喜欢的音乐页面
 router.get('/liked-songs', isAuthenticated, userController.getLikedSongs);
 
-// 播放历史页面
-router.get('/play-history', isAuthenticated, userController.getPlayHistory);
-
 module.exports = router;
