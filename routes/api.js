@@ -445,7 +445,6 @@ router.get('/song/:id/similar', asyncHandler(async (req, res) => {
   });
 }));
 
-
 // 获取相似歌曲推荐 - 新增API
 router.get('/song/:id/similar', asyncHandler(async (req, res) => {
   const songId = req.params.id;
@@ -477,6 +476,35 @@ router.get('/song/:id/similar', asyncHandler(async (req, res) => {
     },
     similarSongs
   });
+}));
+
+// 获取随机推荐歌曲
+router.get('/recommended-songs', asyncHandler(async (req, res) => {
+  try {
+    // 获取12首随机歌曲
+    const songs = await Song.aggregate([
+      { $sample: { size: 12 } },
+      { $lookup: { from: 'artists', localField: 'artist', foreignField: '_id', as: 'artistData' } },
+      { $unwind: '$artistData' }
+    ]);
+    
+    // 格式化结果以匹配前端期望的格式
+    const formattedSongs = songs.map(song => ({
+      _id: song._id,
+      title: song.title,
+      coverImage: song.coverImage,
+      audioFile: song.audioFile,
+      artist: {
+        _id: song.artistData._id,
+        name: song.artistData.name
+      }
+    }));
+    
+    res.json(formattedSongs);
+  } catch (error) {
+    console.error('获取推荐歌曲失败:', error);
+    res.status(500).json({ message: '获取推荐歌曲失败' });
+  }
 }));
 
 module.exports = router;

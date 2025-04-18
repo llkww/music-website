@@ -504,6 +504,8 @@ p {
     flex-direction: column;
     z-index: 1000;
     animation: slideUp 0.3s ease;
+    overflow-x: hidden;
+    /* 禁用水平滚动 */
 }
 
 @keyframes slideUp {
@@ -538,6 +540,8 @@ p {
 .playlist-items {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
+    /* 禁用水平滚动 */
     max-height: 400px;
 }
 
@@ -548,6 +552,8 @@ p {
     border-bottom: 1px solid #eee;
     cursor: pointer;
     transition: all 0.2s ease;
+    width: 100%;
+    /* 确保不超出容器宽度 */
 }
 
 .playlist-item.active {

@@ -9,16 +9,11 @@ router.get('/hot-songs', musicController.getHotSongs);
 // 获取新歌榜
 router.get('/new-songs', musicController.getNewSongs);
 
-// 歌曲详情页
+// 歌曲详情页 - 修改路由路径，直接使用song/:id
 router.get('/song/:id', musicController.getSongDetails);
 
 // 喜欢/取消喜欢歌曲
 router.post('/song/:id/like', musicController.toggleLikeSong);
-
-// 歌手详情页移至artist.js
-
-// 专辑详情页
-router.get('/album/:id', musicController.getAlbumDetails);
 
 // 分类浏览页面 - 按流派
 router.get('/genre/:genre', async (req, res) => {

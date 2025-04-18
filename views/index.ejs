@@ -20,14 +20,16 @@
         </div>
     </div>
 
-    <section class="hot-songs mb-5" data-aos="fade-up" data-aos-delay="200">
+    <section class="recommended-songs mb-5" data-aos="fade-up" data-aos-delay="200">
         <div class="container">
             <div class="section-header d-flex justify-content-between align-items-center mb-4">
-                <h2>热门歌曲</h2>
-                <a href="/search?type=song&sort=hot" class="btn btn-sm btn-outline-primary">查看全部</a>
+                <h2>推荐歌曲</h2>
+                <button id="refresh-songs" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
             </div>
 
-            <div class="row">
+            <div class="row" id="recommended-songs-container">
                 <% hotSongs.forEach((song, index)=> { %>
                     <div class="col-md-6 col-lg-4 mb-4" data-aos="zoom-in" data-aos-delay="<%= 300 + index * 100 %>">
                         <div class="card song-card h-100">
@@ -164,6 +166,128 @@
         </div>
     </section>
 
+    <section class="rankings mb-5" data-aos="fade-up" data-aos-delay="600">
+        <div class="container">
+            <h2 class="text-center mb-4">音乐排行榜</h2>
+
+            <div class="row">
+                <!-- 热歌TOP10 -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="h5 mb-0">热歌TOP10</h3>
+                            <small>依据播放量排名</small>
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <% hotSongsTop10.forEach((song, index)=> { %>
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <span class="badge <%= index < 3 ? 'bg-danger' : 'bg-secondary' %> me-3">
+                                            <%= index + 1 %>
+                                        </span>
+                                        <img src="<%= song.coverImage %>" class="rounded me-2"
+                                            style="width: 40px; height: 40px;" alt="<%= song.title %>">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
+                                                    <%= song.title %>
+                                                </a></div>
+                                            <small class="text-muted text-truncate">
+                                                href="/artist/<%= song.artist._id %>">
+                                                    <%= song.artist.name %>
+                                                        </a></small>
+                                        </div>
+                                        <button class="btn btn-sm btn-primary rounded-circle btn-play"
+                                            data-id="<%= song._id %>" data-title="<%= song.title %>"
+                                            data-artist="<%= song.artist.name %>" data-cover="<%= song.coverImage %>"
+                                            data-audio="<%= song.audioFile %>">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最喜爱TOP10 -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <div class="card-header bg-danger text-white">
+                            <h3 class="h5 mb-0">最喜爱TOP10</h3>
+                            <small>依据收藏量排名</small>
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <% mostLikedSongs.forEach((song, index)=> { %>
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <span class="badge <%= index < 3 ? 'bg-danger' : 'bg-secondary' %> me-3">
+                                            <%= index + 1 %>
+                                        </span>
+                                        <img src="<%= song.coverImage %>" class="rounded me-2"
+                                            style="width: 40px; height: 40px;" alt="<%= song.title %>">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
+                                                    <%= song.title %>
+                                                </a></div>
+                                            <small class="text-muted text-truncate">
+                                                href="/artist/<%= song.artist._id %>">
+                                                    <%= song.artist.name %>
+                                                        </a></small>
+                                        </div>
+                                        <button class="btn btn-sm btn-danger rounded-circle btn-play"
+                                            data-id="<%= song._id %>" data-title="<%= song.title %>"
+                                            data-artist="<%= song.artist.name %>" data-cover="<%= song.coverImage %>"
+                                            data-audio="<%= song.audioFile %>">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 新歌TOP10 -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="h5 mb-0">新歌TOP10</h3>
+                            <small>依据发行年份排名</small>
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <% newSongsTop10.forEach((song, index)=> { %>
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <span class="badge <%= index < 3 ? 'bg-danger' : 'bg-secondary' %> me-3">
+                                            <%= index + 1 %>
+                                        </span>
+                                        <img src="<%= song.coverImage %>" class="rounded me-2"
+                                            style="width: 40px; height: 40px;" alt="<%= song.title %>">
+                                        <div class="flex-grow-1 overflow-hidden">
+                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
+                                                    <%= song.title %>
+                                                </a></div>
+                                            <small class="text-muted text-truncate">
+                                                href="/artist/<%= song.artist._id %>">
+                                                    <%= song.artist.name %>
+                                                        </a></small>
+                                        </div>
+                                        <button class="btn btn-sm btn-success rounded-circle btn-play"
+                                            data-id="<%= song._id %>" data-title="<%= song.title %>"
+                                            data-artist="<%= song.artist.name %>" data-cover="<%= song.coverImage %>"
+                                            data-audio="<%= song.audioFile %>">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="features mb-5" data-aos="fade-up" data-aos-delay="700">
         <div class="container">
             <h2 class="text-center mb-4">网站特色</h2>
@@ -193,128 +317,6 @@
                             <i class="bi bi-people feature-icon"></i>
                             <h4 class="card-title">社交分享</h4>
                             <p class="card-text">与好友分享您喜爱的音乐，评论互动，共同探索音乐世界。</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="rankings mb-5" data-aos="fade-up" data-aos-delay="800">
-        <div class="container">
-            <h2 class="text-center mb-4">音乐排行榜</h2>
-    
-            <div class="row">
-                <!-- 热歌TOP10 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <div class="card-header bg-primary text-white">
-                            <h3 class="h5 mb-0">热歌TOP10</h3>
-                            <small>依据播放量排名</small>
-                        </div>
-                        <div class="card-body p-0">
-                            <ul class="list-group list-group-flush">
-                                <% hotSongsTop10.forEach((song, index)=> { %>
-                                    <li class="list-group-item d-flex align-items-center">
-                                        <span class="badge <%= index < 3 ? 'bg-danger' : 'bg-secondary' %> me-3">
-                                            <%= index + 1 %>
-                                        </span>
-                                        <img src="<%= song.coverImage %>" class="rounded me-2"
-                                            style="width: 40px; height: 40px;" alt="<%= song.title %>">
-                                        <div class="flex-grow-1 overflow-hidden">
-                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
-                                                    <%= song.title %>
-                                                </a></div>
-                                            <small class="text-muted text-truncate"><a
-                                                    href="/artist/<%= song.artist._id %>">
-                                                    <%= song.artist.name %>
-                                                </a></small>
-                                        </div>
-                                        <button class="btn btn-sm btn-primary rounded-circle btn-play"
-                                            data-id="<%= song._id %>" data-title="<%= song.title %>"
-                                            data-artist="<%= song.artist.name %>" data-cover="<%= song.coverImage %>"
-                                            data-audio="<%= song.audioFile %>">
-                                            <i class="bi bi-play-fill"></i>
-                                        </button>
-                                    </li>
-                                    <% }) %>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- 最喜爱TOP10 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <div class="card-header bg-danger text-white">
-                            <h3 class="h5 mb-0">最喜爱TOP10</h3>
-                            <small>依据收藏量排名</small>
-                        </div>
-                        <div class="card-body p-0">
-                            <ul class="list-group list-group-flush">
-                                <% mostLikedSongs.forEach((song, index)=> { %>
-                                    <li class="list-group-item d-flex align-items-center">
-                                        <span class="badge <%= index < 3 ? 'bg-danger' : 'bg-secondary' %> me-3">
-                                            <%= index + 1 %>
-                                        </span>
-                                        <img src="<%= song.coverImage %>" class="rounded me-2"
-                                            style="width: 40px; height: 40px;" alt="<%= song.title %>">
-                                        <div class="flex-grow-1 overflow-hidden">
-                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
-                                                    <%= song.title %>
-                                                </a></div>
-                                            <small class="text-muted text-truncate"><a
-                                                    href="/artist/<%= song.artist._id %>">
-                                                    <%= song.artist.name %>
-                                                </a></small>
-                                        </div>
-                                        <button class="btn btn-sm btn-danger rounded-circle btn-play"
-                                            data-id="<%= song._id %>" data-title="<%= song.title %>"
-                                            data-artist="<%= song.artist.name %>" data-cover="<%= song.coverImage %>"
-                                            data-audio="<%= song.audioFile %>">
-                                            <i class="bi bi-play-fill"></i>
-                                        </button>
-                                    </li>
-                                    <% }) %>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- 新歌TOP10 -->
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow">
-                        <div class="card-header bg-success text-white">
-                            <h3 class="h5 mb-0">新歌TOP10</h3>
-                            <small>依据发行年份排名</small>
-                        </div>
-                        <div class="card-body p-0">
-                            <ul class="list-group list-group-flush">
-                                <% newSongsTop10.forEach((song, index)=> { %>
-                                    <li class="list-group-item d-flex align-items-center">
-                                        <span class="badge <%= index < 3 ? 'bg-danger' : 'bg-secondary' %> me-3">
-                                            <%= index + 1 %>
-                                        </span>
-                                        <img src="<%= song.coverImage %>" class="rounded me-2"
-                                            style="width: 40px; height: 40px;" alt="<%= song.title %>">
-                                        <div class="flex-grow-1 overflow-hidden">
-                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
-                                                    <%= song.title %>
-                                                </a></div>
-                                            <small class="text-muted text-truncate"><a
-                                                    href="/artist/<%= song.artist._id %>">
-                                                    <%= song.artist.name %>
-                                                </a></small>
-                                        </div>
-                                        <button class="btn btn-sm btn-success rounded-circle btn-play"
-                                            data-id="<%= song._id %>" data-title="<%= song.title %>"
-                                            data-artist="<%= song.artist.name %>" data-cover="<%= song.coverImage %>"
-                                            data-audio="<%= song.audioFile %>">
-                                            <i class="bi bi-play-fill"></i>
-                                        </button>
-                                    </li>
-                                    <% }) %>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -370,6 +372,86 @@
 
                 // 清除URL参数
                 window.history.replaceState({}, document.title, '/');
+            }
+
+            // 添加刷新推荐歌曲的功能
+            const refreshButton = document.getElementById('refresh-songs');
+            if (refreshButton) {
+                refreshButton.addEventListener('click', function () {
+                    // 显示加载状态
+                    this.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                    this.classList.add('disabled');
+
+                    // 获取随机推荐歌曲
+                    fetch('/api/recommended-songs')
+                        .then(response => response.json())
+                        .then(songs => {
+                            const container = document.getElementById('recommended-songs-container');
+
+                            if (container && songs && songs.length > 0) {
+                                // 清空当前内容
+                                container.innerHTML = '';
+
+                                // 添加新的推荐歌曲
+                                songs.forEach((song, index) => {
+                                    const songCard = `
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                                        <div class="card song-card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center">
+                                                    <img src="${song.coverImage}" alt="${song.title}" class="song-cover me-3">
+                                                    <div class="song-info">
+                                                        <h5 class="card-title mb-1">
+                                                            <a href="/music/song/${song._id}">${song.title}</a>
+                                                        </h5>
+                                                        <p class="card-text text-muted">
+                                                            <a href="/artist/${song.artist._id}">${song.artist.name}</a>
+                                                        </p>
+                                                    </div>
+                                                    <div class="ms-auto">
+                                                        <button class="btn btn-play btn-sm btn-primary rounded-circle"
+                                                            data-id="${song._id}" data-title="${song.title}"
+                                                            data-artist="${song.artist.name}" data-cover="${song.coverImage}"
+                                                            data-audio="${song.audioFile}">
+                                                            <i class="bi bi-play-fill"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `;
+                                    container.innerHTML += songCard;
+                                });
+
+                                // 重新绑定播放按钮事件
+                                container.querySelectorAll('.btn-play').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const songData = {
+                                            id: this.dataset.id,
+                                            title: this.dataset.title,
+                                            artist: this.dataset.artist,
+                                            cover: this.dataset.cover,
+                                            audio: this.dataset.audio
+                                        };
+
+                                        if (window.musicPlayer) {
+                                            window.musicPlayer.playSong(songData);
+                                        }
+                                    });
+                                });
+                            }
+
+                            // 恢复按钮状态
+                            this.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                            this.classList.remove('disabled');
+                        })
+                        .catch(error => {
+                            console.error('获取推荐歌曲失败:', error);
+                            this.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                            this.classList.remove('disabled');
+                        });
+                });
             }
         });
     </script>
