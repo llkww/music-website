@@ -15,33 +15,56 @@ router.get('/new-songs', musicController.getNewSongs);
 // 歌曲详情页
 router.get('/song/:id', musicController.getSongDetails);
 
-// // 添加一个通用的路由处理器
-// router.get('/:id', async (req, res) => {
-//   try {
-//     const song = await Song.findById(req.params.id)
-//       .populate('artist')
-//       .populate('album');
+router.get('/song/:id', async (req, res) => {
+  try {
+    console.log('进入歌曲详情路由，ID:', req.params.id);
     
-//     if (!song) {
-//       return res.status(404).render('404', { title: '歌曲不存在' });
-//     }
+    // 确保ID格式正确
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      console.log('无效的歌曲ID格式:', req.params.id);
+      return res.status(400).render('error', { 
+        title: '请求错误', 
+        message: '无效的歌曲ID格式' 
+      });
+    }
     
-//     // 更新播放次数
-//     song.playCount += 1;
-//     await song.save();
+    // 使用lean()获取纯JavaScript对象，避免mongoose文档对象可能的问题
+    const song = await Song.findById(req.params.id)
+      .populate('artist')
+      .populate('album')
+      .lean();
     
-//     res.render('song-details', {
-//       title: song.title,
-//       song,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).render('error', {
-//       title: '服务器错误',
-//       message: '获取歌曲详情失败'
-//     });
-//   }
-// });
+    if (!song) {
+      console.log('歌曲未找到:', req.params.id);
+      return res.status(404).render('404', { title: '歌曲不存在' });
+    }
+    
+    console.log('找到歌曲:', song.title);
+    
+    // 确保所有必要字段都有默认值
+    song.playCount = (song.playCount || 0) + 1;
+    song.likes = song.likes || 0;
+    song.comments = song.comments || [];
+    song.lyrics = song.lyrics || '';
+    song.tags = song.tags || [];
+    
+    // 更新播放次数 - 使用单独的操作，不影响渲染
+    Song.findByIdAndUpdate(req.params.id, { $inc: { playCount: 1 } })
+      .catch(err => console.error('更新播放次数失败:', err));
+    
+    // 渲染模板，传递处理后的安全数据
+    res.render('song-details', {
+      title: song.title || '歌曲详情',
+      song
+    });
+  } catch (error) {
+    console.error('歌曲详情处理错误:', error);
+    res.status(500).render('error', {
+      title: '服务器错误',
+      message: '获取歌曲详情失败: ' + error.message
+    });
+  }
+});
 
 // 喜欢/取消喜欢歌曲
 router.post('/song/:id/like', musicController.toggleLikeSong);
