@@ -33,67 +33,67 @@ exports.getNewSongs = async (req, res) => {
   }
 };
 
-// 获取歌曲详情
-exports.getSongDetails = async (req, res) => {
-  try {
-    const song = await Song.findById(req.params.id)
-      .populate('artist')
-      .populate('album');
+// // 获取歌曲详情
+// exports.getSongDetails = async (req, res) => {
+//   try {
+//     const song = await Song.findById(req.params.id)
+//       .populate('artist')
+//       .populate('album');
     
-    if (!song) {
-      return res.status(404).render('404', { title: '歌曲不存在' });
-    }
+//     if (!song) {
+//       return res.status(404).render('404', { title: '歌曲不存在' });
+//     }
     
-    // 更新播放次数
-    song.playCount += 1;
-    await song.save();
+//     // 更新播放次数
+//     song.playCount += 1;
+//     await song.save();
     
-    res.render('song-details', {
-      title: song.title,
-      song,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).render('error', {
-      title: '服务器错误',
-      message: '获取歌曲详情失败'
-    });
-  }
-};
+//     res.render('song-details', {
+//       title: song.title,
+//       song,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).render('error', {
+//       title: '服务器错误',
+//       message: '获取歌曲详情失败'
+//     });
+//   }
+// };
 
-// 喜欢/取消喜欢歌曲
-exports.toggleLikeSong = async (req, res) => {
-  try {
-    if (!req.session.user) {
-      return res.status(401).json({ message: '请先登录' });
-    }
+// // 喜欢/取消喜欢歌曲
+// exports.toggleLikeSong = async (req, res) => {
+//   try {
+//     if (!req.session.user) {
+//       return res.status(401).json({ message: '请先登录' });
+//     }
     
-    const user = await User.findById(req.session.user.id);
-    const songId = req.params.id;
+//     const user = await User.findById(req.session.user.id);
+//     const songId = req.params.id;
     
-    // 检查歌曲是否已被喜欢
-    const isLiked = user.likedSongs.includes(songId);
+//     // 检查歌曲是否已被喜欢
+//     const isLiked = user.likedSongs.includes(songId);
     
-    if (isLiked) {
-      // 取消喜欢
-      await User.findByIdAndUpdate(req.session.user.id, {
-        $pull: { likedSongs: songId }
-      });
-      await Song.findByIdAndUpdate(songId, { $inc: { likes: -1 } });
-    } else {
-      // 添加喜欢
-      await User.findByIdAndUpdate(req.session.user.id, {
-        $push: { likedSongs: songId }
-      });
-      await Song.findByIdAndUpdate(songId, { $inc: { likes: 1 } });
-    }
+//     if (isLiked) {
+//       // 取消喜欢
+//       await User.findByIdAndUpdate(req.session.user.id, {
+//         $pull: { likedSongs: songId }
+//       });
+//       await Song.findByIdAndUpdate(songId, { $inc: { likes: -1 } });
+//     } else {
+//       // 添加喜欢
+//       await User.findByIdAndUpdate(req.session.user.id, {
+//         $push: { likedSongs: songId }
+//       });
+//       await Song.findByIdAndUpdate(songId, { $inc: { likes: 1 } });
+//     }
     
-    res.json({ success: true, liked: !isLiked });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: '操作失败' });
-  }
-};
+//     res.json({ success: true, liked: !isLiked });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: '操作失败' });
+//   }
+// };
 
 // 获取歌手详情
 exports.getArtistDetails = async (req, res) => {
