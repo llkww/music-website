@@ -195,6 +195,7 @@
             if (playAllBtn) {
                 playAllBtn.addEventListener('click', function () {
                     const songs = [];
+
                     // 收集所有歌曲信息
                     document.querySelectorAll('.btn-play').forEach(button => {
                         songs.push({
@@ -207,15 +208,12 @@
                     });
 
                     if (songs.length > 0 && window.musicPlayer) {
-                        // 添加所有歌曲到播放列表并播放第一首
-                        for (let i = 0; i < songs.length; i++) {
-                            if (i === 0) {
-                                window.musicPlayer.playSong(songs[i]);
-                            } else {
-                                if (window.musicPlayer.addToPlaylist) {
-                                    window.musicPlayer.addToPlaylist(songs[i]);
-                                }
-                            }
+                        // 播放第一首歌曲
+                        window.musicPlayer.playSong(songs[0]);
+
+                        // 将其余歌曲添加到播放列表
+                        for (let i = 1; i < songs.length; i++) {
+                            window.musicPlayer.addToPlaylist(songs[i]);
                         }
                     }
                 });

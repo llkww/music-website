@@ -390,6 +390,15 @@ document.addEventListener('DOMContentLoaded', function() {
           commentInput.value = '';
         }
         
+        // 确保排序方式是按时间排序，以便显示最新评论
+        sortBy = 'time';
+        const timeBtn = document.querySelector('.sort-by-time');
+        const likesBtn = document.querySelector('.sort-by-likes');
+        if (timeBtn && likesBtn) {
+          timeBtn.classList.add('active');
+          likesBtn.classList.remove('active');
+        }
+        
         // 重新加载评论
         loadComments();
         

@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+
+    <div class="container my-5 text-center">
+        <div class="py-5">
+            <i class="bi bi-search display-1 text-muted mb-4"></i>
+            <h2 class="mb-3">抱歉，您搜索的内容本网站暂未收录</h2>
+            <p class="lead mb-4">您可以尝试搜索其他关键词，或者浏览我们的推荐内容</p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form action="/search" method="GET" class="mb-4">
+                        <div class="input-group input-group-lg">
+                            <input type="search" class="form-control" placeholder="换个关键词试试..." name="query"
+                                value="<%= query || '' %>">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i> 搜索
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <a href="/" class="btn btn-outline-primary">返回首页</a>
+            <a href="/playlist/user-playlists" class="btn btn-outline-secondary ms-2">我的歌单</a>
+        </div>
+
+        <div class="mt-5">
+            <h3 class="mb-4">您可能喜欢</h3>
+            <div class="row" id="recommended-songs">
+                <!-- 这里会通过JS动态加载推荐歌曲 -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">加载中...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 加载推荐歌曲
+            const recommendedContainer = document.getElementById('recommended-songs');
+            if (recommendedContainer) {
+                fetch('/api/recommended-songs')
+                    .then(response => response.json())
+                    .then(songs => {
+                        if (songs && songs.length > 0) {
+                            recommendedContainer.innerHTML = '';
+
+                            // 只显示6首推荐歌曲
+                            songs.slice(0, 6).forEach(song => {
+                                const songCard = `
+                <div class="col-md-4 mb-4">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center">
+                        <img src="${song.coverImage}" alt="${song.title}" class="rounded me-3" style="width: 60px; height: 60px;">
+                        <div class="flex-grow-1">
+                          <h5 class="card-title mb-1">
+                            <a href="/song/${song._id}">${song.title}</a>
+                          </h5>
+                          <p class="card-text text-muted">
+                            <a href="/artist/${song.artist._id}">${song.artist.name}</a>
+                          </p>
+                          <button class="btn btn-primary btn-sm rounded-pill play-button mt-2"
+                                  data-id="${song._id}" data-title="${song.title}"
+                                  data-artist="${song.artist.name}" data-cover="${song.coverImage}"
+                                  data-audio="${song.audioFile}">
+                            <i class="bi bi-play-fill"></i> 播放
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+                                recommendedContainer.innerHTML += songCard;
+                            });
+
+                            // 添加播放按钮事件
+                            recommendedContainer.querySelectorAll('.play-button').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const songData = {
+                                        id: this.dataset.id,
+                                        title: this.dataset.title,
+                                        artist: this.dataset.artist,
+                                        cover: this.dataset.cover,
+                                        audio: this.dataset.audio
+                                    };
+
+                                    if (window.musicPlayer) {
+                                        window.musicPlayer.playSong(songData);
+                                    }
+                                });
+                            });
+                        } else {
+                            recommendedContainer.innerHTML = '<div class="col-12 text-center"><p class="text-muted">抱歉，无法加载推荐歌曲</p></div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取推荐歌曲失败:', error);
+                        recommendedContainer.innerHTML = '<div class="col-12 text-center"><p class="text-danger">加载推荐失败，请稍后再试</p></div>';
+                    });
+            }
+        });
+    </script>
+
+    <%- include('partials/footer') %>

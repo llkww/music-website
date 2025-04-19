@@ -124,15 +124,6 @@
                     align-items: center;
                 }
 
-                .search-type-btn {
-                    background: transparent;
-                    border: none;
-                    border-left: 1px solid #eee;
-                    padding: 12px 15px;
-                    cursor: pointer;
-                    transition: background-color 0.2s;
-                }
-
                 .search-submit-btn {
                     background: transparent;
                     border: none;
@@ -141,50 +132,8 @@
                     transition: background-color 0.2s;
                 }
 
-                .search-type-btn:hover,
                 .search-submit-btn:hover {
                     background-color: rgba(29, 185, 84, 0.1);
-                }
-
-                .search-dropdown {
-                    position: absolute;
-                    top: 100%;
-                    right: 0;
-                    z-index: 1050;
-                    min-width: 180px;
-                    background-color: white;
-                    border-radius: 10px;
-                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-                    padding: 10px;
-                    margin-top: 5px;
-                    display: none;
-                }
-
-                .search-dropdown.show {
-                    display: block;
-                    animation: fadeIn 0.2s ease;
-                }
-
-                @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-10px);
-                    }
-
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-
-                .search-form-check {
-                    padding: 8px 15px;
-                    transition: background-color 0.2s;
-                    border-radius: 5px;
-                }
-
-                .search-form-check:hover {
-                    background-color: rgba(29, 185, 84, 0.05);
                 }
 
                 .search-suggestions {
@@ -267,30 +216,9 @@
                                 <input type="search" class="search-input" placeholder="搜索音乐、歌手、歌单" name="query"
                                     id="search-input">
                                 <div class="search-controls">
-                                    <button type="button" class="search-type-btn" id="search-type-toggle">
-                                        <i class="bi bi-filter"></i>
-                                    </button>
                                     <button type="submit" class="search-submit-btn">
                                         <i class="bi bi-search"></i>
                                     </button>
-                                </div>
-                            </div>
-
-                            <div class="search-dropdown" id="search-dropdown">
-                                <div class="search-form-check">
-                                    <input class="form-check-input" type="radio" name="type" id="type-song" value="song"
-                                        checked>
-                                    <label class="form-check-label" for="type-song">歌曲</label>
-                                </div>
-                                <div class="search-form-check">
-                                    <input class="form-check-input" type="radio" name="type" id="type-artist"
-                                        value="artist">
-                                    <label class="form-check-label" for="type-artist">歌手</label>
-                                </div>
-                                <div class="search-form-check">
-                                    <input class="form-check-input" type="radio" name="type" id="type-playlist"
-                                        value="playlist">
-                                    <label class="form-check-label" for="type-playlist">歌单</label>
                                 </div>
                             </div>
 
@@ -352,20 +280,6 @@
                     duration: 800,
                     easing: 'ease-out-cubic',
                     once: true
-                });
-            });
-
-            // 搜索类型切换
-            document.getElementById('search-type-toggle')?.addEventListener('click', function () {
-                const dropdown = document.getElementById('search-dropdown');
-                dropdown.classList.toggle('show');
-
-                // 点击外部关闭下拉菜单
-                document.addEventListener('click', function closeDropdown(e) {
-                    if (!e.target.closest('#search-type-toggle') && !e.target.closest('#search-dropdown')) {
-                        dropdown.classList.remove('show');
-                        document.removeEventListener('click', closeDropdown);
-                    }
                 });
             });
 
@@ -482,17 +396,9 @@
                     suggestionsContainer.querySelectorAll('.suggestion-item').forEach(item => {
                         item.addEventListener('click', function () {
                             const query = this.dataset.query;
-                            const type = this.dataset.type === 'hot' ? 'all' : this.dataset.type;
-
                             searchInput.value = query;
 
-                            // 设置搜索类型
-                            const typeRadio = document.querySelector(`input[name="type"][value="${type}"]`);
-                            if (typeRadio) {
-                                typeRadio.checked = true;
-                            }
-
-                            // 提交表单
+                            // 直接提交表单
                             searchInput.closest('form').submit();
                         });
                     });

@@ -468,26 +468,24 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 切换收藏状态
   function toggleFavorite() {
-    if (!currentPlaylist.length || currentIndex < 0) return;
-    
-    const songId = currentPlaylist[currentIndex].id;
-    
-    fetch(`/song/${songId}/like`, {
-      method: 'POST'
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // 更新收藏按钮样式
-        favoriteButton.innerHTML = data.liked ? 
-          '<i class="bi bi-heart-fill text-danger"></i>' : 
-          '<i class="bi bi-heart"></i>';
-      }
-    })
-    .catch(error => {
-      console.error('切换收藏状态失败:', error);
-    });
-  }
+  if (!currentPlaylist.length || currentIndex < 0) return;
+  
+  const songId = currentPlaylist[currentIndex].id;
+  
+  fetch(`/song/${songId}/like`, {
+    method: 'POST'
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // 更新所有爱心按钮
+      updateAllHeartButtons(songId, data.liked);
+    }
+  })
+  .catch(error => {
+    console.error('切换收藏状态失败:', error);
+  });
+ }
   
   // 更新收藏按钮状态
   function updateFavoriteButton(songId) {
@@ -1182,6 +1180,37 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(savePlayStateToStorage, 30000);
   }
   
+  // 当播放新歌曲时更新所有爱心按钮
+  function updateAllHeartButtons(songId, isLiked) {
+    // 更新页面上的爱心按钮
+    document.querySelectorAll(`.like-song-btn[data-id="${songId}"]`).forEach(btn => {
+      const icon = btn.querySelector('i');
+      if (isLiked) {
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill');
+        icon.classList.add('text-danger');
+      } else {
+        icon.classList.remove('bi-heart-fill');
+        icon.classList.remove('text-danger');
+        icon.classList.add('bi-heart');
+      }
+    });
+    
+    // 更新播放器的爱心按钮
+    if (favoriteButton) {
+      const icon = favoriteButton.querySelector('i');
+      if (isLiked) {
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill');
+        icon.classList.add('text-danger');
+      } else {
+        icon.classList.remove('bi-heart-fill');
+        icon.classList.remove('text-danger');
+        icon.classList.add('bi-heart');
+      }
+    }
+  }
+
   // 添加歌曲到播放列表（不立即播放）
   function addToPlaylist(song) {
     if (!song || !song.id) {
@@ -1202,38 +1231,15 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // 保存播放列表到本地存储
       savePlaylistToStorage();
-      
-      // 如果是第一首歌，更新播放器信息但不自动播放
-      if (currentPlaylist.length === 1) {
-        currentIndex = 0;
+
+      // 更新收藏按钮状态
+      updateFavoriteButton(song.id);
         
-        // 更新播放器显示
-        playingTitle.textContent = song.title;
-        playingArtist.textContent = song.artist;
-        playingCover.src = song.cover;
-        
-        // 设置音频源（但不自动播放）
-        audioElement.src = song.audio;
-        audioElement.load();
-        
-        // 更新收藏按钮状态
-        updateFavoriteButton(song.id);
-        
-        // 加载歌词
-        loadLyrics(song.id);
+      // 加载歌词
+      loadLyrics(song.id);
       }
-      
-      // 显示添加成功的提示
-      showAddToPlaylistNotification(song.title);
-    } else {
-      console.log(`歌曲 "${song.title}" 已在播放列表中`);
-      // 可选：将已存在的歌曲移到播放列表末尾
-      // const existingSong = currentPlaylist.splice(existingIndex, 1)[0];
-      // currentPlaylist.push(existingSong);
-      // updatePlaylistDisplay();
-    }
   }
-  
+
   // 更新播放器显示
   function updatePlayerDisplay() {
     if (currentPlaylist.length > 0 && currentIndex >= 0) {

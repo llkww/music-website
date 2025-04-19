@@ -69,28 +69,21 @@
                                         60).toString().padStart(2, '0' ) %>
                             </td>
                             <td>
-                                <div class="d-flex">
+                                <div class="d-flex align-items-center">
                                     <button class="btn btn-primary rounded-circle btn-play me-2"
                                         data-id="<%= song._id %>" data-title="<%= song.title %>"
                                         data-artist="<%= song.artist.name %>" data-cover="<%= song.coverImage %>"
                                         data-audio="<%= song.audioFile %>">
                                         <i class="bi bi-play-fill"></i>
                                     </button>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                            data-bs-toggle="dropdown">
-                                            <i class="bi bi-three-dots"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><button class="dropdown-item btn-add-to-playlist"
-                                                    data-song-id="<%= song._id %>">添加到歌单</button></li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li><button class="dropdown-item text-danger unlike-song"
-                                                    data-song-id="<%= song._id %>">取消收藏</button></li>
-                                        </ul>
-                                    </div>
+                                    <button class="btn btn-outline-danger rounded-circle me-2 unlike-song"
+                                        data-id="<%= song._id %>">
+                                        <i class="bi bi-heart-fill text-danger"></i>
+                                    </button>
+                                    <button class="btn btn-outline-secondary rounded-circle btn-add-to-playlist"
+                                        data-song-id="<%= song._id %>" title="添加到歌单">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -124,7 +117,7 @@
                     // 取消收藏按钮事件
                     document.querySelectorAll('.unlike-song').forEach(button => {
                         button.addEventListener('click', function () {
-                            const songId = this.dataset.songId;
+                            const songId = this.dataset.id;
 
                             fetch(`/song/${songId}/like`, {
                                 method: 'POST'
@@ -161,6 +154,47 @@
                                 .catch(error => {
                                     console.error('取消收藏失败:', error);
                                     alert('操作失败，请稍后再试');
+                                });
+                        });
+                    });
+
+                    // 添加到歌单按钮事件
+                    document.querySelectorAll('.btn-add-to-playlist').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const songId = this.dataset.songId;
+
+                            // 获取用户的歌单列表
+                            fetch('/api/user-playlists')
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.playlists && data.playlists.length > 0) {
+                                        // 创建歌单选择下拉框
+                                        let html = '<option value="">选择歌单</option>';
+                                        data.playlists.forEach(playlist => {
+                                            html += `<option value="${playlist._id}">${playlist.name}</option>`;
+                                        });
+
+                                        const playlistSelect = document.getElementById('playlist-select');
+                                        if (playlistSelect) {
+                                            playlistSelect.innerHTML = html;
+                                        }
+
+                                        // 设置歌曲ID
+                                        const songIdInput = document.getElementById('song-id');
+                                        if (songIdInput) {
+                                            songIdInput.value = songId;
+                                        }
+
+                                        // 显示添加到歌单模态框
+                                        const addToPlaylistModal = new bootstrap.Modal(document.getElementById('add-to-playlist-modal'));
+                                        addToPlaylistModal.show();
+                                    } else {
+                                        alert('您还没有创建歌单，请先创建歌单');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('获取歌单失败:', error);
+                                    alert('获取歌单失败');
                                 });
                         });
                     });
