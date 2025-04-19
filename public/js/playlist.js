@@ -123,8 +123,14 @@ document.addEventListener('DOMContentLoaded', function() {
           // 显示添加到歌单模态框
           const addToPlaylistModal = document.getElementById('add-to-playlist-modal');
           if (addToPlaylistModal) {
-            const modalInstance = new bootstrap.Modal(addToPlaylistModal);
-            modalInstance.show();
+            // 确保使用Bootstrap的Modal实例
+            if (typeof bootstrap !== 'undefined') {
+              const modalInstance = new bootstrap.Modal(addToPlaylistModal);
+              modalInstance.show();
+            } else {
+              console.error('Bootstrap未定义，无法初始化模态框');
+              alert('页面加载不完整，请刷新后重试');
+            }
           } else {
             console.error('未找到添加到歌单模态框元素');
             alert('页面元素缺失，无法添加歌曲到歌单');
@@ -191,9 +197,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // 关闭模态框
         const addToPlaylistModal = document.getElementById('add-to-playlist-modal');
         if (addToPlaylistModal) {
-          const modalInstance = bootstrap.Modal.getInstance(addToPlaylistModal);
-          if (modalInstance) {
-            modalInstance.hide();
+          // 使用Bootstrap的Modal实例关闭模态框
+          if (typeof bootstrap !== 'undefined') {
+            const modalInstance = bootstrap.Modal.getInstance(addToPlaylistModal);
+            if (modalInstance) {
+              modalInstance.hide();
+            } else {
+              // 如果获取不到实例，尝试直接关闭
+              $(addToPlaylistModal).modal('hide');
+            }
+          } else {
+            // 后备方案，直接触发点击事件
+            const closeButton = addToPlaylistModal.querySelector('[data-bs-dismiss="modal"]');
+            if (closeButton) {
+              closeButton.click();
+            }
           }
         }
       } else {
@@ -271,4 +289,30 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 监听文档内容变化
   observer.observe(document.body, { childList: true, subtree: true });
+  
+  // 确保模态框点取消按钮能正确关闭
+  document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
+    button.addEventListener('click', function() {
+      const modal = this.closest('.modal');
+      if (modal && typeof bootstrap !== 'undefined') {
+        const modalInstance = bootstrap.Modal.getInstance(modal);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      }
+    });
+  });
+  
+  // 模态框背景点击关闭
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+      // 只有点击模态框背景时才关闭
+      if (e.target === this) {
+        const modalInstance = bootstrap.Modal.getInstance(this);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      }
+    });
+  });
 });

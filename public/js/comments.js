@@ -572,6 +572,10 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('初始加载评论');
     // 添加排序控制按钮
     addSortControls();
+    // 确保默认按时间排序
+    sortBy = 'time';
+    document.querySelector('.sort-by-time')?.classList.add('active');
+    document.querySelector('.sort-by-likes')?.classList.remove('active');
     loadComments();
   }
 });
