@@ -28,7 +28,7 @@
                                     <div class="d-flex align-items-center">
                                         <img src="<%= song.coverImage %>" alt="<%= song.title %>"
                                             class="song-cover me-3" style="width: 40px; height: 40px;">
-                                        <a href="/music/song/<%= song._id %>">
+                                        <a href="/song/<%= song._id %>">
                                             <%= song.title %>
                                         </a>
                                         <% if (song.isVIP) { %><span class="badge bg-warning text-dark ms-2">VIP</span>

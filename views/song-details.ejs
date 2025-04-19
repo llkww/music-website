@@ -236,7 +236,7 @@
                     likeButton.addEventListener('click', function () {
                         const songId = this.dataset.id;
 
-                        fetch(`/music/song/${songId}/like`, {
+                        fetch(`/song/${songId}/like`, {
                             method: 'POST'
                         })
                             .then(response => response.json())
@@ -284,7 +284,7 @@
                                     <img src="${song.coverImage}" class="card-img-top" alt="${song.title}">
                                     <div class="card-body">
                                         <h5 class="card-title text-truncate">
-                                            <a href="/music/song/${song._id}">${song.title}</a>
+                                            <a href="/song/${song._id}">${song.title}</a>
                                         </h5>
                                         <p class="card-text text-truncate">
                                             <a href="/artist/${song.artist._id}">${song.artist.name}</a>

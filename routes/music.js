@@ -12,11 +12,9 @@ router.get('/hot-songs', musicController.getHotSongs);
 // 获取新歌榜
 router.get('/new-songs', musicController.getNewSongs);
 
-// 歌曲详情页
-router.get('/song/:id', musicController.getSongDetails);
-
-// 喜欢/取消喜欢歌曲
-router.post('/song/:id/like', musicController.toggleLikeSong);
+// 以下两个路由已移至song.js，需要删除
+// router.get('/song/:id', musicController.getSongDetails);
+// router.post('/song/:id/like', musicController.toggleLikeSong);
 
 // 歌手详情页
 router.get('/artist/:id', musicController.getArtistDetails);

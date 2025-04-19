@@ -15,6 +15,7 @@ const apiRoutes = require('./routes/api');
 const socialRoutes = require('./routes/social');
 const albumRoutes = require('./routes/album');
 const artistRoutes = require('./routes/artist');
+const songRoutes = require('./routes/song');
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use('/api', apiRoutes);
 app.use('/social', socialRoutes);
 app.use('/album', albumRoutes);
 app.use('/artist', artistRoutes);
+app.use('/song', songRoutes);
 
 // 错误处理
 app.use((req, res) => {

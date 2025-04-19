@@ -81,7 +81,7 @@ exports.search = async (req, res) => {
       
       // 如果只有一个结果且类型是歌曲，直接跳转到详情页
       if (type === 'song' && songs.length === 1) {
-        return res.redirect(`/music/song/${songs[0]._id}`);
+        return res.redirect(`/song/${songs[0]._id}`);
       }
     }
     

@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const songId = currentPlaylist[currentIndex].id;
     
-    fetch(`/music/song/${songId}/like`, {
+    fetch(`/song/${songId}/like`, {
       method: 'POST'
     })
     .then(response => response.json())

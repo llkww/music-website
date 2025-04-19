@@ -37,7 +37,7 @@
                                     <div class="song-info">
                                         <h5 class="card-title mb-1">
                                             <!-- 添加链接到歌曲详情页 -->
-                                            <a href="/music/song/<%= song._id %>">
+                                            <a href="/song/<%= song._id %>">
                                                 <%= song.title %>
                                             </a>
                                         </h5>
@@ -186,7 +186,7 @@
                                         <img src="<%= song.coverImage %>" class="rounded me-2"
                                             style="width: 40px; height: 40px;" alt="<%= song.title %>">
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
+                                            <div class="text-truncate fw-bold"><a href="/song/<%= song._id %>">
                                                     <%= song.title %>
                                                 </a></div>
                                             <small class="text-muted text-truncate">
@@ -224,7 +224,7 @@
                                         <img src="<%= song.coverImage %>" class="rounded me-2"
                                             style="width: 40px; height: 40px;" alt="<%= song.title %>">
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
+                                            <div class="text-truncate fw-bold"><a href="/song/<%= song._id %>">
                                                     <%= song.title %>
                                                 </a></div>
                                             <small class="text-muted text-truncate">
@@ -262,7 +262,7 @@
                                         <img src="<%= song.coverImage %>" class="rounded me-2"
                                             style="width: 40px; height: 40px;" alt="<%= song.title %>">
                                         <div class="flex-grow-1 overflow-hidden">
-                                            <div class="text-truncate fw-bold"><a href="/music/song/<%= song._id %>">
+                                            <div class="text-truncate fw-bold"><a href="/song/<%= song._id %>">
                                                     <%= song.title %>
                                                 </a></div>
                                             <small class="text-muted text-truncate">
@@ -400,7 +400,7 @@
                                                     <img src="${song.coverImage}" alt="${song.title}" class="song-cover me-3">
                                                     <div class="song-info">
                                                         <h5 class="card-title mb-1">
-                                                            <a href="/music/song/${song._id}">${song.title}</a>
+                                                            <a href="/song/${song._id}">${song.title}</a>
                                                         </h5>
                                                         <p class="card-text text-muted">
                                                             <a href="/artist/${song.artist._id}">${song.artist.name}</a>
