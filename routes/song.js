@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Song = require('../models/Song');
-const User = require('../models/User');
+const User = require('../models/User'); // 添加User模型引入
 const mongoose = require('mongoose');
 
 // 获取歌曲详情
@@ -18,22 +18,17 @@ router.get('/:id', async (req, res) => {
       });
     }
     
-    console.log(`正在查询歌曲: ${songId}`);
-    
     // 查找歌曲并关联艺术家和专辑信息
     const song = await Song.findById(songId)
       .populate('artist')
       .populate('album');
     
     if (!song) {
-      console.log(`歌曲不存在: ${songId}`);
       return res.status(404).render('404', { title: '歌曲不存在' });
     }
     
-    // 检查关联引用是否存在
+    // 检查艺术家引用是否存在
     if (!song.artist) {
-      console.warn(`歌曲 ${songId} 的艺术家引用不存在`);
-      // 设置一个默认值以避免模板错误
       song.artist = { name: '未知艺术家', _id: null };
     }
     
@@ -41,15 +36,13 @@ router.get('/:id', async (req, res) => {
     song.playCount += 1;
     await song.save();
     
-    console.log(`成功渲染歌曲详情: ${song.title} (ID: ${songId})`);
-    
     // 渲染歌曲详情页面
     res.render('song-details', {
       title: song.title,
-      song,
+      song
     });
   } catch (error) {
-    console.error(`获取歌曲详情失败, ID: ${req.params.id}`, error);
+    console.error('获取歌曲详情失败:', error);
     res.status(500).render('error', {
       title: '服务器错误',
       message: '获取歌曲详情失败: ' + error.message
