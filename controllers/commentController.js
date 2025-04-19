@@ -214,6 +214,11 @@ exports.likeComment = async (req, res) => {
         content.comments[commentIndex].likes = Math.max(0, content.comments[commentIndex].likes - 1);
         content.comments[commentIndex].likedBy = commentLikes.filter(id => id !== req.session.user.id);
         isLiked = false;
+        
+        // 取消热门标记（如果点赞数低于100）
+        if (content.comments[commentIndex].likes < 100) {
+          content.comments[commentIndex].isHot = false;
+        }
       }
       
       await content.save();
@@ -278,8 +283,9 @@ exports.likeSongComment = exports.likeComment;
 exports.getSongComments = async (req, res) => {
   try {
     const { id: songId } = req.params;
+    const { sortBy = 'time' } = req.query; // 增加排序参数：time 或 likes
     
-    console.log('获取歌曲评论:', songId);
+    console.log('获取歌曲评论:', songId, '排序方式:', sortBy);
     
     const song = await Song.findById(songId)
       .populate('comments.user', 'username avatar')
@@ -306,11 +312,19 @@ exports.getSongComments = async (req, res) => {
       });
     }
     
-    // 排序评论（热门评论在前，然后按时间倒序）
+    // 根据排序参数排序评论
     const sortedComments = comments.sort((a, b) => {
-      if (a.isHot && !b.isHot) return -1;
-      if (!a.isHot && b.isHot) return 1;
-      return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortBy === 'likes') {
+        // 按热度排序（点赞数）：先考虑热门评论标记，然后按点赞数排序
+        if (a.isHot && !b.isHot) return -1;
+        if (!a.isHot && b.isHot) return 1;
+        return b.likes - a.likes;
+      } else {
+        // 按时间排序（默认）：先考虑热门评论标记，然后按时间倒序
+        if (a.isHot && !b.isHot) return -1;
+        if (!a.isHot && b.isHot) return 1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
     });
     
     res.json({ success: true, comments: sortedComments });
@@ -324,8 +338,9 @@ exports.getSongComments = async (req, res) => {
 exports.getPlaylistComments = async (req, res) => {
   try {
     const { id: playlistId } = req.params;
+    const { sortBy = 'time' } = req.query; // 增加排序参数：time 或 likes
     
-    console.log('获取歌单评论:', playlistId);
+    console.log('获取歌单评论:', playlistId, '排序方式:', sortBy);
     
     const playlist = await Playlist.findById(playlistId)
       .populate('comments.user', 'username avatar')
@@ -357,9 +372,19 @@ exports.getPlaylistComments = async (req, res) => {
       });
     }
     
-    // 按时间倒序排序评论
+    // 根据排序参数排序评论
     const sortedComments = comments.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortBy === 'likes') {
+        // 按热度排序（点赞数）：先考虑热门评论标记，然后按点赞数排序
+        if (a.isHot && !b.isHot) return -1;
+        if (!a.isHot && b.isHot) return 1;
+        return b.likes - a.likes;
+      } else {
+        // 按时间排序（默认）：先考虑热门评论标记，然后按时间倒序
+        if (a.isHot && !b.isHot) return -1;
+        if (!a.isHot && b.isHot) return 1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
     });
     
     console.log(`找到歌单评论 ${sortedComments.length} 条`);

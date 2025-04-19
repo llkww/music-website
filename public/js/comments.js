@@ -9,6 +9,47 @@ document.addEventListener('DOMContentLoaded', function() {
   let contentId = commentForm ? commentForm.dataset.id : null;
   let contentType = commentForm ? commentForm.dataset.type : null; // song 或 playlist
   
+  // 添加评论排序控制
+  let sortBy = 'time'; // 默认按时间排序，可选值：'time'(时间) 或 'likes'(热度)
+  
+  // 添加排序控制按钮
+  function addSortControls() {
+    if (commentsList) {
+      // 创建排序控制按钮组
+      const sortControlsHtml = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="comment-sort-controls btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-primary sort-by-time active">最新</button>
+            <button type="button" class="btn btn-sm btn-outline-primary sort-by-likes">热度</button>
+          </div>
+          <div class="comments-count"></div>
+        </div>
+      `;
+      
+      // 插入到评论列表前
+      commentsList.insertAdjacentHTML('beforebegin', sortControlsHtml);
+      
+      // 绑定排序按钮事件
+      document.querySelector('.sort-by-time').addEventListener('click', function() {
+        if (!this.classList.contains('active')) {
+          document.querySelector('.sort-by-likes').classList.remove('active');
+          this.classList.add('active');
+          sortBy = 'time';
+          loadComments(1, false);
+        }
+      });
+      
+      document.querySelector('.sort-by-likes').addEventListener('click', function() {
+        if (!this.classList.contains('active')) {
+          document.querySelector('.sort-by-time').classList.remove('active');
+          this.classList.add('active');
+          sortBy = 'likes';
+          loadComments(1, false);
+        }
+      });
+    }
+  }
+  
   // 当前评论页
   let currentPage = 1;
   const pageSize = 10;
@@ -24,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (!contentId || !contentType) return;
     
-    const url = `/api/${contentType}/${contentId}/comments`;
+    const url = `/api/${contentType}/${contentId}/comments?sortBy=${sortBy}`;
     console.log('加载评论URL:', url);
     
     fetch(url)
@@ -33,6 +74,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           console.log('评论加载成功:', data.comments.length);
           renderComments(data.comments, append);
+          
+          // 更新评论数
+          updateCommentsCount(data.comments.length);
           
           // 更新加载更多按钮状态
           if (loadMoreButton) {
@@ -47,6 +91,20 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('加载评论失败:', error);
         commentsList.innerHTML = '<div class="text-center text-muted my-4">加载评论失败，请刷新页面重试</div>';
       });
+  }
+  
+  // 更新评论数量显示
+  function updateCommentsCount(count) {
+    const countElement = document.querySelector('.comments-count');
+    if (countElement) {
+      countElement.textContent = `共 ${count} 条评论`;
+    }
+    
+    // 更新卡片头部的评论数量
+    const headerBadge = document.querySelector('.card-header .badge');
+    if (headerBadge) {
+      headerBadge.textContent = count;
+    }
   }
   
   // 渲染评论
@@ -290,6 +348,11 @@ document.addEventListener('DOMContentLoaded', function() {
             icon.classList.add('bi-heart');
           }
         }
+        
+        // 如果排序是按热度，评论点赞数变化较大时刷新列表
+        if (sortBy === 'likes' && (data.likes === 100 || data.likes === 99)) {
+          loadComments();
+        }
       } else {
         if (data.message === '请先登录') {
           alert('请先登录后再点赞');
@@ -386,6 +449,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 添加新回复到DOM
         addReplyToDOM(commentId, data.reply);
+        
+        // 更新评论数
+        updateCommentsCount(parseInt(document.querySelector('.comments-count').textContent.match(/\d+/)[0]) + 1);
       } else {
         if (data.message === '请先登录') {
           alert('请先登录后再回复');
@@ -457,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     
     // 添加到回复容器
-    repliesContainer.appendChild(replyEl);
+    repliesContainer.insertBefore(replyEl, repliesContainer.firstChild);
     
     // 绑定点赞事件
     const likeButton = replyEl.querySelector('.like-button');
@@ -495,6 +561,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // 初始加载评论
   if (contentId && contentType && commentsList) {
     console.log('初始加载评论');
+    // 添加排序控制按钮
+    addSortControls();
     loadComments();
   }
 });

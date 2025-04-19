@@ -28,6 +28,12 @@
             <div class="col-md-8">
                 <h2 class="mb-3">歌曲列表</h2>
                 <% if (album.songs && album.songs.length> 0) { %>
+                    <!-- 添加播放全部按钮 -->
+                    <div class="mb-3">
+                        <button id="play-all-btn" class="btn btn-primary">
+                            <i class="bi bi-play-fill"></i> 播放全部
+                        </button>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -61,12 +67,29 @@
                                                     60).toString().padStart(2, '0' ) %>
                                         </td>
                                         <td>
-                                            <button class="btn btn-primary rounded-circle btn-play"
-                                                data-id="<%= song._id %>" data-title="<%= song.title %>"
-                                                data-artist="<%= album.artist.name %>"
-                                                data-cover="<%= song.coverImage %>" data-audio="<%= song.audioFile %>">
-                                                <i class="bi bi-play-fill"></i>
-                                            </button>
+                                            <div class="d-flex align-items-center">
+                                                <button class="btn btn-primary rounded-circle btn-play me-2"
+                                                    data-id="<%= song._id %>" data-title="<%= song.title %>"
+                                                    data-artist="<%= album.artist.name %>"
+                                                    data-cover="<%= song.coverImage %>"
+                                                    data-audio="<%= song.audioFile %>">
+                                                    <i class="bi bi-play-fill"></i>
+                                                </button>
+                                                <!-- 添加收藏按钮 -->
+                                                <% if (locals.user) { %>
+                                                    <button
+                                                        class="btn btn-outline-danger rounded-circle me-2 like-song-btn"
+                                                        data-id="<%= song._id %>">
+                                                        <i class="bi bi-heart"></i>
+                                                    </button>
+                                                    <% } %>
+                                                        <!-- 修改为加号按钮 -->
+                                                        <button
+                                                            class="btn btn-outline-secondary rounded-circle btn-add-to-playlist"
+                                                            data-song-id="<%= song._id %>" title="添加到歌单">
+                                                            <i class="bi bi-plus"></i>
+                                                        </button>
+                                            </div>
                                         </td>
                                     </tr>
                                     <% }) %>
@@ -80,8 +103,74 @@
         </div>
     </div>
 
+    <!-- 添加到歌单模态框 -->
+    <div class="modal fade" id="add-to-playlist-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加到歌单</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-to-playlist-form">
+                        <input type="hidden" id="song-id" name="songId">
+                        <div class="mb-3">
+                            <label for="playlist-select" class="form-label">选择歌单</label>
+                            <select class="form-select" id="playlist-select" required>
+                                <option value="">选择歌单</option>
+                            </select>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">添加</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // 收藏按钮初始化
+            document.querySelectorAll('.like-song-btn').forEach(btn => {
+                const songId = btn.dataset.id;
+                // 获取收藏状态
+                fetch(`/api/song/${songId}/is-liked`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.isLiked) {
+                            const icon = btn.querySelector('i');
+                            icon.classList.remove('bi-heart');
+                            icon.classList.add('bi-heart-fill');
+                            icon.classList.add('text-danger');
+                        }
+                    });
+
+                // 绑定点击事件
+                btn.addEventListener('click', function () {
+                    const songId = this.dataset.id;
+                    fetch(`/song/${songId}/like`, {
+                        method: 'POST'
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const icon = this.querySelector('i');
+                                if (data.liked) {
+                                    icon.classList.remove('bi-heart');
+                                    icon.classList.add('bi-heart-fill');
+                                    icon.classList.add('text-danger');
+                                } else {
+                                    icon.classList.remove('bi-heart-fill');
+                                    icon.classList.remove('text-danger');
+                                    icon.classList.add('bi-heart');
+                                }
+                            }
+                        });
+                });
+            });
+
             // 播放按钮事件
             document.querySelectorAll('.btn-play').forEach(button => {
                 button.addEventListener('click', function () {
@@ -100,6 +189,37 @@
                     }
                 });
             });
+
+            // 播放全部按钮
+            const playAllBtn = document.getElementById('play-all-btn');
+            if (playAllBtn) {
+                playAllBtn.addEventListener('click', function () {
+                    const songs = [];
+                    // 收集所有歌曲信息
+                    document.querySelectorAll('.btn-play').forEach(button => {
+                        songs.push({
+                            id: button.dataset.id,
+                            title: button.dataset.title,
+                            artist: button.dataset.artist,
+                            cover: button.dataset.cover,
+                            audio: button.dataset.audio
+                        });
+                    });
+
+                    if (songs.length > 0 && window.musicPlayer) {
+                        // 添加所有歌曲到播放列表并播放第一首
+                        for (let i = 0; i < songs.length; i++) {
+                            if (i === 0) {
+                                window.musicPlayer.playSong(songs[i]);
+                            } else {
+                                if (window.musicPlayer.addToPlaylist) {
+                                    window.musicPlayer.addToPlaylist(songs[i]);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
         });
     </script>
 

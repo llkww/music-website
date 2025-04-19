@@ -1233,26 +1233,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // updatePlaylistDisplay();
     }
   }
-
-  // 显示添加到播放列表的通知
-  function showAddToPlaylistNotification(songTitle) {
-    // 创建提示元素
-    const notification = document.createElement('div');
-    notification.className = 'autoplay-notification';
-    notification.innerHTML = `<i class="bi bi-music-note-list"></i> 已添加 "${songTitle}" 到播放列表`;
-    document.body.appendChild(notification);
-    
-    // 3秒后自动隐藏
-    setTimeout(() => {
-      notification.classList.add('fade-out');
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 500);
-    }, 3000);
-  }
-
+  
   // 更新播放器显示
   function updatePlayerDisplay() {
     if (currentPlaylist.length > 0 && currentIndex >= 0) {
