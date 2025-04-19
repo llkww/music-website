@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // 搜索相关元素
   const searchForm = document.getElementById('search-form');
   const searchInput = document.getElementById('search-input');
-  const searchTypeSelect = document.getElementById('search-type');
+  const searchTypeSelect = document.querySelectorAll('input[name="type"]');
   const searchSuggestionsContainer = document.getElementById('search-suggestions');
   const clearSearchButton = document.getElementById('clear-search');
   const advancedSearchToggle = document.getElementById('advanced-search-toggle');
@@ -126,10 +126,17 @@ document.addEventListener('DOMContentLoaded', function() {
           const searchType = this.dataset.type === 'hot' ? 'all' : this.dataset.type;
           
           searchInput.value = searchText;
-          if (searchTypeSelect) {
-            searchTypeSelect.value = searchType;
+          
+          // 确保选择正确的搜索类型单选按钮
+          const typeRadio = document.getElementById(`type-${searchType}`);
+          if (typeRadio) {
+            typeRadio.checked = true;
           }
           
+          // 提交表单前记录一下日志
+          console.log(`提交搜索: 关键词="${searchText}", 类型=${searchType}`);
+          
+          // 立即提交表单
           searchForm.submit();
         });
       });
@@ -379,11 +386,27 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 提交搜索表单时保存历史记录
   if (searchForm) {
-    searchForm.addEventListener('submit', function() {
+    searchForm.addEventListener('submit', function(e) {
+      // 检查是否有搜索关键词
       const query = searchInput.value.trim();
-      if (query) {
-        saveSearchHistory(query);
+      if (!query) {
+        e.preventDefault();
+        return;
       }
+      
+      // 获取选中的搜索类型
+      let searchType = 'all'; // 默认为all
+      searchTypeSelect.forEach(radio => {
+        if (radio.checked) {
+          searchType = radio.value;
+        }
+      });
+      
+      // 记录将要提交的搜索类型
+      console.log(`搜索表单提交: 关键词="${query}", 类型=${searchType}`);
+      
+      // 保存搜索历史
+      saveSearchHistory(query);
     });
   }
   
@@ -404,7 +427,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   if (typeParam && searchTypeSelect) {
-    searchTypeSelect.value = typeParam;
+    const targetRadio = document.getElementById(`type-${typeParam}`);
+    if (targetRadio) {
+      targetRadio.checked = true;
+    }
   }
   
   // 如果有高级搜索参数，展开高级搜索面板并设置筛选器

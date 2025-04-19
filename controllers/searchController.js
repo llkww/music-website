@@ -9,6 +9,7 @@ exports.search = async (req, res) => {
   try {
     const { query, type = 'song', genre, language, year, duration, bpm } = req.query;
     
+    // 如果没有查询关键词且类型是歌曲，显示搜索页面
     if (!query && type === 'song') {
       return res.render('search', {
         title: '搜索',
@@ -58,29 +59,61 @@ exports.search = async (req, res) => {
     
     // 根据查询类型执行相应搜索
     if (type === 'all' || type === 'song') {
-      songs = await Song.find({
-        $and: [
-          query ? { title: searchOptions.basic } : {},
-          genre ? { genre: searchOptions.genre } : {},
-          language ? { language: searchOptions.language } : {},
-          year ? { releaseYear: searchOptions.year } : {},
-          duration ? { 
-            duration: { 
-              $gte: searchOptions.duration.$gte, 
-              $lte: searchOptions.duration.$lte 
-            } 
-          } : {},
-          bpm ? { 
-            bpm: { 
-              $gte: searchOptions.bpm.$gte, 
-              $lte: searchOptions.bpm.$lte 
-            } 
-          } : {}
-        ]
-      }).populate('artist').populate('album').limit(20);
+      const searchConditions = [];
+      
+      // 添加标题搜索条件
+      if (query) {
+        searchConditions.push({ title: searchOptions.basic });
+      }
+      
+      // 添加其他筛选条件
+      if (genre) {
+        searchConditions.push({ genre: searchOptions.genre });
+      }
+      
+      if (language) {
+        searchConditions.push({ language: searchOptions.language });
+      }
+      
+      if (year) {
+        searchConditions.push({ releaseYear: searchOptions.year });
+      }
+      
+      if (duration) {
+        searchConditions.push({ 
+          duration: { 
+            $gte: searchOptions.duration.$gte, 
+            $lte: searchOptions.duration.$lte 
+          } 
+        });
+      }
+      
+      if (bpm) {
+        searchConditions.push({ 
+          bpm: { 
+            $gte: searchOptions.bpm.$gte, 
+            $lte: searchOptions.bpm.$lte 
+          } 
+        });
+      }
+      
+      // 构建最终查询条件
+      const finalCondition = searchConditions.length > 0 
+        ? { $and: searchConditions } 
+        : {};
+      
+      // 执行查询
+      songs = await Song.find(finalCondition)
+        .populate('artist')
+        .populate('album')
+        .limit(20);
+      
+      // 调试日志
+      console.log(`搜索类型: ${type}, 搜索关键词: ${query}, 歌曲结果数量: ${songs.length}`);
       
       // 如果只有一个结果且类型是歌曲，直接跳转到详情页
       if (type === 'song' && songs.length === 1) {
+        console.log(`跳转到歌曲详情页: /song/${songs[0]._id}`);
         return res.redirect(`/song/${songs[0]._id}`);
       }
     }
@@ -165,7 +198,7 @@ exports.search = async (req, res) => {
       filters: { genre, language, year, duration, bpm }
     });
   } catch (error) {
-    console.error(error);
+    console.error('搜索执行失败:', error);
     res.status(500).render('error', {
       title: '服务器错误',
       message: '搜索失败'
@@ -229,7 +262,7 @@ exports.getSearchSuggestions = async (req, res) => {
     
     res.json({ suggestions });
   } catch (error) {
-    console.error(error);
+    console.error('获取搜索建议失败:', error);
     res.status(500).json({ message: '获取搜索建议失败' });
   }
 };
@@ -284,7 +317,7 @@ exports.getSearchFilters = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error('获取筛选选项失败:', error);
     res.status(500).json({ message: '获取筛选选项失败' });
   }
 };

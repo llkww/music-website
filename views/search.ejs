@@ -23,7 +23,7 @@
                     <ul class="nav nav-pills search-type-nav">
                         <li class="nav-item">
                             <input type="radio" class="btn-check" name="type" id="type-song" value="song"
-                                <%=type==='song' || type==='all' ? 'checked' : '' %>>
+                                <%=type==='song' ? 'checked' : '' %>>
                             <label class="btn btn-outline-primary" for="type-song">歌曲</label>
                         </li>
                         <li class="nav-item">
@@ -40,6 +40,11 @@
                             <input type="radio" class="btn-check" name="type" id="type-playlist" value="playlist"
                                 <%=type==='playlist' ? 'checked' : '' %>>
                             <label class="btn btn-outline-primary" for="type-playlist">歌单</label>
+                        </li>
+                        <li class="nav-item">
+                            <input type="radio" class="btn-check" name="type" id="type-all" value="all" <%=type==='all'
+                                ? 'checked' : '' %>>
+                            <label class="btn btn-outline-primary" for="type-all">全部</label>
                         </li>
                     </ul>
                 </div>

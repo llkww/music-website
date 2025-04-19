@@ -20,6 +20,7 @@
 
                         <div class="btn-group">
                             <% if (locals.user) { %>
+                                <!-- 不再使用isLiked参数，而是始终初始化为未收藏状态，由JS更新 -->
                                 <button id="like-button" class="btn btn-outline-danger btn-lg"
                                     data-id="<%= song._id %>">
                                     <i class="bi bi-heart"></i>
@@ -230,9 +231,29 @@
                     });
                 });
 
-                // 喜欢按钮事件
+                // 检查喜欢状态并更新按钮
                 const likeButton = document.getElementById('like-button');
                 if (likeButton) {
+                    const songId = likeButton.dataset.id;
+
+                    // 在页面加载时查询当前歌曲收藏状态
+                    fetch(`/api/song/${songId}/is-liked`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.isLiked) {
+                                // 如果已收藏，更新按钮样式
+                                const likeIcon = likeButton.querySelector('i');
+                                if (likeIcon) {
+                                    likeIcon.classList.remove('bi-heart');
+                                    likeIcon.classList.add('bi-heart-fill');
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('获取收藏状态失败:', error);
+                        });
+
+                    // 喜欢按钮事件
                     likeButton.addEventListener('click', function () {
                         const songId = this.dataset.id;
 
