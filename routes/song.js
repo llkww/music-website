@@ -18,17 +18,23 @@ router.get('/:id', async (req, res) => {
       });
     }
     
+    console.log(`正在查询歌曲ID: ${songId}`); // 添加日志
+    
     // 查找歌曲并关联艺术家和专辑信息
     const song = await Song.findById(songId)
       .populate('artist')
       .populate('album');
     
     if (!song) {
+      console.error(`未找到歌曲ID: ${songId}`); // 添加日志
       return res.status(404).render('404', { title: '歌曲不存在' });
     }
     
+    console.log(`成功找到歌曲: ${song.title}`); // 添加日志
+    
     // 检查艺术家引用是否存在
     if (!song.artist) {
+      console.warn(`歌曲${song.title}没有关联艺术家`); // 添加日志
       song.artist = { name: '未知艺术家', _id: null };
     }
     
@@ -42,7 +48,7 @@ router.get('/:id', async (req, res) => {
       song
     });
   } catch (error) {
-    console.error('获取歌曲详情失败:', error);
+    console.error('获取歌曲详情失败:', error.stack); // 记录完整错误栈
     res.status(500).render('error', {
       title: '服务器错误',
       message: '获取歌曲详情失败: ' + error.message

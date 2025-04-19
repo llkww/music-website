@@ -116,10 +116,9 @@
                     <div class="card-body lyrics-container">
                         <% if (song.lyrics) { %>
                             <div class="lyrics-text">
-                                <% // 处理LRC格式歌词 const lines=song.lyrics.split('\n'); let displayLyrics='' ; for (let
-                                    i=0; i < lines.length; i++) { const line=lines[i].trim(); if (line) { // 移除时间标记
-                                    const textOnly=line.replace(/\[\d+:\d+\.\d+\]/g, '' ).trim(); if (textOnly) {
-                                    displayLyrics +=`<p>${textOnly}</p>`;
+                                <% const lines=song.lyrics.split('\n'); let displayLyrics='' ; for (let i=0; i < lines.length; i++)
+                                    { const line=lines[i].trim(); if (line) {  const textOnly=line.replace(/\[\d+:\d+\.\d+\]/g, ''
+                                    ).trim(); if (textOnly) { displayLyrics +=`<p>${textOnly}</p>`;
                                     }
                                     }
                                     }
