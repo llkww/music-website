@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const commentsList = document.getElementById('comments-list');
   const loadMoreButton = document.getElementById('load-more-comments');
   
-  // 歌曲或歌单ID
-  const contentId = commentForm ? commentForm.dataset.id : null;
-  const contentType = commentForm ? commentForm.dataset.type : null; // song 或 playlist
+  // 歌曲或歌单ID - 改为let以便动态更新
+  let contentId = commentForm ? commentForm.dataset.id : null;
+  let contentType = commentForm ? commentForm.dataset.type : null; // song 或 playlist
   
   // 当前评论页
   let currentPage = 1;
@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 加载评论
   function loadComments(page = 1, append = false) {
+    // 确保每次加载评论时重新获取contentId和contentType
+    contentId = commentForm ? commentForm.dataset.id : contentId;
+    contentType = commentForm ? commentForm.dataset.type : contentType;
+    
     if (!contentId || !contentType) return;
     
     const url = `/api/${contentType}/${contentId}/comments`;
@@ -237,6 +241,17 @@ document.addEventListener('DOMContentLoaded', function() {
   function likeComment(commentId, type, button) {
     if (!commentId) return;
     
+    // 确保contentId和contentType正确设置
+    if (!contentId || !contentType) {
+      contentId = commentForm ? commentForm.dataset.id : null;
+      contentType = commentForm ? commentForm.dataset.type : null;
+      
+      if (!contentId || !contentType) {
+        console.error('无法获取内容ID或类型');
+        return;
+      }
+    }
+    
     const url = `/api/${contentType}/${contentId}/comment/${commentId}/like`;
     console.log('点赞请求URL:', url);
     
@@ -334,7 +349,18 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 提交回复
   function submitReply(commentId, text, form) {
-    if (!contentId || !contentType || !commentId || !text) return;
+    if (!commentId || !text) return;
+    
+    // 确保contentId和contentType正确设置
+    if (!contentId || !contentType) {
+      contentId = commentForm ? commentForm.dataset.id : null;
+      contentType = commentForm ? commentForm.dataset.type : null;
+      
+      if (!contentId || !contentType) {
+        console.error('无法获取内容ID或类型');
+        return;
+      }
+    }
     
     const url = `/api/${contentType}/${contentId}/comment/${commentId}/reply`;
     console.log('提交回复URL:', url);

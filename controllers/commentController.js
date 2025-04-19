@@ -39,26 +39,38 @@ exports.addSongComment = async (req, res) => {
   }
 };
 
-// 回复歌曲评论
-exports.replySongComment = async (req, res) => {
+// 回复评论通用函数 (新增)
+exports.replyComment = async (req, res) => {
   try {
     if (!req.session.user) {
       return res.status(401).json({ message: '请先登录' });
     }
     
-    // 修改：从 URL 参数获取 ID，而不是请求体
-    const songId = req.params.id;
+    const contentId = req.params.id;
     const commentId = req.params.commentId;
     const { text } = req.body;
     
-    console.log('回复评论:', { songId, commentId, userId: req.session.user.id }); // 添加日志
+    // 根据URL确定内容类型
+    const contentType = req.baseUrl.includes('playlist') ? 'playlist' : 'song';
     
-    const song = await Song.findById(songId);
-    if (!song) {
-      return res.status(404).json({ message: '歌曲不存在' });
+    console.log('回复评论:', { contentId, commentId, contentType, userId: req.session.user.id });
+    
+    let content;
+    if (contentType === 'song') {
+      content = await Song.findById(contentId);
+      if (!content) {
+        return res.status(404).json({ message: '歌曲不存在' });
+      }
+    } else if (contentType === 'playlist') {
+      content = await Playlist.findById(contentId);
+      if (!content) {
+        return res.status(404).json({ message: '歌单不存在' });
+      }
+    } else {
+      return res.status(400).json({ message: '不支持的内容类型' });
     }
     
-    const commentIndex = song.comments.findIndex(comment => comment._id.toString() === commentId);
+    const commentIndex = content.comments.findIndex(comment => comment._id.toString() === commentId);
     if (commentIndex === -1) {
       return res.status(404).json({ message: '评论不存在' });
     }
@@ -71,11 +83,21 @@ exports.replySongComment = async (req, res) => {
       likedBy: []
     };
     
-    song.comments[commentIndex].replies.unshift(newReply);
-    await song.save();
+    content.comments[commentIndex].replies.unshift(newReply);
+    await content.save();
     
-    const populatedSong = await Song.findById(songId).populate('comments.user', 'username avatar').populate('comments.replies.user', 'username avatar');
-    const addedReply = populatedSong.comments[commentIndex].replies[0];
+    let populatedContent;
+    if (contentType === 'song') {
+      populatedContent = await Song.findById(contentId)
+        .populate('comments.user', 'username avatar')
+        .populate('comments.replies.user', 'username avatar');
+    } else {
+      populatedContent = await Playlist.findById(contentId)
+        .populate('comments.user', 'username avatar')
+        .populate('comments.replies.user', 'username avatar');
+    }
+    
+    const addedReply = populatedContent.comments[commentIndex].replies[0];
     
     res.json({ success: true, reply: addedReply });
   } catch (error) {
@@ -84,23 +106,35 @@ exports.replySongComment = async (req, res) => {
   }
 };
 
-// 点赞歌曲评论
-exports.likeSongComment = async (req, res) => {
+// 点赞评论通用函数 (新增)
+exports.likeComment = async (req, res) => {
   try {
     if (!req.session.user) {
       return res.status(401).json({ message: '请先登录' });
     }
     
-    // 修改：从 URL 参数获取 ID，而不是请求体
-    const songId = req.params.id;
+    const contentId = req.params.id;
     const commentId = req.params.commentId;
     const { type = 'comment' } = req.body; // 评论类型 comment 或 reply
     
-    console.log('点赞评论:', { songId, commentId, type, userId: req.session.user.id }); // 添加日志
+    // 根据URL确定内容类型
+    const contentType = req.baseUrl.includes('playlist') ? 'playlist' : 'song';
     
-    const song = await Song.findById(songId);
-    if (!song) {
-      return res.status(404).json({ message: '歌曲不存在' });
+    console.log('点赞评论:', { contentId, commentId, type, contentType, userId: req.session.user.id });
+    
+    let content;
+    if (contentType === 'song') {
+      content = await Song.findById(contentId);
+      if (!content) {
+        return res.status(404).json({ message: '歌曲不存在' });
+      }
+    } else if (contentType === 'playlist') {
+      content = await Playlist.findById(contentId);
+      if (!content) {
+        return res.status(404).json({ message: '歌单不存在' });
+      }
+    } else {
+      return res.status(400).json({ message: '不支持的内容类型' });
     }
     
     if (type === 'reply') {
@@ -109,8 +143,8 @@ exports.likeSongComment = async (req, res) => {
       let replyLiked = false;
       let replyLikes = 0;
       
-      for (let i = 0; i < song.comments.length; i++) {
-        const replies = song.comments[i].replies;
+      for (let i = 0; i < content.comments.length; i++) {
+        const replies = content.comments[i].replies;
         
         if (replies) {
           for (let j = 0; j < replies.length; j++) {
@@ -145,18 +179,18 @@ exports.likeSongComment = async (req, res) => {
         return res.status(404).json({ message: '回复不存在' });
       }
       
-      await song.save();
+      await content.save();
       res.json({ success: true, liked: replyLiked, likes: replyLikes });
       
     } else {
       // 处理评论点赞
-      const commentIndex = song.comments.findIndex(comment => comment._id.toString() === commentId);
+      const commentIndex = content.comments.findIndex(comment => comment._id.toString() === commentId);
       if (commentIndex === -1) {
         return res.status(404).json({ message: '评论不存在' });
       }
       
       // 检查用户是否已经点赞
-      const comment = song.comments[commentIndex];
+      const comment = content.comments[commentIndex];
       const commentLikes = comment.likedBy || [];
       const userIndex = commentLikes.indexOf(req.session.user.id);
       
@@ -164,27 +198,27 @@ exports.likeSongComment = async (req, res) => {
       
       if (userIndex === -1) {
         // 添加点赞
-        song.comments[commentIndex].likes += 1;
-        song.comments[commentIndex].likedBy = [...commentLikes, req.session.user.id];
+        content.comments[commentIndex].likes += 1;
+        content.comments[commentIndex].likedBy = [...commentLikes, req.session.user.id];
         isLiked = true;
         
         // 当点赞数超过100时，标记为热门评论
-        if (song.comments[commentIndex].likes >= 100) {
-          song.comments[commentIndex].isHot = true;
+        if (content.comments[commentIndex].likes >= 100) {
+          content.comments[commentIndex].isHot = true;
         }
       } else {
         // 取消点赞
-        song.comments[commentIndex].likes = Math.max(0, song.comments[commentIndex].likes - 1);
-        song.comments[commentIndex].likedBy = commentLikes.filter(id => id !== req.session.user.id);
+        content.comments[commentIndex].likes = Math.max(0, content.comments[commentIndex].likes - 1);
+        content.comments[commentIndex].likedBy = commentLikes.filter(id => id !== req.session.user.id);
         isLiked = false;
       }
       
-      await song.save();
+      await content.save();
       
       res.json({ 
         success: true, 
         liked: isLiked, 
-        likes: song.comments[commentIndex].likes 
+        likes: content.comments[commentIndex].likes 
       });
     }
   } catch (error) {
@@ -192,6 +226,10 @@ exports.likeSongComment = async (req, res) => {
     res.status(500).json({ message: '点赞失败', error: error.message });
   }
 };
+
+// 保留原有的回复歌曲评论函数和点赞歌曲评论函数以保持兼容性
+exports.replySongComment = exports.replyComment;
+exports.likeSongComment = exports.likeComment;
 
 // 添加歌单评论
 exports.addPlaylistComment = async (req, res) => {
@@ -278,7 +316,8 @@ exports.getPlaylistComments = async (req, res) => {
     const { id: playlistId } = req.params; // 使用id参数而不是playlistId
     
     const playlist = await Playlist.findById(playlistId)
-      .populate('comments.user', 'username avatar');
+      .populate('comments.user', 'username avatar')
+      .populate('comments.replies.user', 'username avatar');
     
     if (!playlist) {
       return res.status(404).json({ success: false, message: '歌单不存在' });
@@ -292,6 +331,12 @@ exports.getPlaylistComments = async (req, res) => {
       
       comments.forEach(comment => {
         comment.liked = comment.likedBy && comment.likedBy.includes(userId);
+        
+        if (comment.replies) {
+          comment.replies.forEach(reply => {
+            reply.liked = reply.likedBy && reply.likedBy.includes(userId);
+          });
+        }
       });
     }
     

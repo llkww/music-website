@@ -34,14 +34,14 @@ const asyncHandler = (fn) => (req, res, next) => {
 
 // 歌曲评论相关接口
 router.post('/song/:id/comment', commentController.addSongComment);
-router.post('/song/:id/comment/:commentId/reply', commentController.replySongComment);
-router.post('/song/:id/comment/:commentId/like', commentController.likeSongComment);
+router.post('/song/:id/comment/:commentId/reply', commentController.replyComment);
+router.post('/song/:id/comment/:commentId/like', commentController.likeComment);
 router.get('/song/:id/comments', commentController.getSongComments);
 
 // 歌单评论相关接口也需要保持一致
 router.post('/playlist/:id/comment', commentController.addPlaylistComment);
-router.post('/playlist/:id/comment/:commentId/reply', commentController.replySongComment); 
-router.post('/playlist/:id/comment/:commentId/like', commentController.likeSongComment); 
+router.post('/playlist/:id/comment/:commentId/reply', commentController.replyComment);
+router.post('/playlist/:id/comment/:commentId/like', commentController.likeComment);
 router.get('/playlist/:id/comments', commentController.getPlaylistComments);
 
 // 歌词API - 增强错误处理和缓存控制
