@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const commentsList = document.getElementById('comments-list');
   const loadMoreButton = document.getElementById('load-more-comments');
   
-  // 歌曲或歌单ID - 改为let以便动态更新
+  // 歌曲或歌单ID
   let contentId = commentForm ? commentForm.dataset.id : null;
   let contentType = commentForm ? commentForm.dataset.type : null; // song 或 playlist
   
@@ -40,10 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         } else {
           console.error('加载评论失败:', data.message);
+          commentsList.innerHTML = '<div class="text-center text-muted my-4">加载评论失败，请刷新页面重试</div>';
         }
       })
       .catch(error => {
         console.error('加载评论失败:', error);
+        commentsList.innerHTML = '<div class="text-center text-muted my-4">加载评论失败，请刷新页面重试</div>';
       });
   }
   
@@ -242,14 +244,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!commentId) return;
     
     // 确保contentId和contentType正确设置
+    contentId = commentForm ? commentForm.dataset.id : contentId;
+    contentType = commentForm ? commentForm.dataset.type : contentType;
+    
     if (!contentId || !contentType) {
-      contentId = commentForm ? commentForm.dataset.id : null;
-      contentType = commentForm ? commentForm.dataset.type : null;
-      
-      if (!contentId || !contentType) {
-        console.error('无法获取内容ID或类型');
-        return;
-      }
+      console.error('无法获取内容ID或类型');
+      return;
     }
     
     const url = `/api/${contentType}/${contentId}/comment/${commentId}/like`;
@@ -339,11 +339,13 @@ document.addEventListener('DOMContentLoaded', function() {
           alert('请先登录后再评论');
         } else {
           console.error('评论失败:', data.message);
+          alert(`评论失败: ${data.message}`);
         }
       }
     })
     .catch(error => {
       console.error('提交评论失败:', error);
+      alert('提交评论失败，请稍后再试');
     });
   }
   
@@ -352,14 +354,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!commentId || !text) return;
     
     // 确保contentId和contentType正确设置
+    contentId = commentForm ? commentForm.dataset.id : contentId;
+    contentType = commentForm ? commentForm.dataset.type : contentType;
+    
     if (!contentId || !contentType) {
-      contentId = commentForm ? commentForm.dataset.id : null;
-      contentType = commentForm ? commentForm.dataset.type : null;
-      
-      if (!contentId || !contentType) {
-        console.error('无法获取内容ID或类型');
-        return;
-      }
+      console.error('无法获取内容ID或类型');
+      return;
     }
     
     const url = `/api/${contentType}/${contentId}/comment/${commentId}/reply`;
@@ -391,11 +391,13 @@ document.addEventListener('DOMContentLoaded', function() {
           alert('请先登录后再回复');
         } else {
           console.error('回复失败:', data.message);
+          alert(`回复失败: ${data.message}`);
         }
       }
     })
     .catch(error => {
       console.error('提交回复失败:', error);
+      alert('提交回复失败，请稍后再试');
     });
   }
   

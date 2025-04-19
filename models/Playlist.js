@@ -77,7 +77,34 @@ const PlaylistSchema = new mongoose.Schema({
     likes: {
       type: Number,
       default: 0
-    }
+    },
+    likedBy: [{
+      type: String
+    }],
+    isHot: {
+      type: Boolean,
+      default: false
+    },
+    replies: [{
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+      text: {
+        type: String
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      },
+      likes: {
+        type: Number,
+        default: 0
+      },
+      likedBy: [{
+        type: String
+      }]
+    }]
   }]
 });
 

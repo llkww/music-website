@@ -38,7 +38,7 @@ router.post('/song/:id/comment/:commentId/reply', commentController.replyComment
 router.post('/song/:id/comment/:commentId/like', commentController.likeComment);
 router.get('/song/:id/comments', commentController.getSongComments);
 
-// 歌单评论相关接口也需要保持一致
+// 歌单评论相关接口
 router.post('/playlist/:id/comment', commentController.addPlaylistComment);
 router.post('/playlist/:id/comment/:commentId/reply', commentController.replyComment);
 router.post('/playlist/:id/comment/:commentId/like', commentController.likeComment);
